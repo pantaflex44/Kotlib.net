@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <ApplicationIcon>kotlib.ico</ApplicationIcon>
+    <Version>0.1.0</Version>
+    <Authors>Christophe LEMOINE</Authors>
+    <Description>Librairie pour la gestion assistée par ordinateur des finances personnelles.</Description>
+    <Copyright>(c)2021 Christophe LEMOINE</Copyright>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageProjectUrl>https://pantaflex44.me</PackageProjectUrl>
+    <PackageIcon>kotlib.png</PackageIcon>
+    <PackageIconUrl />
+    <RepositoryUrl>https://github.com/pantaflex44?tab=repositories</RepositoryUrl>
+    <RepositoryType>Github</RepositoryType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Objects\PaytypeList.cs~RFdc379c.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="kotlib.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>
