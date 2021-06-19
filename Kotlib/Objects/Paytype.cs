@@ -26,7 +26,8 @@ using System.Xml;
 using System.Xml.Serialization;
 using System.Text.RegularExpressions;
 
-namespace Kotlib.Objects {
+namespace Kotlib.Objects
+{
 
     /// <summary>
     /// Moyen de paiement
@@ -43,7 +44,8 @@ namespace Kotlib.Objects {
     [DisplayName("Moyen de paiement personnalisé")]
     [Description("Moyen de paiement personnalisé")]
     [Category("payment")]
-    public class Paytype: INotifyPropertyChanged {
+    public class Paytype : INotifyPropertyChanged
+    {
 
         #region Fonctions privées
 
@@ -52,7 +54,8 @@ namespace Kotlib.Objects {
         /// </summary>
         /// <param name="name">Nom de la propriété,
         /// ou vide pour le nom de la propriété appelante.</param>
-        public void OnPropertyChanged([CallerMemberName] string name = null) {
+        public void OnPropertyChanged([CallerMemberName] string name = null)
+        {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
             OnUpdated(this, new EventArgs());
         }
@@ -60,7 +63,8 @@ namespace Kotlib.Objects {
         /// <summary>
         /// Informe que le dossier financier a été modifié
         /// </summary>
-        public void OnUpdated(object sender, EventArgs e) {
+        public void OnUpdated(object sender, EventArgs e)
+        {
             UpdatedEvent?.Invoke(sender, e);
         }
 
@@ -88,10 +92,13 @@ namespace Kotlib.Objects {
         /// </summary>
         /// <value>Identifiant unique.</value>
         [XmlElement(ElementName = "Id")]
-        public Guid Id {
+        public Guid Id
+        {
             get { return _id; }
-            set {
-                if(value != _id) {
+            set
+            {
+                if (value != _id)
+                {
                     _id = value;
                     OnPropertyChanged();
                 }
@@ -104,25 +111,29 @@ namespace Kotlib.Objects {
         /// </summary>
         /// <value>Nom, 255 caractères maximum.</value>
         [XmlElement(ElementName = "Name")]
-        public string Name {
+        public string Name
+        {
             get { return _name; }
-            set {
+            set
+            {
                 value = value.Trim();
 
-                if(value.Length > 255)
+                if (value.Length > 255)
                     value = value.Substring(0, 255);
 
-                if(value == "")
+                if (value == "")
                     throw new ArgumentException("Dénomination du moyen de paiement requise.");
 
-                if(value != _name) {
+                if (value != _name)
+                {
                     _name = value;
                     OnPropertyChanged();
                 }
             }
         }
-        public bool ShouldSerializeName() {
-            if(Name.Trim() == "")
+        public bool ShouldSerializeName()
+        {
+            if (Name.Trim() == "")
                 throw new ArgumentException("Dénomination du moyen de paiement requise.");
 
             return true;
@@ -133,14 +144,16 @@ namespace Kotlib.Objects {
         /// <summary>
         /// Constructeurs
         /// </summary>
-        public Paytype() {
+        public Paytype()
+        {
             Id = Guid.NewGuid();
         }
         /// <summary>
         /// Constructeur
         /// </summary>
         /// <param name="name">Nom du moyen de paiement.</param>
-        public Paytype(string name) : this() {
+        public Paytype(string name) : this()
+        {
             Name = name;
         }
 
@@ -178,7 +191,8 @@ namespace Kotlib.Objects {
     [DisplayName("Carte bancaire")]
     [Description("Paiement par carte bancaire")]
     [Category("payment")]
-    public class BankCard: Paytype {
+    public class BankCard : Paytype
+    {
 
         #region Propriétés publiques
 
@@ -188,18 +202,21 @@ namespace Kotlib.Objects {
         /// </summary>
         /// <value>Numéro de la carte bancaire.</value>
         [XmlElement(ElementName = "Number")]
-        public string Number {
+        public string Number
+        {
             get { return _number; }
-            set {
+            set
+            {
                 value = value.Trim().Replace(" ", "").Replace("\n", "").Replace("\r", "").Replace("\t", "");
 
-                if(value.Length > 18)
+                if (value.Length > 18)
                     value = value.Substring(0, 18);
 
-                if(value != "" && !Regex.IsMatch(value, @"^(?:4[0-9]{12}(?:[0-9]{3})?|(?:5[1-5][0-9]{2}|222[1-9]|22[3-9][0-9]|2[3-6][0-9]{2}|27[01][0-9]|2720)[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|6(?:011|5[0-9]{2})[0-9]{12}|(?:2131|1800|35\d{3})\d{11})$", RegexOptions.IgnoreCase))
+                if (value != "" && !Regex.IsMatch(value, @"^(?:4[0-9]{12}(?:[0-9]{3})?|(?:5[1-5][0-9]{2}|222[1-9]|22[3-9][0-9]|2[3-6][0-9]{2}|27[01][0-9]|2720)[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|6(?:011|5[0-9]{2})[0-9]{12}|(?:2131|1800|35\d{3})\d{11})$", RegexOptions.IgnoreCase))
                     throw new ArgumentException("Numéro de carte bancaire invalide.");
 
-                if(value != _number) {
+                if (value != _number)
+                {
                     _number = value;
                     OnPropertyChanged();
                 }
@@ -212,18 +229,21 @@ namespace Kotlib.Objects {
         /// </summary>
         /// <value>Numéro CVV/CCV.</value>
         [XmlElement(ElementName = "CVV")]
-        public string CVV {
+        public string CVV
+        {
             get { return _cvv; }
-            set {
+            set
+            {
                 value = value.Trim().Replace(" ", "").Replace("\n", "").Replace("\r", "").Replace("\t", "");
 
-                if(value.Length > 4)
+                if (value.Length > 4)
                     value = value.Substring(0, 4);
 
-                if(value != "" && !Regex.IsMatch(value, @"^[0-9]{3,4}$", RegexOptions.IgnoreCase))
+                if (value != "" && !Regex.IsMatch(value, @"^[0-9]{3,4}$", RegexOptions.IgnoreCase))
                     throw new ArgumentException("Numéro CVV/CCV invalide.");
 
-                if(value != _cvv) {
+                if (value != _cvv)
+                {
                     _cvv = value;
                     OnPropertyChanged();
                 }
@@ -236,33 +256,41 @@ namespace Kotlib.Objects {
         /// </summary>
         /// <value>Date de validité (année, mois).</value>
         [XmlIgnore]
-        public (int year, int month) Date {
+        public (int year, int month) Date
+        {
             get { return _date; }
-            set {
-                if(value.year < 1970)
+            set
+            {
+                if (value.year < 1970)
                     value.year = 1970;
 
-                if(value.month < 1)
+                if (value.month < 1)
                     value.month = 1;
-                if(value.month > 12)
+                if (value.month > 12)
                     value.month = 12;
 
-                if(value != _date) {
+                if (value != _date)
+                {
                     _date = value;
                     OnPropertyChanged();
                 }
             }
         }
         [XmlElement(ElementName = "Date")]
-        public string FlatDate {
+        public string FlatDate
+        {
             get { return string.Format("{0}-{1}", Date.year, Date.month); }
-            set {
+            set
+            {
                 var vs = value.Split('-');
-                try {
+                try
+                {
                     int year = Convert.ToInt32(vs[0]);
                     int month = Convert.ToInt32(vs[1]);
                     Date = (year, month);
-                } catch {
+                }
+                catch
+                {
                     Date = (1970, 1);
                 }
             }
@@ -289,7 +317,8 @@ namespace Kotlib.Objects {
     [DisplayName("Chèque")]
     [Description("Encaissement ou Paiement par chèque")]
     [Category("payment | collection")]
-    public class Check: Paytype {
+    public class Check : Paytype
+    {
 
         #region Propriétés publiques
 
@@ -299,12 +328,15 @@ namespace Kotlib.Objects {
         /// </summary>
         /// <value>Numéro du chèque.</value>
         [XmlElement(ElementName = "Number")]
-        public int Number {
+        public int Number
+        {
             get { return _number; }
-            set {
+            set
+            {
                 value = Math.Abs(value);
 
-                if(value != _number) {
+                if (value != _number)
+                {
                     _number = value;
                     OnPropertyChanged();
                 }
@@ -332,7 +364,8 @@ namespace Kotlib.Objects {
     [DisplayName("Espèces")]
     [Description("Encaissement ou Paiement en espèces")]
     [Category("payment | collection")]
-    public class Money: Paytype {
+    public class Money : Paytype
+    {
 
         #region Propriétés publiques
         #endregion
@@ -356,7 +389,8 @@ namespace Kotlib.Objects {
     [DisplayName("Pélèvement bancaire")]
     [Description("Paiement par prélèvement bancaire")]
     [Category("payment")]
-    public class BankDirectDebit: Paytype {
+    public class BankDirectDebit : Paytype
+    {
 
         #region Propriétés publiques
 
@@ -368,21 +402,25 @@ namespace Kotlib.Objects {
         /// </summary>
         /// <value>Référence / Note du transfer, 4000 caractères maximum.</value>
         [XmlIgnore]
-        public string Ref {
+        public string Ref
+        {
             get { return _ref; }
-            set {
+            set
+            {
                 value = value.Trim();
-                if(value.Length > 4000)
+                if (value.Length > 4000)
                     value = value.Substring(0, 4000);
 
-                if(value != _ref) {
+                if (value != _ref)
+                {
                     _ref = value;
                     OnPropertyChanged();
                 }
             }
         }
         [XmlElement(ElementName = "Ref")]
-        public XmlCDataSection RefCData {
+        public XmlCDataSection RefCData
+        {
             get { return _xmlDoc.CreateCDataSection(Ref); }
             set { Ref = value.Data; }
         }
@@ -408,7 +446,8 @@ namespace Kotlib.Objects {
     [DisplayName("Virement bancaire")]
     [Description("Encaissement ou Paiement par virement bancaire")]
     [Category("payment | collection")]
-    public class DirectTransfer: Paytype {
+    public class DirectTransfer : Paytype
+    {
 
         #region Propriétés publiques
 
@@ -420,21 +459,25 @@ namespace Kotlib.Objects {
         /// </summary>
         /// <value>Référence / Note du transfer, 4000 caractères maximum.</value>
         [XmlIgnore]
-        public string Ref {
+        public string Ref
+        {
             get { return _ref; }
-            set {
+            set
+            {
                 value = value.Trim();
-                if(value.Length > 4000)
+                if (value.Length > 4000)
                     value = value.Substring(0, 4000);
 
-                if(value != _ref) {
+                if (value != _ref)
+                {
                     _ref = value;
                     OnPropertyChanged();
                 }
             }
         }
         [XmlElement(ElementName = "Ref")]
-        public XmlCDataSection RefCData {
+        public XmlCDataSection RefCData
+        {
             get { return _xmlDoc.CreateCDataSection(Ref); }
             set { Ref = value.Data; }
         }
@@ -460,7 +503,8 @@ namespace Kotlib.Objects {
     [DisplayName("Transfert entre comptes")]
     [Description("Encaissement ou Paiement par transfert entre compte")]
     [Category("payment | collection")]
-    public class LocalTransfer: Paytype {
+    public class LocalTransfer : Paytype
+    {
 
         #region Propriétés publiques
 
@@ -472,21 +516,25 @@ namespace Kotlib.Objects {
         /// </summary>
         /// <value>Référence / Note du transfer, 4000 caractères maximum.</value>
         [XmlIgnore]
-        public string Ref {
+        public string Ref
+        {
             get { return _ref; }
-            set {
+            set
+            {
                 value = value.Trim();
-                if(value.Length > 4000)
+                if (value.Length > 4000)
                     value = value.Substring(0, 4000);
 
-                if(value != _ref) {
+                if (value != _ref)
+                {
                     _ref = value;
                     OnPropertyChanged();
                 }
             }
         }
         [XmlElement(ElementName = "Ref")]
-        public XmlCDataSection RefCData {
+        public XmlCDataSection RefCData
+        {
             get { return _xmlDoc.CreateCDataSection(Ref); }
             set { Ref = value.Data; }
         }
@@ -512,7 +560,8 @@ namespace Kotlib.Objects {
     [DisplayName("Dépot d'èspèces")]
     [Description("Encaissement par dépot d'espèces")]
     [Category("collection")]
-    public class Deposit: Paytype {
+    public class Deposit : Paytype
+    {
 
         #region Propriétés publiques
         #endregion

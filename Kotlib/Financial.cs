@@ -28,13 +28,15 @@ using System.Xml;
 using System.Xml.Serialization;
 using Kotlib.Objects;
 
-namespace Kotlib {
+namespace Kotlib
+{
 
     /// <summary>
     /// Dossier financier
     /// </summary>
     [XmlRoot(ElementName = "Financial")]
-    public class Financial: Core.Serializable, INotifyPropertyChanged {
+    public class Financial : Core.Serializable, INotifyPropertyChanged
+    {
 
         #region Fonctions privées
 
@@ -43,7 +45,8 @@ namespace Kotlib {
         /// </summary>
         /// <param name="name">Nom de la propriété,
         /// ou vide pour le nom de la propriété appelante.</param>
-        public void OnPropertyChanged([CallerMemberName] string name = null) {
+        public void OnPropertyChanged([CallerMemberName] string name = null)
+        {
             Updated = DateTime.Now;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
@@ -51,7 +54,8 @@ namespace Kotlib {
         /// <summary>
         /// Informe que le dossier financier a été modifié
         /// </summary>
-        public void OnUpdated(object sender, EventArgs e) {
+        public void OnUpdated(object sender, EventArgs e)
+        {
             UpdatedEvent?.Invoke(sender, e);
         }
 
@@ -79,10 +83,13 @@ namespace Kotlib {
         /// </summary>
         /// <value>Identifiant unique.</value>
         [XmlElement(ElementName = "Id")]
-        public Guid Id {
+        public Guid Id
+        {
             get { return _id; }
-            set {
-                if(value != _id) {
+            set
+            {
+                if (value != _id)
+                {
                     _id = value;
                     OnPropertyChanged();
                 }
@@ -95,18 +102,21 @@ namespace Kotlib {
         /// </summary>
         /// <value>Nom, 255 caractères maximum.</value>
         [XmlElement(ElementName = "Name")]
-        public string Name {
+        public string Name
+        {
             get { return _name; }
-            set {
+            set
+            {
                 value = value.Trim();
 
-                if(value.Length > 255)
+                if (value.Length > 255)
                     value = value.Substring(0, 255);
 
-                if(value == "")
+                if (value == "")
                     throw new ArgumentException("Dénomination du dossier financier requise.");
 
-                if(value != _name) {
+                if (value != _name)
+                {
                     _name = value;
                     OnPropertyChanged();
                 }
@@ -116,8 +126,9 @@ namespace Kotlib {
         /// Verifie que la propriété est correcte avant d'être sérialisée
         /// </summary>
         /// <returns><c>true</c></returns>
-        public bool ShouldSerializeName() {
-            if(Name.Trim() == "")
+        public bool ShouldSerializeName()
+        {
+            if (Name.Trim() == "")
                 throw new ArgumentException("Dénomination du dossier financier requise.");
 
             return true;
@@ -129,10 +140,13 @@ namespace Kotlib {
         /// </summary>
         /// <value>Date de création.</value>
         [XmlAttribute(AttributeName = "created")]
-        public DateTime Created {
+        public DateTime Created
+        {
             get { return _created; }
-            set {
-                if(value != _created) {
+            set
+            {
+                if (value != _created)
+                {
                     _created = value;
                     OnPropertyChanged();
                 }
@@ -145,12 +159,15 @@ namespace Kotlib {
         /// </summary>
         /// <value>Date de modification.</value>
         [XmlAttribute(AttributeName = "updated")]
-        public DateTime Updated {
+        public DateTime Updated
+        {
             get { return _updated; }
-            set {
-                if(value != _updated) {
+            set
+            {
+                if (value != _updated)
+                {
                     _updated = value;
-                    if(_updated < _created)
+                    if (_updated < _created)
                         _updated = _created;
 
                     OnUpdated(this, new EventArgs());
@@ -164,14 +181,17 @@ namespace Kotlib {
         /// </summary>
         /// <value>Notes, 4000 caractères maximum.</value>
         [XmlIgnore]
-        public string Note {
+        public string Note
+        {
             get { return _note; }
-            set {
+            set
+            {
                 value = value.Trim();
-                if(value.Length > 4000)
+                if (value.Length > 4000)
                     value = value.Substring(0, 4000);
 
-                if(value != _note) {
+                if (value != _note)
+                {
                     _note = value;
                     OnPropertyChanged();
                 }
@@ -179,7 +199,8 @@ namespace Kotlib {
         }
         private static readonly XmlDocument _xmlDoc = new XmlDocument();
         [XmlElement(ElementName = "Note")]
-        public XmlCDataSection NoteCData {
+        public XmlCDataSection NoteCData
+        {
             get { return _xmlDoc.CreateCDataSection(Note); }
             set { Note = value.Data; }
         }
@@ -190,20 +211,24 @@ namespace Kotlib {
         /// </summary>
         /// <value>Propriétaire du dossier financier.</value>
         [XmlElement(ElementName = "Owner")]
-        public Identity Owner {
+        public Identity Owner
+        {
             get { return _owner; }
-            set {
-                if(value == null)
+            set
+            {
+                if (value == null)
                     throw new ArgumentException("Une identité correcte est requise pour le propriétaire du dossier financier.");
 
-                if(value != _owner) {
+                if (value != _owner)
+                {
                     _owner = value;
                     OnPropertyChanged();
                 }
             }
         }
-        public bool ShouldSerializeOwner() {
-            if(Owner == null)
+        public bool ShouldSerializeOwner()
+        {
+            if (Owner == null)
                 throw new ArgumentException("Une identité correcte est requise pour le propriétaire du dossier financier.");
 
             return true;
@@ -216,11 +241,14 @@ namespace Kotlib {
         /// <value>Liste des moyens de paiements.</value>
         [XmlArray(ElementName = "Paytypes")]
         [XmlArrayItem(ElementName = "Paytype")]
-        public PaytypeList Paytypes {
+        public PaytypeList Paytypes
+        {
             get { return _paytypes; }
-            set {
-                if(value != null && value != _paytypes) {
-                    if(_paytypes != null)
+            set
+            {
+                if (value != null && value != _paytypes)
+                {
+                    if (_paytypes != null)
                         _paytypes.UpdatedEvent -= OnUpdated;
 
                     _paytypes = value;
@@ -236,11 +264,14 @@ namespace Kotlib {
         /// <value>Liste des catégories.</value>
         [XmlArray(ElementName = "Categories")]
         [XmlArrayItem(ElementName = "Category")]
-        public CategoryList Categories {
+        public CategoryList Categories
+        {
             get { return _categories; }
-            set {
-                if(value != null && value != _categories) {
-                    if(_categories != null)
+            set
+            {
+                if (value != null && value != _categories)
+                {
+                    if (_categories != null)
                         _categories.UpdatedEvent -= OnUpdated;
 
                     _categories = value;
@@ -256,11 +287,14 @@ namespace Kotlib {
         /// <value>Liste des tiers.</value>
         [XmlArray(ElementName = "Thirdparties")]
         [XmlArrayItem(ElementName = "Identity")]
-        public ThirdpartyList Thirdparties {
+        public ThirdpartyList Thirdparties
+        {
             get { return _thirdparties; }
-            set {
-                if(value != null && value != _thirdparties) {
-                    if(_thirdparties != null)
+            set
+            {
+                if (value != null && value != _thirdparties)
+                {
+                    if (_thirdparties != null)
                         _thirdparties.UpdatedEvent -= OnUpdated;
 
                     _thirdparties = value;
@@ -276,11 +310,14 @@ namespace Kotlib {
         /// <value>Liste des éléments bancaires.</value>
         [XmlArray(ElementName = "Accounts")]
         [XmlArrayItem(ElementName = "Account")]
-        public AccountList Accounts {
+        public AccountList Accounts
+        {
             get { return _accounts; }
-            set {
-                if(value != null && value != _accounts) {
-                    if(_accounts != null)
+            set
+            {
+                if (value != null && value != _accounts)
+                {
+                    if (_accounts != null)
                         _accounts.UpdatedEvent -= OnUpdated;
 
                     _accounts = value;
@@ -294,7 +331,8 @@ namespace Kotlib {
         /// <summary>
         /// Constructeurs
         /// </summary>
-        public Financial() {
+        public Financial()
+        {
             Id = Guid.NewGuid();
             Created = DateTime.Now;
             Paytypes = PaytypeList.Empty;
@@ -307,7 +345,8 @@ namespace Kotlib {
         /// </summary>
         /// <param name="name">Nom du dossier financier.</param>
         /// <param name="owner">Identité du propriétaire.</param>
-        public Financial(string name, Identity owner) : this() {
+        public Financial(string name, Identity owner) : this()
+        {
             Name = name;
             Owner = owner;
         }
@@ -379,6 +418,41 @@ namespace Kotlib {
             var datas = await File.ReadAllBytesAsync(filepath);
             return await Load(datas, password);
         }
+
+        /// <summary>
+        /// Créé un nouveau dossier financier
+        /// </summary>
+        /// <param name="name">Nom du dossier financier</param>
+        /// <param name="owner">Identité du propriétaire</param>
+        /// <param name="accounts">Liste des éléments bancaires rattachés au dossier financier</param>
+        /// <param name="paytypes">Liste des moyens financiers, optionnel</param>
+        /// <param name="categories">Liste des catégories, optionnel</param>
+        /// <param name="thirdparties">Liste des tiers, optionnel</param>
+        /// <param name="note">Note apposée au dossier financier, optionnel</param>
+        /// <param name="loadDefaults"><c>true</c>, charge les valeurs par défaut, sinon <c>false</c>, créé un dossier vide, optionnel</param>
+        /// <returns>Dossier financier nouvellement créé</returns>
+        public static Financial Create(string name,
+            Identity owner,
+            AccountList accounts,
+            PaytypeList paytypes = default,
+            CategoryList categories = default,
+            ThirdpartyList thirdparties = default,
+            string note = "",
+            bool loadDefaults = false)
+        {
+            return new Financial(name, owner)
+            {
+                Created = DateTime.Now,
+                Updated = DateTime.Now,
+                Accounts = accounts,
+                Thirdparties = thirdparties == default || thirdparties == null ? new ThirdpartyList() { owner } : thirdparties,
+                Paytypes = paytypes == default || paytypes == null ? (loadDefaults ? PaytypeList.Defaults : PaytypeList.Empty) : paytypes,
+                Categories = categories == default || categories == null ? (loadDefaults ? CategoryList.Defaults : CategoryList.Empty) : categories,
+                Note = note.Trim() == "" ? (loadDefaults ? "Modèle par défaut d'un dossier financier" : "") : note
+            };
+        }
+
+
 
 
     }

@@ -24,29 +24,48 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 
-namespace Kotlib.Objects {
+namespace Kotlib.Objects
+{
 
     /// <summary>
     /// Liste d'éléments bancaires
     /// </summary>
-    public class AccountList: ObjectList<Account> {
+    public class AccountList : ObjectList<Account>
+    {
+
+        #region Propriétés publiques
 
         /// <summary>
         /// Retourne une liste vide
         /// </summary>
         /// <value>Liste vide.</value>
-        public static AccountList Empty {
-            get {
+        public static AccountList Empty
+        {
+            get
+            {
                 return new AccountList();
             }
         }
+
+        #endregion
+
+        /// <summary>
+        /// Constructeur
+        /// </summary>
+        public AccountList() : base() { }
+        /// <summary>
+        /// Constructeur
+        /// </summary>
+        /// <param name="items">Liste à charger</param>
+        public AccountList(IEnumerable<Account> items) : base(items) { }
 
         /// <summary>
         /// Retourne le premier élément bancaire trouvé possédant l'identifiant unique passé en paramètre
         /// </summary>
         /// <returns>Elément bancaire trouvé.</returns>
         /// <param name="id">Identifiant unique.</param>
-        public Account GetById(string id) {
+        public Account GetById(string id)
+        {
             return this.ToList().First(a => a.Id.Equals(Guid.Parse(id.Trim())));
         }
 
@@ -68,9 +87,9 @@ namespace Kotlib.Objects {
                             Attribute.IsDefined(at, typeof(DescriptionAttribute)))
                         {
 
-                                var dname = (Attribute.GetCustomAttribute(at, typeof(DisplayNameAttribute)) as DisplayNameAttribute).DisplayName;
-                                var desc = (Attribute.GetCustomAttribute(at, typeof(DescriptionAttribute)) as DescriptionAttribute).Description;
-                                l.Add(new Tuple<string, string, Type>(dname, desc, at));
+                            var dname = (Attribute.GetCustomAttribute(at, typeof(DisplayNameAttribute)) as DisplayNameAttribute).DisplayName;
+                            var desc = (Attribute.GetCustomAttribute(at, typeof(DescriptionAttribute)) as DescriptionAttribute).Description;
+                            l.Add(new Tuple<string, string, Type>(dname, desc, at));
 
                         }
                     }

@@ -24,12 +24,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 
-namespace Kotlib.Objects {
+namespace Kotlib.Objects
+{
 
     /// <summary>
     /// Liste personnalisée d'objets 
     /// </summary>
-    public class ObjectList<T>: IList<T>, INotifyCollectionChanged {
+    public class ObjectList<T> : IList<T>, INotifyCollectionChanged
+    {
 
         List<T> _list = new List<T>();
 
@@ -39,7 +41,8 @@ namespace Kotlib.Objects {
         /// Informe que la collection est modifiée
         /// </summary>
         /// <param name="action">Nom de la méthode</param>
-        public void OnCollectionChanged(NotifyCollectionChangedAction action) {
+        public void OnCollectionChanged(NotifyCollectionChangedAction action)
+        {
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(action));
             OnUpdated(this, new EventArgs());
         }
@@ -47,7 +50,8 @@ namespace Kotlib.Objects {
         /// <summary>
         /// Informe que le dossier financier a été modifié
         /// </summary>
-        public void OnUpdated(object sender, EventArgs e) {
+        public void OnUpdated(object sender, EventArgs e)
+        {
             UpdatedEvent?.Invoke(sender, e);
         }
 
@@ -55,9 +59,11 @@ namespace Kotlib.Objects {
         /// Lie l'événement UpdatedEvent d'un objet à celui de la liste d'objets
         /// </summary>
         /// <param name="item">Objet à lier.</param>
-        private void _AddUpdatedEvent(T item) {
+        private void _AddUpdatedEvent(T item)
+        {
             var eUpdatedEvent = item.GetType().GetEvent("UpdatedEvent");
-            if(eUpdatedEvent != null && eUpdatedEvent.GetAddMethod() != null) {
+            if (eUpdatedEvent != null && eUpdatedEvent.GetAddMethod() != null)
+            {
                 var mOnUpdated = GetType().GetMethod("OnUpdated");
                 var mOnUpdatedDelegate = Delegate.CreateDelegate(eUpdatedEvent.EventHandlerType, this, mOnUpdated);
                 eUpdatedEvent.GetAddMethod().Invoke(item, new object[] { mOnUpdatedDelegate });
@@ -68,9 +74,11 @@ namespace Kotlib.Objects {
         /// Annule le routage d'événement pour l'objet supprimé
         /// </summary>
         /// <param name="item">Objet à délier.</param>
-        private void _RemoveUpdatedEvent(T item) {
+        private void _RemoveUpdatedEvent(T item)
+        {
             var eUpdatedEvent = item.GetType().GetEvent("UpdatedEvent");
-            if(eUpdatedEvent != null && eUpdatedEvent.GetRemoveMethod() != null) {
+            if (eUpdatedEvent != null && eUpdatedEvent.GetRemoveMethod() != null)
+            {
                 var mOnUpdated = GetType().GetMethod("OnUpdated");
                 var mOnUpdatedDelegate = Delegate.CreateDelegate(eUpdatedEvent.EventHandlerType, this, mOnUpdated);
                 eUpdatedEvent.GetRemoveMethod().Invoke(item, new object[] { mOnUpdatedDelegate });
@@ -94,11 +102,29 @@ namespace Kotlib.Objects {
         #endregion
 
         /// <summary>
+        /// Constructeur
+        /// </summary>
+        public ObjectList()
+        {
+        }
+
+        /// <summary>
+        /// Constructeur
+        /// </summary>
+        /// <param name="items">Eléments à charger</param>
+        public ObjectList(IEnumerable<T> items)
+        {
+            _list = new List<T>(items);
+        }
+
+        /// <summary>
         /// Retourne le nombre d'éléments de la liste
         /// </summary>
         /// <value>Nombre d'éléments.</value>
-        public int Count {
-            get {
+        public int Count
+        {
+            get
+            {
                 return _list.Count;
             }
         }
@@ -107,8 +133,10 @@ namespace Kotlib.Objects {
         /// Indique si la liste est en lecture seule
         /// </summary>
         /// <value><c>true</c> si la liste est en lecture seule, sinon, <c>false</c>.</value>
-        public bool IsReadOnly {
-            get {
+        public bool IsReadOnly
+        {
+            get
+            {
                 return false;
             }
         }
@@ -117,11 +145,14 @@ namespace Kotlib.Objects {
         /// Retournel'élément à la position <c>index</c>
         /// </summary>
         /// <param name="index">Position de l'élément.</param>
-        public T this[int index] {
-            get {
+        public T this[int index]
+        {
+            get
+            {
                 return _list[index];
             }
-            set {
+            set
+            {
                 _RemoveUpdatedEvent(_list[index]);
                 _list[index] = value;
                 _AddUpdatedEvent(_list[index]);
@@ -134,8 +165,10 @@ namespace Kotlib.Objects {
         /// Ajoute un élément à la liste
         /// </summary>
         /// <param name="item">Item.</param>
-        public void Add(T item) {
-            if(_list.IndexOf(item) == -1) {
+        public void Add(T item)
+        {
+            if (_list.IndexOf(item) == -1)
+            {
                 _AddUpdatedEvent(item);
                 _list.Add(item);
                 OnCollectionChanged(NotifyCollectionChangedAction.Add);
@@ -147,7 +180,8 @@ namespace Kotlib.Objects {
         /// </summary>
         /// <returns>Position de l'élément base 0, -1 si non trouvée.</returns>
         /// <param name="item">Elément à rechercher.</param>
-        public int IndexOf(T item) {
+        public int IndexOf(T item)
+        {
             return _list.IndexOf(item);
         }
 
@@ -156,8 +190,10 @@ namespace Kotlib.Objects {
         /// </summary>
         /// <param name="index">Position d'insertion.</param>
         /// <param name="item">Elément à insérer.</param>
-        public void Insert(int index, T item) {
-            if(_list.IndexOf(item) == -1) {
+        public void Insert(int index, T item)
+        {
+            if (_list.IndexOf(item) == -1)
+            {
                 _AddUpdatedEvent(item);
                 _list.Insert(index, item);
             }
@@ -167,8 +203,10 @@ namespace Kotlib.Objects {
         /// Supprime l'élément de la liste à la position spécifié
         /// </summary>
         /// <param name="index">Position de l'élément.</param>
-        public void RemoveAt(int index) {
-            if(index >= 0 && index < _list.Count) {
+        public void RemoveAt(int index)
+        {
+            if (index >= 0 && index < _list.Count)
+            {
                 _RemoveUpdatedEvent(_list[index]);
                 _list.RemoveAt(index);
             }
@@ -177,8 +215,9 @@ namespace Kotlib.Objects {
         /// <summary>
         /// Vide la liste de ses éléments
         /// </summary>
-        public void Clear() {
-            foreach(var e in _list)
+        public void Clear()
+        {
+            foreach (var e in _list)
                 _RemoveUpdatedEvent(e);
 
             _list.Clear();
@@ -189,7 +228,8 @@ namespace Kotlib.Objects {
         /// </summary>
         /// <returns>true, si l'élément existe, sinon, false.</returns>
         /// <param name="item">Elément à trouver.</param>
-        public bool Contains(T item) {
+        public bool Contains(T item)
+        {
             return _list.Contains(item);
         }
 
@@ -198,7 +238,8 @@ namespace Kotlib.Objects {
         /// </summary>
         /// <param name="array">Conteneur de la copie.</param>
         /// <param name="arrayIndex">Position de la liste .</param>
-        public void CopyTo(T[] array, int arrayIndex) {
+        public void CopyTo(T[] array, int arrayIndex)
+        {
             _list.CopyTo(array, arrayIndex);
         }
 
@@ -207,8 +248,10 @@ namespace Kotlib.Objects {
         /// </summary>
         /// <returns>true, l'élément est supprimé, sinon, false.</returns>
         /// <param name="item">Elément à supprimer.</param>
-        public bool Remove(T item) {
-            if(_list.IndexOf(item) > -1) {
+        public bool Remove(T item)
+        {
+            if (_list.IndexOf(item) > -1)
+            {
                 _RemoveUpdatedEvent(item);
                 return _list.Remove(item);
             }
@@ -219,7 +262,8 @@ namespace Kotlib.Objects {
         /// Retourne l'énumérateur
         /// </summary>
         /// <returns>Enumérateur.</returns>
-        public IEnumerator<T> GetEnumerator() {
+        public IEnumerator<T> GetEnumerator()
+        {
             return _list.GetEnumerator();
         }
 
@@ -227,7 +271,8 @@ namespace Kotlib.Objects {
         /// Retourne l'interface d'énumération
         /// </summary>
         /// <returns>Interface d'énumération.</returns>
-        IEnumerator IEnumerable.GetEnumerator() {
+        IEnumerator IEnumerable.GetEnumerator()
+        {
             return (IEnumerator)_list.GetEnumerator();
         }
 

@@ -20,13 +20,16 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections.Generic;
 
-namespace Kotlib.Objects {
+namespace Kotlib.Objects
+{
 
     /// <summary>
     /// Liste de carte d'identité
     /// </summary>
-    public class IdentityList: ObjectList<Identity> {
+    public class IdentityList : ObjectList<Identity>
+    {
 
         #region Propriétés publiques
 
@@ -34,13 +37,25 @@ namespace Kotlib.Objects {
         /// Retourne une liste vide
         /// </summary>
         /// <value>Liste vide.</value>
-        public static IdentityList Empty {
-            get {
+        public static IdentityList Empty
+        {
+            get
+            {
                 return new IdentityList();
             }
         }
 
         #endregion
+
+        /// <summary>
+        /// Constructeur
+        /// </summary>
+        public IdentityList() : base() { }
+        /// <summary>
+        /// Constructeur
+        /// </summary>
+        /// <param name="items">Liste à charger</param>
+        public IdentityList(IEnumerable<Identity> items) : base(items) { }
 
     }
 
