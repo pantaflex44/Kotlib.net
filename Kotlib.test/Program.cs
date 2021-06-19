@@ -21,12 +21,8 @@
 
 using System;
 using System.Text;
-
-using Kotlib.Objects;
-using Kotlib.Core;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
+using Kotlib.Objects;
 
 namespace Kotlib.test
 {
@@ -42,20 +38,18 @@ namespace Kotlib.test
                 Forname = "Christophe"
             };
 
-            // Informations de la CB  a modifier car non valide
             var bc = new BankCard("CIC Mastercard Tof")
             {
-                Number = "1234 5678 9012 3456",
+                Number = "5135 1800 0000 0001",
                 CVV = "123",
-                Date = (2022, 8)
+                Date = new CardDate(2025, 12)
             };
             bc.Name = "CIC Mastercard";
 
-            // Informations du compte bancaire à modifier car non valide
-            var ba = new BankAccount("CIC Compte personnel", me)
+            var ba = new BankAccount("CIC Compte courant", me)
             {
                 BankName = "CIC",
-                Iban = "FR76 3004 1234 4567 8901 2345 678",
+                Iban = "FR76 1180 8009 1012 3456 7890 147",
                 Bic = "CMCIFRPP",
                 Contact = new Identity("CIC COUERON")
                 {
@@ -73,12 +67,15 @@ namespace Kotlib.test
             );
             fi.Paytypes.Add(bc);
             fi.UpdatedEvent += (sender, e) => Console.WriteLine("fi1 updated " + sender.GetType().UnderlyingSystemType);
-            string filepath = fi.SaveToFile(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), password: "bob").Result;
+            string filepath = fi.SaveToFile(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), password: "bob");
 
-            var fi2 = Financial.LoadFromFile(filepath, password: "bob").Result;
-            byte[] datas2 = fi2.Serialize().Result;
+            var fi2 = Financial.LoadFromFile(filepath, password: "bob");
+            byte[] datas2 = fi2.Serialize();
             Console.WriteLine(Encoding.UTF8.GetString(datas2));
 
+            
+            
+            Console.ReadLine();
         }
 
     }

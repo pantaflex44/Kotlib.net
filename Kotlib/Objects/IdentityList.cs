@@ -21,42 +21,53 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Kotlib.Objects
 {
 
-    /// <summary>
-    /// Liste de carte d'identité
-    /// </summary>
-    public class IdentityList : ObjectList<Identity>
-    {
+	/// <summary>
+	/// Liste de carte d'identité
+	/// </summary>
+	public class IdentityList : ObjectList<Identity>
+	{
 
-        #region Propriétés publiques
+		#region Propriétés publiques
 
-        /// <summary>
-        /// Retourne une liste vide
-        /// </summary>
-        /// <value>Liste vide.</value>
-        public static IdentityList Empty
-        {
-            get
-            {
-                return new IdentityList();
-            }
-        }
+		/// <summary>
+		/// Retourne une liste vide
+		/// </summary>
+		/// <value>Liste vide.</value>
+		public static IdentityList Empty
+		{
+			get
+			{
+				return new IdentityList();
+			}
+		}
 
-        #endregion
+		#endregion
 
-        /// <summary>
-        /// Constructeur
-        /// </summary>
-        public IdentityList() : base() { }
-        /// <summary>
-        /// Constructeur
-        /// </summary>
-        /// <param name="items">Liste à charger</param>
-        public IdentityList(IEnumerable<Identity> items) : base(items) { }
+		/// <summary>
+		/// Constructeur
+		/// </summary>
+		public IdentityList() : base() { }
+		/// <summary>
+		/// Constructeur
+		/// </summary>
+		/// <param name="items">Liste à charger</param>
+		public IdentityList(IEnumerable<Identity> items) : base(items) { }
 
-    }
+		/// <summary>
+		/// Retourne la premiere identité trouvée possédant l'identifiant unique passé en paramètre
+		/// </summary>
+		/// <returns>Identité trouvée.</returns>
+		/// <param name="id">Identifiant unique.</param>
+		public Identity GetById(string id)
+		{
+			return this.ToList().First(a => a.Id.Equals(Guid.Parse(id.Trim())));
+		}
+
+	}
 
 }

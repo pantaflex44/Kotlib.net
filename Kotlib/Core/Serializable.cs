@@ -23,49 +23,53 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace Kotlib.Core {
+namespace Kotlib.Core
+{
 
-    /// <summary>
-    /// Méthodes pour la sérialisation et la désérialisation d'un objet
-    /// </summary>
-    public class Serializable {
+	/// <summary>
+	/// Méthodes pour la sérialisation et la désérialisation d'un objet
+	/// </summary>
+	public class Serializable
+	{
 
-        /// <summary>
-        /// Serialisation d'un objet
-        /// </summary>
-        /// <returns>Tableau de données représentant un objet sérialisé.</returns>
-        public Task<byte[]> Serialize() {
-            byte[] datas = new byte[0];
+		/// <summary>
+		/// Serialisation d'un objet
+		/// </summary>
+		/// <returns>Tableau de données représentant un objet sérialisé.</returns>
+		public byte[] Serialize()
+		{
+			byte[] datas = { };
 
-            using (var ms = new MemoryStream())
-            {
-                var xs = new XmlSerializer(this.GetType());
+			using (var ms = new MemoryStream()) {
+				var xs = new XmlSerializer(this.GetType());
 
-                var ns = new XmlSerializerNamespaces();
-                ns.Add("", "");
+				var ns = new XmlSerializerNamespaces();
+				ns.Add("", "");
 
-                xs.Serialize(ms, this, ns);
+				xs.Serialize(ms, this, ns);
 
-                ms.Seek(0, SeekOrigin.Begin);
-                datas = new byte[ms.Length];
-                int count = ms.Read(datas, 0, datas.Length);
-            }
+				ms.Seek(0, SeekOrigin.Begin);
+				datas = new byte[ms.Length];
+				int count = ms.Read(datas, 0, datas.Length);
+			}
 
-            return Task.FromResult(datas);
-        }
+			return datas;
+		}
 
-        /// <summary>
-        /// Désérialisation d'un objet
-        /// </summary>
-        /// <returns>Objet reconstitué.</returns>
-        /// <param name="datas">Données à sérialisées.</param>
-        /// <typeparam name="T">Type d'objet à reconstituer.</typeparam>
-        public static Task<T> Deserialize<T>(byte[] datas) {
-            using var ms = new MemoryStream(datas);
-            var xs = new XmlSerializer(typeof(T));
-            return Task.FromResult((T)xs.Deserialize(ms));
-        }
+		/// <summary>
+		/// Désérialisation d'un objet
+		/// </summary>
+		/// <returns>Objet reconstitué.</returns>
+		/// <param name="datas">Données à sérialisées.</param>
+		/// <typeparam name="T">Type d'objet à reconstituer.</typeparam>
+		public static T Deserialize<T>(byte[] datas)
+		{
+			using (var ms = new MemoryStream(datas)) {
+				var xs = new XmlSerializer(typeof(T));
+				return (T)xs.Deserialize(ms);
+			}
+		}
 
-    }
+	}
 
 }

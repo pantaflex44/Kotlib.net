@@ -26,56 +26,58 @@ using System.IO.Compression;
 namespace Kotlib.Core
 {
 
-    /// <summary>
-    /// Regroupe les méthodes de compression / décompression
-    /// </summary>
-    public static class Compression
-    {
+	/// <summary>
+	/// Regroupe les méthodes de compression / décompression
+	/// </summary>
+	public static class Compression
+	{
 
-        /// <summary>
-        /// Compresse des données
-        /// </summary>
-        /// <returns>Les données compressées.</returns>
-        /// <param name="original">Données originales.</param>
-        public static byte[] Compress(byte[] original)
-        {
-            byte[] datas = Array.Empty<byte>();
+		/// <summary>
+		/// Compresse des données
+		/// </summary>
+		/// <returns>Les données compressées.</returns>
+		/// <param name="original">Données originales.</param>
+		public static byte[] Compress(byte[] original)
+		{
+			byte[] datas = { };
 
-            using (var original_stream = new MemoryStream(original))
-            {
-                using var compressed_stream = new MemoryStream();
-                using var compression_stream = new DeflateStream(compressed_stream, CompressionMode.Compress);
-                original_stream.CopyTo(compression_stream);
-                compression_stream.Close();
+			using (var original_stream = new MemoryStream(original)) {
+				using (var compressed_stream = new MemoryStream()) {
+					using (var compression_stream = new DeflateStream(compressed_stream, CompressionMode.Compress)) {
+						original_stream.CopyTo(compression_stream);
+						compression_stream.Close();
+		
+						datas = compressed_stream.ToArray();
+					}
+				}
+			}
 
-                datas = compressed_stream.ToArray();
-            }
+			return datas;
+		}
 
-            return datas;
-        }
+		/// <summary>
+		/// Décompresse les données
+		/// </summary>
+		/// <returns>Données décompressées.</returns>
+		/// <param name="compressed">Données compressées.</param>
+		public static byte[] Decompress(byte[] compressed)
+		{
+			byte[] datas = { };
 
-        /// <summary>
-        /// Décompresse les données
-        /// </summary>
-        /// <returns>Données décompressées.</returns>
-        /// <param name="compressed">Données compressées.</param>
-        public static byte[] Decompress(byte[] compressed)
-        {
-            byte[] datas = Array.Empty<byte>();
+			using (var compressed_stream = new MemoryStream(compressed)) {
+				using (var decompression_stream = new DeflateStream(compressed_stream, CompressionMode.Decompress)) {
+					using (var original_stream = new MemoryStream()) {
+						decompression_stream.CopyTo(original_stream);
+						decompression_stream.Close();
+		
+						datas = original_stream.ToArray();
+					}
+				}
+			}
 
-            using (var compressed_stream = new MemoryStream(compressed))
-            {
-                using var decompression_stream = new DeflateStream(compressed_stream, CompressionMode.Decompress);
-                using var original_stream = new MemoryStream();
-                decompression_stream.CopyTo(original_stream);
-                decompression_stream.Close();
+			return datas;
+		}
 
-                datas = original_stream.ToArray();
-            }
-
-            return datas;
-        }
-
-    }
+	}
 
 }

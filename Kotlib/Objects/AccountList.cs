@@ -27,81 +27,81 @@ using System.Linq;
 namespace Kotlib.Objects
 {
 
-    /// <summary>
-    /// Liste d'éléments bancaires
-    /// </summary>
-    public class AccountList : ObjectList<Account>
-    {
+	/// <summary>
+	/// Liste d'éléments bancaires
+	/// </summary>
+	public class AccountList : ObjectList<Account>
+	{
 
-        #region Propriétés publiques
+		#region Propriétés publiques
 
-        /// <summary>
-        /// Retourne une liste vide
-        /// </summary>
-        /// <value>Liste vide.</value>
-        public static AccountList Empty
-        {
-            get
-            {
-                return new AccountList();
-            }
-        }
+		/// <summary>
+		/// Retourne une liste vide
+		/// </summary>
+		/// <value>Liste vide.</value>
+		public static AccountList Empty {
+			get {
+				return new AccountList();
+			}
+		}
 
-        #endregion
+		#endregion
 
-        /// <summary>
-        /// Constructeur
-        /// </summary>
-        public AccountList() : base() { }
-        /// <summary>
-        /// Constructeur
-        /// </summary>
-        /// <param name="items">Liste à charger</param>
-        public AccountList(IEnumerable<Account> items) : base(items) { }
+		/// <summary>
+		/// Constructeur
+		/// </summary>
+		public AccountList()
+			: base()
+		{
+		}
+		/// <summary>
+		/// Constructeur
+		/// </summary>
+		/// <param name="items">Liste à charger</param>
+		public AccountList(IEnumerable<Account> items)
+			: base(items)
+		{
+		}
 
-        /// <summary>
-        /// Retourne le premier élément bancaire trouvé possédant l'identifiant unique passé en paramètre
-        /// </summary>
-        /// <returns>Elément bancaire trouvé.</returns>
-        /// <param name="id">Identifiant unique.</param>
-        public Account GetById(string id)
-        {
-            return this.ToList().First(a => a.Id.Equals(Guid.Parse(id.Trim())));
-        }
+		/// <summary>
+		/// Retourne le premier élément bancaire trouvé possédant l'identifiant unique passé en paramètre
+		/// </summary>
+		/// <returns>Elément bancaire trouvé.</returns>
+		/// <param name="id">Identifiant unique.</param>
+		public Account GetById(string id)
+		{
+			return this.ToList().First(a => a.Id.Equals(Guid.Parse(id.Trim())));
+		}
 
-        /// <summary>
-        /// Retourne la liste des éléments bancaires disponibles
-        /// </summary>
-        /// <returns>Liste des éléments bancaires disponibles</returns>
-        public static List<Tuple<string, string, Type>> GetAvaillableAccounts()
-        {
-            var l = new List<Tuple<string, string, Type>>();
+		/// <summary>
+		/// Retourne la liste des éléments bancaires disponibles
+		/// </summary>
+		/// <returns>Liste des éléments bancaires disponibles</returns>
+		public static List<Tuple<string, string, Type>> GetAvaillableAccounts()
+		{
+			var l = new List<Tuple<string, string, Type>>();
 
-            foreach (var da in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                foreach (var at in da.GetTypes())
-                {
-                    if (typeof(Account).IsAssignableFrom(at))
-                    {
-                        if (Attribute.IsDefined(at, typeof(DisplayNameAttribute)) &&
-                            Attribute.IsDefined(at, typeof(DescriptionAttribute)))
-                        {
+			foreach (var da in AppDomain.CurrentDomain.GetAssemblies()) {
+				foreach (var at in da.GetTypes()) {
+					if (typeof(Account).IsAssignableFrom(at)) {
+						if (Attribute.IsDefined(at, typeof(DisplayNameAttribute)) &&
+						                      Attribute.IsDefined(at, typeof(DescriptionAttribute))) {
 
-                            var dname = (Attribute.GetCustomAttribute(at, typeof(DisplayNameAttribute)) as DisplayNameAttribute).DisplayName;
-                            var desc = (Attribute.GetCustomAttribute(at, typeof(DescriptionAttribute)) as DescriptionAttribute).Description;
-                            l.Add(new Tuple<string, string, Type>(dname, desc, at));
+							var dname = (Attribute.GetCustomAttribute(at, typeof(DisplayNameAttribute)) as DisplayNameAttribute).DisplayName;
+							var desc = (Attribute.GetCustomAttribute(at, typeof(DescriptionAttribute)) as DescriptionAttribute).Description;
+							l.Add(new Tuple<string, string, Type>(dname, desc, at));
 
-                        }
-                    }
-                }
-            }
+						}
+					}
+				}
+			}
 
-            return l;
-        }
+			return l;
+		}
 
 
 
-    }
+	}
 
 
 }

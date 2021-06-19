@@ -21,6 +21,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Xml;
 using System.Xml.Serialization;
@@ -28,149 +29,155 @@ using System.Xml.Serialization;
 namespace Kotlib.Objects
 {
 
-    /// <summary>
-    /// Catégorie
-    /// </summary>
-    [XmlRoot(ElementName = "Category")]
-    public class Category : INotifyPropertyChanged
-    {
+	/// <summary>
+	/// Catégorie
+	/// </summary>
+	[XmlRoot(ElementName = "Category")]
+	public class Category : INotifyPropertyChanged
+	{
 
-        #region Fonctions privées
+		#region Fonctions privées
 
-        /// <summary>
-        /// Informe qu'une propriété est modifiée
-        /// </summary>
-        /// <param name="name">Nom de la propriété,
-        /// ou vide pour le nom de la propriété appelante.</param>
-        public void OnPropertyChanged([CallerMemberName] string name = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-            OnUpdated(this, new EventArgs());
-        }
+		/// <summary>
+		/// Informe qu'une propriété est modifiée
+		/// </summary>
+		/// <param name="name">Nom de la propriété,
+		/// ou vide pour le nom de la propriété appelante.</param>
+		[MethodImpl(MethodImplOptions.NoInlining)]
+		public void OnPropertyChanged(string name = null)
+		{
+			if (name == null) {
+				var stackTrace = new StackTrace(1, false);
+				var type = stackTrace.GetFrame(1).GetMethod().DeclaringType;
+				name = type.Name;
+			}
+            
+			if (PropertyChanged != null)
+				PropertyChanged.Invoke(this, new PropertyChangedEventArgs(name));
+            
+			OnUpdated(this, new EventArgs());
+		}
 
-        /// <summary>
-        /// Informe que le dossier financier a été modifié
-        /// </summary>
-        public void OnUpdated(object sender, EventArgs e)
-        {
-            UpdatedEvent?.Invoke(sender, e);
-        }
+		/// <summary>
+		/// Informe que le dossier financier a été modifié
+		/// </summary>
+		public void OnUpdated(object sender, EventArgs e)
+		{
+			if (UpdatedEvent != null)
+				UpdatedEvent.Invoke(sender, e);
+		}
 
-        #endregion
+		#endregion
 
-        #region Evénements
+		#region Evénements
 
-        /// <summary>
-        /// Se produit lorsque qu'une propriété est modifiée
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
+		/// <summary>
+		/// Se produit lorsque qu'une propriété est modifiée
+		/// </summary>
+		public event PropertyChangedEventHandler PropertyChanged;
 
-        /// <summary>
-        /// Se produit lorsque le dossier financier a été modifié
-        /// </summary>
-        public event EventHandler UpdatedEvent;
+		/// <summary>
+		/// Se produit lorsque le dossier financier a été modifié
+		/// </summary>
+		public event EventHandler UpdatedEvent;
 
-        #endregion
+		#endregion
 
-        #region Propriétés publiques
+		#region Propriétés publiques
 
-        private Guid _id = Guid.Empty;
-        /// <summary>
-        /// Identifiant unique
-        /// </summary>
-        /// <value>Identifiant unique.</value>
-        [XmlElement(ElementName = "Id")]
-        public Guid Id
-        {
-            get { return _id; }
-            set
-            {
-                if (value != _id)
-                {
-                    _id = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
+		private Guid _id = Guid.Empty;
+		/// <summary>
+		/// Identifiant unique
+		/// </summary>
+		/// <value>Identifiant unique.</value>
+		[XmlElement(ElementName = "Id")]
+		public Guid Id {
+			get { return _id; }
+			set {
+				if (value != _id) {
+					_id = value;
+					OnPropertyChanged();
+				}
+			}
+		}
 
-        private string _name = "";
-        /// <summary>
-        /// Dénomination de la catégorie
-        /// </summary>
-        /// <value>Nom, 255 caractères maximum.</value>
-        [XmlElement(ElementName = "Name")]
-        public string Name
-        {
-            get { return _name; }
-            set
-            {
-                value = value.Trim();
+		private string _name = "";
+		/// <summary>
+		/// Dénomination de la catégorie
+		/// </summary>
+		/// <value>Nom, 255 caractères maximum.</value>
+		[XmlElement(ElementName = "Name")]
+		public string Name {
+			get { return _name; }
+			set {
+				value = value.Trim();
 
-                if (value.Length > 255)
-                    value = value.Substring(0, 255);
+				if (value.Length > 255)
+					value = value.Substring(0, 255);
 
-                if (value == "")
-                    throw new ArgumentException("Dénomination de la catégorie requise.");
+				if (value == "")
+					throw new ArgumentException("Dénomination de la catégorie requise.");
 
-                if (value != _name)
-                {
-                    _name = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-        public bool ShouldSerializeName()
-        {
-            if (Name.Trim() == "")
-                throw new ArgumentException("Dénomination de la catégorie requise.");
+				if (value != _name) {
+					_name = value;
+					OnPropertyChanged();
+				}
+			}
+		}
+		/// <summary>
+		/// Vérifie si la propriété est correctement définie avant d'être sérialisée
+		/// </summary>
+		/// <returns><c>true</c></returns>
+		public bool ShouldSerializeName()
+		{
+			if (Name.Trim() == "")
+				throw new ArgumentException("Dénomination de la catégorie requise.");
 
-            return true;
-        }
+			return true;
+		}
 
-        private CategoryList _childs = null;
-        /// <summary>
-        /// Liste des sous catégories
-        /// </summary>
-        /// <value>Sous catégories.</value>
-        [XmlArray("Childs")]
-        [XmlArrayItem("Category")]
-        public CategoryList Childs
-        {
-            get { return _childs; }
-            set
-            {
-                if (value != null && value != _childs)
-                {
-                    if (_childs != null)
-                        _childs.UpdatedEvent -= OnUpdated;
+		private CategoryList _childs = null;
+		/// <summary>
+		/// Liste des sous catégories
+		/// </summary>
+		/// <value>Sous catégories.</value>
+		[XmlArray("Childs")]
+		[XmlArrayItem("Category")]
+		public CategoryList Childs {
+			get { return _childs; }
+			set {
+				if (value != null && value != _childs) {
+					if (_childs != null)
+						_childs.UpdatedEvent -= OnUpdated;
 
-                    _childs = value;
-                    _childs.UpdatedEvent += OnUpdated;
-                }
-            }
-        }
+					_childs = value;
+					_childs.UpdatedEvent += OnUpdated;
+				}
+			}
+		}
 
-        #endregion
+		#endregion
 
-        /// <summary>
-        /// Constructeurs
-        /// </summary>
-        public Category()
-        {
-            Id = Guid.NewGuid();
-            Childs = CategoryList.Empty;
-        }
-        /// <summary>
-        /// Constructeur
-        /// </summary>
-        /// <param name="name">Nom de la catégorie.</param>
-        /// <param name="childs">Liste des catégories enfants.</param>
-        public Category(string name, CategoryList childs = default) : this()
-        {
-            Name = name;
-            Childs = childs == default || childs == null ? CategoryList.Empty : childs;
-        }
+		/// <summary>
+		/// Constructeurs
+		/// </summary>
+		public Category()
+		{
+			Id = Guid.NewGuid();
+			Childs = CategoryList.Empty;
+		}
+		/// <summary>
+		/// Constructeur
+		/// </summary>
+		/// <param name="name">Nom de la catégorie.</param>
+		/// <param name="childs">Liste des catégories enfants.</param>
+		public Category(string name, CategoryList childs = null)
+			: this()
+		{
+			Name = name;
+			Childs = childs ?? CategoryList.Empty;
+		}
 
-    }
+	}
 
 }

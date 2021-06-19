@@ -21,43 +21,57 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Kotlib.Objects
 {
 
-    /// <summary>
-    /// Liste de tiers
-    /// </summary>
-    public class ThirdpartyList : ObjectList<Identity>
-    {
+	/// <summary>
+	/// Liste de tiers
+	/// </summary>
+	public class ThirdpartyList : ObjectList<Identity>
+	{
 
-        #region Propriétés publiques
+		#region Propriétés publiques
 
-        /// <summary>
-        /// Retourne une liste vide
-        /// </summary>
-        /// <value>Liste vide.</value>
-        public static ThirdpartyList Empty
-        {
-            get
-            {
-                return new ThirdpartyList();
-            }
-        }
+		/// <summary>
+		/// Retourne une liste vide
+		/// </summary>
+		/// <value>Liste vide.</value>
+		public static ThirdpartyList Empty {
+			get {
+				return new ThirdpartyList();
+			}
+		}
 
-        #endregion
+		#endregion
 
-        /// <summary>
-        /// Constructeur
-        /// </summary>
-        public ThirdpartyList() : base() { }
-        /// <summary>
-        /// Constructeur
-        /// </summary>
-        /// <param name="items">Liste à charger</param>
-        public ThirdpartyList(IEnumerable<Identity> items) : base(items) { }
+		/// <summary>
+		/// Constructeur
+		/// </summary>
+		public ThirdpartyList()
+			: base()
+		{
+		}
+		/// <summary>
+		/// Constructeur
+		/// </summary>
+		/// <param name="items">Liste à charger</param>
+		public ThirdpartyList(IEnumerable<Identity> items)
+			: base(items)
+		{
+		}
 
+		/// <summary>
+		/// Retourne le premier tiers trouvé possédant l'identifiant unique passé en paramètre
+		/// </summary>
+		/// <returns>Tiers trouvé.</returns>
+		/// <param name="id">Identifiant unique.</param>
+		public Identity GetById(string id)
+		{
+			return this.ToList().First(a => a.Id.Equals(Guid.Parse(id.Trim())));
+		}
 
-    }
+	}
 
 }

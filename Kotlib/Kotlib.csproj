@@ -15,6 +15,14 @@
     <RepositoryType>Github</RepositoryType>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>C:\Users\panta\OneDrive\Documents\Projets\C#\Kotlib\Kotlib\Kotlib.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="Objects\PaytypeList.cs~RFdc379c.TMP" />
     <None Include="..\kotlib.png">

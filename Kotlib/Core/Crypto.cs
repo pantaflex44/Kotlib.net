@@ -25,64 +25,62 @@ using System.Text;
 namespace Kotlib.Core
 {
 
-    /// <summary>
-    /// Regroupe les méthodes de cryptage et décryptage
-    /// </summary>
-    public static class Crypto
-    {
+	/// <summary>
+	/// Regroupe les méthodes de cryptage et décryptage
+	/// </summary>
+	public static class Crypto
+	{
 
-        /// <summary>
-        /// Cryptage des données
-        /// </summary>
-        /// <returns>Données cryptées.</returns>
-        /// <param name="original">Données originales.</param>
-        /// <param name="password">Mot de passe.</param>
-        public static byte[] Encrypt(byte[] original, string password)
-        {
-            var md5 = new MD5CryptoServiceProvider();
-            byte[] key = md5.ComputeHash(Encoding.UTF8.GetBytes(password));
-            md5.Clear();
+		/// <summary>
+		/// Cryptage des données
+		/// </summary>
+		/// <returns>Données cryptées.</returns>
+		/// <param name="original">Données originales.</param>
+		/// <param name="password">Mot de passe.</param>
+		public static byte[] Encrypt(byte[] original, string password)
+		{
+			var md5 = new MD5CryptoServiceProvider();
+			byte[] key = md5.ComputeHash(Encoding.UTF8.GetBytes(password));
+			md5.Clear();
 
-            var des = new TripleDESCryptoServiceProvider
-            {
-                Key = key,
-                Mode = CipherMode.ECB,
-                Padding = PaddingMode.PKCS7
-            };
+			var des = new TripleDESCryptoServiceProvider {
+				Key = key,
+				Mode = CipherMode.ECB,
+				Padding = PaddingMode.PKCS7
+			};
 
-            var provider = des.CreateEncryptor();
-            byte[] datas = provider.TransformFinalBlock(original, 0, original.Length);
-            des.Clear();
+			var provider = des.CreateEncryptor();
+			byte[] datas = provider.TransformFinalBlock(original, 0, original.Length);
+			des.Clear();
 
-            return datas;
-        }
+			return datas;
+		}
 
-        /// <summary>
-        /// Décryptage des données
-        /// </summary>
-        /// <returns>Données décryptées.</returns>
-        /// <param name="crypted">Données cryptées.</param>
-        /// <param name="password">Mot de passe.</param>
-        public static byte[] Decrypt(byte[] crypted, string password)
-        {
-            var md5 = new MD5CryptoServiceProvider();
-            byte[] key = md5.ComputeHash(Encoding.UTF8.GetBytes(password));
-            md5.Clear();
+		/// <summary>
+		/// Décryptage des données
+		/// </summary>
+		/// <returns>Données décryptées.</returns>
+		/// <param name="crypted">Données cryptées.</param>
+		/// <param name="password">Mot de passe.</param>
+		public static byte[] Decrypt(byte[] crypted, string password)
+		{
+			var md5 = new MD5CryptoServiceProvider();
+			byte[] key = md5.ComputeHash(Encoding.UTF8.GetBytes(password));
+			md5.Clear();
 
-            var des = new TripleDESCryptoServiceProvider
-            {
-                Key = key,
-                Mode = CipherMode.ECB,
-                Padding = PaddingMode.PKCS7
-            };
+			var des = new TripleDESCryptoServiceProvider {
+				Key = key,
+				Mode = CipherMode.ECB,
+				Padding = PaddingMode.PKCS7
+			};
 
-            var provider = des.CreateDecryptor();
-            byte[] datas = provider.TransformFinalBlock(crypted, 0, crypted.Length);
-            des.Clear();
+			var provider = des.CreateDecryptor();
+			byte[] datas = provider.TransformFinalBlock(crypted, 0, crypted.Length);
+			des.Clear();
 
-            return datas;
-        }
+			return datas;
+		}
 
-    }
+	}
 
 }
