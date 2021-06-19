@@ -25,6 +25,8 @@ using System.Text;
 using Kotlib.Objects;
 using Kotlib.Core;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Kotlib.test
 {
@@ -34,7 +36,7 @@ namespace Kotlib.test
 
         public static void Main(string[] args)
         {
-            var fi = new Financial("Mon dossier financier",
+            /*var fi = new Financial("Mon dossier financier",
                 new Identity("Christophe LEMOINE")
                 {
                     Lastname = "LEMOINE",
@@ -63,8 +65,43 @@ namespace Kotlib.test
                 },
                 Paytypes = new PaytypeList() { bc }
             };
-            fi.Accounts.Add(ba);
+            fi.Accounts.Add(ba);*/
 
+            var me = new Identity("Christophe LEMOINE")
+            {
+                Lastname = "LEMOINE",
+                Forname = "Christophe"
+            };
+
+            var bc = new BankCard("CIC Mastercard Tof")
+            {
+                Number = "5136 4830 1141 7908",
+                CVV = "123",
+                Date = (2022, 8)
+            };
+            bc.Name = "CIC Mastercard";
+
+            var ba = new BankAccount("CIC Compte personnel", me)
+            {
+                BankName = "CIC",
+                Iban = "FR76 3004 7143 1000 0207 6660 120",
+                Bic = "CMCIFRPP",
+                Contact = new Identity("CIC COUERON")
+                {
+                    Address = "CIC COUERON\n2 RUE JEAN JAURES\n44220 COUERON\n",
+                    Phone = "0228030868"
+                },
+                Paytypes = new PaytypeList() { bc }
+            };
+
+            var fi = Financial.Create(
+                name: "Mon dossier financier",
+                owner: me,
+                accounts: new AccountList() { ba },
+                loadDefaults: true
+            );
+            fi.Paytypes.Add(bc);
+            fi.UpdatedEvent += (sender, e) => Console.WriteLine("fi1 updated " + sender.GetType().UnderlyingSystemType);
             string filepath = fi.SaveToFile(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), password: "bob").Result;
 
             var fi2 = Financial.LoadFromFile(filepath, password: "bob").Result;

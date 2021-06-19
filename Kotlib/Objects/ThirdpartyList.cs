@@ -20,13 +20,16 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections.Generic;
 
-namespace Kotlib.Objects {
+namespace Kotlib.Objects
+{
 
     /// <summary>
     /// Liste de tiers
     /// </summary>
-    public class ThirdpartyList: ObjectList<Identity> {
+    public class ThirdpartyList : ObjectList<Identity>
+    {
 
         #region Propriétés publiques
 
@@ -34,13 +37,26 @@ namespace Kotlib.Objects {
         /// Retourne une liste vide
         /// </summary>
         /// <value>Liste vide.</value>
-        public static ThirdpartyList Empty {
-            get {
+        public static ThirdpartyList Empty
+        {
+            get
+            {
                 return new ThirdpartyList();
             }
         }
 
         #endregion
+
+        /// <summary>
+        /// Constructeur
+        /// </summary>
+        public ThirdpartyList() : base() { }
+        /// <summary>
+        /// Constructeur
+        /// </summary>
+        /// <param name="items">Liste à charger</param>
+        public ThirdpartyList(IEnumerable<Identity> items) : base(items) { }
+
 
     }
 

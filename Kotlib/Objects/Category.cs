@@ -25,13 +25,15 @@ using System.Runtime.CompilerServices;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace Kotlib.Objects {
+namespace Kotlib.Objects
+{
 
     /// <summary>
     /// Catégorie
     /// </summary>
     [XmlRoot(ElementName = "Category")]
-    public class Category: INotifyPropertyChanged {
+    public class Category : INotifyPropertyChanged
+    {
 
         #region Fonctions privées
 
@@ -40,7 +42,8 @@ namespace Kotlib.Objects {
         /// </summary>
         /// <param name="name">Nom de la propriété,
         /// ou vide pour le nom de la propriété appelante.</param>
-        public void OnPropertyChanged([CallerMemberName] string name = null) {
+        public void OnPropertyChanged([CallerMemberName] string name = null)
+        {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
             OnUpdated(this, new EventArgs());
         }
@@ -48,7 +51,8 @@ namespace Kotlib.Objects {
         /// <summary>
         /// Informe que le dossier financier a été modifié
         /// </summary>
-        public void OnUpdated(object sender, EventArgs e) {
+        public void OnUpdated(object sender, EventArgs e)
+        {
             UpdatedEvent?.Invoke(sender, e);
         }
 
@@ -76,10 +80,13 @@ namespace Kotlib.Objects {
         /// </summary>
         /// <value>Identifiant unique.</value>
         [XmlElement(ElementName = "Id")]
-        public Guid Id {
+        public Guid Id
+        {
             get { return _id; }
-            set {
-                if(value != _id) {
+            set
+            {
+                if (value != _id)
+                {
                     _id = value;
                     OnPropertyChanged();
                 }
@@ -92,25 +99,29 @@ namespace Kotlib.Objects {
         /// </summary>
         /// <value>Nom, 255 caractères maximum.</value>
         [XmlElement(ElementName = "Name")]
-        public string Name {
+        public string Name
+        {
             get { return _name; }
-            set {
+            set
+            {
                 value = value.Trim();
 
-                if(value.Length > 255)
+                if (value.Length > 255)
                     value = value.Substring(0, 255);
 
-                if(value == "")
+                if (value == "")
                     throw new ArgumentException("Dénomination de la catégorie requise.");
 
-                if(value != _name) {
+                if (value != _name)
+                {
                     _name = value;
                     OnPropertyChanged();
                 }
             }
         }
-        public bool ShouldSerializeName() {
-            if(Name.Trim() == "")
+        public bool ShouldSerializeName()
+        {
+            if (Name.Trim() == "")
                 throw new ArgumentException("Dénomination de la catégorie requise.");
 
             return true;
@@ -123,11 +134,14 @@ namespace Kotlib.Objects {
         /// <value>Sous catégories.</value>
         [XmlArray("Childs")]
         [XmlArrayItem("Category")]
-        public CategoryList Childs {
+        public CategoryList Childs
+        {
             get { return _childs; }
-            set {
-                if(value != null && value != _childs) {
-                    if(_childs != null)
+            set
+            {
+                if (value != null && value != _childs)
+                {
+                    if (_childs != null)
                         _childs.UpdatedEvent -= OnUpdated;
 
                     _childs = value;
@@ -141,7 +155,8 @@ namespace Kotlib.Objects {
         /// <summary>
         /// Constructeurs
         /// </summary>
-        public Category() {
+        public Category()
+        {
             Id = Guid.NewGuid();
             Childs = CategoryList.Empty;
         }
@@ -150,9 +165,10 @@ namespace Kotlib.Objects {
         /// </summary>
         /// <param name="name">Nom de la catégorie.</param>
         /// <param name="childs">Liste des catégories enfants.</param>
-        public Category(string name, CategoryList childs = default) : this() {
+        public Category(string name, CategoryList childs = default) : this()
+        {
             Name = name;
-            Childs = childs.Equals(default) ? CategoryList.Empty : childs;
+            Childs = childs == default || childs == null ? CategoryList.Empty : childs;
         }
 
     }

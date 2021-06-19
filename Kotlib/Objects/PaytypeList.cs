@@ -24,27 +24,70 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
 
-namespace Kotlib.Objects {
+namespace Kotlib.Objects
+{
 
     /// <summary>
     /// Liste de moyens de paiements
     /// </summary>
-    public class PaytypeList: ObjectList<Paytype> {
+    public class PaytypeList : ObjectList<Paytype>
+    {
 
         #region Fonctions privées
 
-        
+
 
         #endregion
+
+        #region Propriétés publiques
 
         /// <summary>
         /// Retourne une liste vide
         /// </summary>
         /// <value>Liste vide.</value>
-        public static PaytypeList Empty {
-            get {
+        public static PaytypeList Empty
+        {
+            get
+            {
                 return new PaytypeList();
             }
+        }
+
+        /// <summary>
+        /// Retourne une liste de moyens par défaut
+        /// </summary>
+        public static PaytypeList Defaults
+        {
+            get
+            {
+                return new PaytypeList(from item in GetAvaillablePaytypes()
+                                       select (Paytype)Activator.CreateInstance(item.Item3, item.Item1));
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Constructeur
+        /// </summary>
+        public PaytypeList() : base() { }
+        /// <summary>
+        /// Constructeur
+        /// </summary>
+        /// <param name="items">Liste à charger</param>
+        public PaytypeList(IEnumerable<Paytype> items) : base(items) { }
+
+        /// <summary>
+        /// Retourne la liste des moyens de paiements et d'encaissements disponibles
+        /// </summary>
+        /// <returns>Liste des moyens disponibles</returns>
+        public static List<Tuple<string, string, Type>> GetAvaillablePaytypes()
+        {
+            return (from da in AppDomain.CurrentDomain.GetAssemblies()
+                    from at in da.GetTypes()
+                    where typeof(Paytype).IsAssignableFrom(at) && !at.Equals(typeof(Paytype)) && !at.Equals(typeof(Collection))
+                    where Attribute.IsDefined(at, typeof(DisplayNameAttribute)) && Attribute.IsDefined(at, typeof(DescriptionAttribute))
+                    select new Tuple<string, string, Type>((Attribute.GetCustomAttribute(at, typeof(DisplayNameAttribute)) as DisplayNameAttribute).DisplayName, (Attribute.GetCustomAttribute(at, typeof(DescriptionAttribute)) as DescriptionAttribute).Description, at)).ToList();
         }
 
         /// <summary>
@@ -54,40 +97,20 @@ namespace Kotlib.Objects {
         /// <returns>Liste des moyens disponibles</returns>
         public static List<Tuple<string, string, Type>> GetAvaillablePaytypes(string categoryName)
         {
-            var l = new List<Tuple<string, string, Type>>();
-
-            foreach (var da in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                foreach (var at in da.GetTypes())
-                {
-                    if (typeof(Paytype).IsAssignableFrom(at))
-                    {
-                        if (Attribute.IsDefined(at, typeof(CategoryAttribute)) &&
-                            Attribute.IsDefined(at, typeof(DisplayNameAttribute)) &&
-                            Attribute.IsDefined(at, typeof(DescriptionAttribute)))
-                        {
-
-                            var category = (Attribute.GetCustomAttribute(at, typeof(CategoryAttribute)) as CategoryAttribute).Category;
-                            if (category.Contains(categoryName))
-                            {
-                                var dname = (Attribute.GetCustomAttribute(at, typeof(DisplayNameAttribute)) as DisplayNameAttribute).DisplayName;
-                                var desc = (Attribute.GetCustomAttribute(at, typeof(DescriptionAttribute)) as DescriptionAttribute).Description;
-                                l.Add(new Tuple<string, string, Type>(dname, desc, at));
-                            }
-
-                        }
-                    }
-                }
-            }
-
-            return l;
+            return (from da in AppDomain.CurrentDomain.GetAssemblies()
+                    from at in da.GetTypes()
+                    where typeof(Paytype).IsAssignableFrom(at) && !at.Equals(typeof(Paytype)) && !at.Equals(typeof(Collection))
+                    where Attribute.IsDefined(at, typeof(CategoryAttribute)) && Attribute.IsDefined(at, typeof(DisplayNameAttribute)) && Attribute.IsDefined(at, typeof(DescriptionAttribute))
+                    where ((Attribute.GetCustomAttribute(at, typeof(CategoryAttribute)) as CategoryAttribute).Category).Contains(categoryName)
+                    select new Tuple<string, string, Type>((Attribute.GetCustomAttribute(at, typeof(DisplayNameAttribute)) as DisplayNameAttribute).DisplayName, (Attribute.GetCustomAttribute(at, typeof(DescriptionAttribute)) as DescriptionAttribute).Description, at)).ToList();
         }
 
         /// <summary>
         /// Retourne la liste des moyens de paiements disponibles
         /// </summary>
         /// <returns>Liste des moyens de paiements (nom, description, type)</returns>
-        public static List<Tuple<string, string, Type>> GetAvaillablePayments() {
+        public static List<Tuple<string, string, Type>> GetAvaillablePayments()
+        {
             return GetAvaillablePaytypes("payment");
         }
 
@@ -100,7 +123,7 @@ namespace Kotlib.Objects {
             return GetAvaillablePaytypes("collection");
         }
 
-        
+
 
     }
 
