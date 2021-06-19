@@ -1,4 +1,4 @@
-![Kotlib](https://github.com/pantaflex44/kotlib/raw/main/kotlib_back.png)
+![Kotlib.net](https://pantaflex44.me/wp-content/uploads/2021/06/kotlib_back.png)
 ## Finances personnelles assistées par ordinateur
 Librairie .Net 5 pour la gestion assistée par ordinateur des finances personnelles.
 
