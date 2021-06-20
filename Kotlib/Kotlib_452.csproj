@@ -6,8 +6,8 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
-    <RootNamespace>Kotlib_452</RootNamespace>
-    <AssemblyName>Kotlib_452</AssemblyName>
+    <RootNamespace>Kotlib</RootNamespace>
+    <AssemblyName>Kotlib</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <TargetFrameworkProfile />
@@ -76,9 +76,13 @@
     <Compile Include="Objects\Identity.cs" />
     <Compile Include="Objects\IdentityList.cs" />
     <Compile Include="Objects\ObjectList.cs" />
+    <Compile Include="Objects\Operation.cs" />
+    <Compile Include="Objects\OperationList.cs" />
     <Compile Include="Objects\Paytype.cs" />
     <Compile Include="Objects\PaytypeList.cs" />
     <Compile Include="Objects\ThirdpartyList.cs" />
+    <Compile Include="Objects\Transfer.cs" />
+    <Compile Include="Objects\TransferList.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

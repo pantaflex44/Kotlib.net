@@ -23,6 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Xml.Serialization;
 
 namespace Kotlib.Objects
 {
@@ -39,9 +40,35 @@ namespace Kotlib.Objects
 		/// Retourne une liste vide
 		/// </summary>
 		/// <value>Liste vide.</value>
-		public static AccountList Empty {
-			get {
+		[XmlIgnore]
+		public static AccountList Empty
+		{
+			get
+			{
 				return new AccountList();
+			}
+		}
+		
+		private TransferList _transfers = null;
+		/// <summary>
+		/// Liste des transferts
+		/// </summary>
+		/// <value>Liste des transferts.</value>
+		[XmlArray(ElementName = "Transfers")]
+		[XmlArrayItem(ElementName = "Transfer")]
+		public TransferList Transfers
+		{
+			get { return _transfers; }
+			set
+			{
+				if (value != null && value != _transfers)
+				{
+					if (_transfers != null)
+						_transfers.UpdatedEvent -= OnUpdated;
+
+					_transfers = value;
+					_transfers.UpdatedEvent += OnUpdated;
+				}
 			}
 		}
 
@@ -53,6 +80,7 @@ namespace Kotlib.Objects
 		public AccountList()
 			: base()
 		{
+			Transfers = TransferList.Empty;
 		}
 		/// <summary>
 		/// Constructeur
@@ -61,6 +89,7 @@ namespace Kotlib.Objects
 		public AccountList(IEnumerable<Account> items)
 			: base(items)
 		{
+			Transfers = TransferList.Empty;
 		}
 
 		/// <summary>
@@ -68,9 +97,63 @@ namespace Kotlib.Objects
 		/// </summary>
 		/// <returns>Elément bancaire trouvé.</returns>
 		/// <param name="id">Identifiant unique.</param>
-		public Account GetById(string id)
+		public Account GetById(Guid id)
 		{
-			return this.ToList().First(a => a.Id.Equals(Guid.Parse(id.Trim())));
+			return this.ToList().FirstOrDefault(a => a.Id.Equals(id));
+		}
+		
+		/// <summary>
+		/// Retournel'élément à la position <c>index</c>
+		/// </summary>
+		/// <param name="index">Position de l'élément.</param>
+		public new Account this[int index]
+		{
+			get
+			{
+				return base[index];
+			}
+			set
+			{
+				Transfers.RemoveAll(a => a.FromAccountId.Equals(base[index].Id) || a.ToAccountId.Equals(base[index].Id));
+				base[index] = value;
+			}
+		}
+		
+		/// <summary>
+		/// Supprime l'élément de la liste à la position spécifié
+		/// </summary>
+		/// <param name="index">Position de l'élément.</param>
+		public new void RemoveAt(int index)
+		{
+			if (index >= 0 && index < base.Count)
+			{
+				Transfers.RemoveAll(a => a.FromAccountId.Equals(base[index].Id) || a.ToAccountId.Equals(base[index].Id));
+				base.RemoveAt(index);
+			}
+		}
+
+		/// <summary>
+		/// Vide la liste de ses éléments
+		/// </summary>
+		public new void Clear()
+		{
+			foreach (var e in Items)
+				Transfers.RemoveAll(a => a.FromAccountId.Equals(e.Id) || a.ToAccountId.Equals(e.Id));
+
+			base.Clear();
+		}
+		
+		/// <summary>
+		/// Supprime un élément de la liste
+		/// </summary>
+		/// <returns>true, l'élément est supprimé, sinon, false.</returns>
+		/// <param name="item">Elément à supprimer.</param>
+		public new bool Remove(Account item)
+		{
+			if (base.IndexOf(item) > -1)
+				Transfers.RemoveAll(a => a.FromAccountId.Equals(item.Id) || a.ToAccountId.Equals(item.Id));
+			
+			return base.Remove(item);
 		}
 
 		/// <summary>
@@ -81,11 +164,15 @@ namespace Kotlib.Objects
 		{
 			var l = new List<Tuple<string, string, Type>>();
 
-			foreach (var da in AppDomain.CurrentDomain.GetAssemblies()) {
-				foreach (var at in da.GetTypes()) {
-					if (typeof(Account).IsAssignableFrom(at)) {
+			foreach (var da in AppDomain.CurrentDomain.GetAssemblies())
+			{
+				foreach (var at in da.GetTypes())
+				{
+					if (typeof(Account).IsAssignableFrom(at))
+					{
 						if (Attribute.IsDefined(at, typeof(DisplayNameAttribute)) &&
-						                      Attribute.IsDefined(at, typeof(DescriptionAttribute))) {
+						    Attribute.IsDefined(at, typeof(DescriptionAttribute)))
+						{
 
 							var dname = (Attribute.GetCustomAttribute(at, typeof(DisplayNameAttribute)) as DisplayNameAttribute).DisplayName;
 							var desc = (Attribute.GetCustomAttribute(at, typeof(DescriptionAttribute)) as DescriptionAttribute).Description;
@@ -99,7 +186,15 @@ namespace Kotlib.Objects
 			return l;
 		}
 
-
+		/// <summary>
+		/// Nettoie la liste des transferts.
+		/// Supprime tous les transferts ayant un compte émetteur ou destinataure inconnu.
+		/// </summary>
+		public void CleanTransfers()
+		{
+			var actIdList = Items.Select(a => a.Id).ToList();
+			Transfers.RemoveAll(a => !actIdList.Contains(a.FromAccountId) || !actIdList.Contains(a.ToAccountId));
+		}
 
 	}
 

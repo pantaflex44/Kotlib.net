@@ -41,9 +41,12 @@ namespace Kotlib.Core
 		{
 			byte[] datas = { };
 
-			using (var original_stream = new MemoryStream(original)) {
-				using (var compressed_stream = new MemoryStream()) {
-					using (var compression_stream = new DeflateStream(compressed_stream, CompressionMode.Compress)) {
+			using (var original_stream = new MemoryStream(original))
+			{
+				using (var compressed_stream = new MemoryStream())
+				{
+					using (var compression_stream = new DeflateStream(compressed_stream, CompressionMode.Compress))
+					{
 						original_stream.CopyTo(compression_stream);
 						compression_stream.Close();
 		
@@ -64,9 +67,12 @@ namespace Kotlib.Core
 		{
 			byte[] datas = { };
 
-			using (var compressed_stream = new MemoryStream(compressed)) {
-				using (var decompression_stream = new DeflateStream(compressed_stream, CompressionMode.Decompress)) {
-					using (var original_stream = new MemoryStream()) {
+			using (var compressed_stream = new MemoryStream(compressed))
+			{
+				using (var decompression_stream = new DeflateStream(compressed_stream, CompressionMode.Decompress))
+				{
+					using (var original_stream = new MemoryStream())
+					{
 						decompression_stream.CopyTo(original_stream);
 						decompression_stream.Close();
 		

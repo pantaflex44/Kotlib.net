@@ -1,5 +1,5 @@
 ﻿//
-//  IdentityList.cs
+//  OperationList.cs
 //
 //  Author:
 //       Christophe LEMOINE <pantafle@tuta.io>
@@ -27,10 +27,13 @@ namespace Kotlib.Objects
 {
 
 	/// <summary>
-	/// Liste de carte d'identité
+	/// Liste des opérations
 	/// </summary>
-	public class IdentityList : ObjectList<Identity>
+	public class OperationList : ObjectList<Operation>
 	{
+
+		#region Fonctions privées
+		#endregion
 
 		#region Propriétés publiques
 
@@ -38,11 +41,22 @@ namespace Kotlib.Objects
 		/// Retourne une liste vide
 		/// </summary>
 		/// <value>Liste vide.</value>
-		public static IdentityList Empty
+		public static OperationList Empty
 		{
 			get
 			{
-				return new IdentityList();
+				return new OperationList();
+			}
+		}
+
+		/// <summary>
+		/// Retourne une liste des opérations par défaut
+		/// </summary>
+		public static OperationList Defaults
+		{
+			get
+			{
+				return OperationList.Empty;
 			}
 		}
 
@@ -51,7 +65,7 @@ namespace Kotlib.Objects
 		/// <summary>
 		/// Constructeur
 		/// </summary>
-		public IdentityList()
+		public OperationList()
 			: base()
 		{
 		}
@@ -59,17 +73,17 @@ namespace Kotlib.Objects
 		/// Constructeur
 		/// </summary>
 		/// <param name="items">Liste à charger</param>
-		public IdentityList(IEnumerable<Identity> items)
+		public OperationList(IEnumerable<Operation> items)
 			: base(items)
 		{
 		}
 
 		/// <summary>
-		/// Retourne la premiere identité trouvée possédant l'identifiant unique passé en paramètre
+		/// Retourne la première opération trouvée possédant l'identifiant unique passé en paramètre
 		/// </summary>
-		/// <returns>Identité trouvée.</returns>
+		/// <returns>Opération trouvée.</returns>
 		/// <param name="id">Identifiant unique.</param>
-		public Identity GetById(Guid id)
+		public Operation GetById(Guid id)
 		{
 			return this.ToList().FirstOrDefault(a => a.Id.Equals(id));
 		}

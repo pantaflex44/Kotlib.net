@@ -43,7 +43,8 @@ namespace Kotlib.Core
 			byte[] key = md5.ComputeHash(Encoding.UTF8.GetBytes(password));
 			md5.Clear();
 
-			var des = new TripleDESCryptoServiceProvider {
+			var des = new TripleDESCryptoServiceProvider
+			{
 				Key = key,
 				Mode = CipherMode.ECB,
 				Padding = PaddingMode.PKCS7
@@ -68,7 +69,8 @@ namespace Kotlib.Core
 			byte[] key = md5.ComputeHash(Encoding.UTF8.GetBytes(password));
 			md5.Clear();
 
-			var des = new TripleDESCryptoServiceProvider {
+			var des = new TripleDESCryptoServiceProvider
+			{
 				Key = key,
 				Mode = CipherMode.ECB,
 				Padding = PaddingMode.PKCS7

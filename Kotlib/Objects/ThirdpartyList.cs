@@ -38,8 +38,10 @@ namespace Kotlib.Objects
 		/// Retourne une liste vide
 		/// </summary>
 		/// <value>Liste vide.</value>
-		public static ThirdpartyList Empty {
-			get {
+		public static ThirdpartyList Empty
+		{
+			get
+			{
 				return new ThirdpartyList();
 			}
 		}
@@ -67,9 +69,9 @@ namespace Kotlib.Objects
 		/// </summary>
 		/// <returns>Tiers trouvé.</returns>
 		/// <param name="id">Identifiant unique.</param>
-		public Identity GetById(string id)
+		public Identity GetById(Guid id)
 		{
-			return this.ToList().First(a => a.Id.Equals(Guid.Parse(id.Trim())));
+			return this.ToList().FirstOrDefault(a => a.Id.Equals(id));
 		}
 
 	}

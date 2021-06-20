@@ -7,11 +7,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle ("Kotlib_452")]
+[assembly: AssemblyTitle ("Kotlib")]
 [assembly: AssemblyDescription ("Librairie .Net 4.5.2 pour la gestion assistée par ordinateur des finances personelles")]
 [assembly: AssemblyConfiguration ("")]
 [assembly: AssemblyCompany ("Christophe LEMOINE")]
-[assembly: AssemblyProduct ("Kotlib_452")]
+[assembly: AssemblyProduct ("Kotlib_452.dll")]
 [assembly: AssemblyCopyright ("Copyright (c)2021 Christophe LEMOINE")]
 [assembly: AssemblyTrademark ("Licence GNU/GPL v3")]
 [assembly: AssemblyCulture ("")]
@@ -26,3 +26,5 @@ using System.Runtime.InteropServices;
 // Build Numbers by using the '*' as shown below:
 [assembly: AssemblyVersion ("0.1.*")]
 [assembly: AssemblyFileVersion ("0.1")]
+[assembly: AssemblyInformationalVersion ("")]
+[assembly: CLSCompliant (true)]

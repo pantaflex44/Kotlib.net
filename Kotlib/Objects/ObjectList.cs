@@ -65,7 +65,8 @@ namespace Kotlib.Objects
 		private void _AddUpdatedEvent(T item)
 		{
 			var eUpdatedEvent = item.GetType().GetEvent("UpdatedEvent");
-			if (eUpdatedEvent != null && eUpdatedEvent.GetAddMethod() != null) {
+			if (eUpdatedEvent != null && eUpdatedEvent.GetAddMethod() != null)
+			{
 				var mOnUpdated = GetType().GetMethod("OnUpdated");
 				var mOnUpdatedDelegate = Delegate.CreateDelegate(eUpdatedEvent.EventHandlerType, this, mOnUpdated);
 				eUpdatedEvent.GetAddMethod().Invoke(item, new object[] { mOnUpdatedDelegate });
@@ -79,7 +80,8 @@ namespace Kotlib.Objects
 		private void _RemoveUpdatedEvent(T item)
 		{
 			var eUpdatedEvent = item.GetType().GetEvent("UpdatedEvent");
-			if (eUpdatedEvent != null && eUpdatedEvent.GetRemoveMethod() != null) {
+			if (eUpdatedEvent != null && eUpdatedEvent.GetRemoveMethod() != null)
+			{
 				var mOnUpdated = GetType().GetMethod("OnUpdated");
 				var mOnUpdatedDelegate = Delegate.CreateDelegate(eUpdatedEvent.EventHandlerType, this, mOnUpdated);
 				eUpdatedEvent.GetRemoveMethod().Invoke(item, new object[] { mOnUpdatedDelegate });
@@ -122,8 +124,10 @@ namespace Kotlib.Objects
 		/// Retourne le nombre d'éléments de la liste
 		/// </summary>
 		/// <value>Nombre d'éléments.</value>
-		public int Count {
-			get {
+		public int Count
+		{
+			get
+			{
 				return _list.Count;
 			}
 		}
@@ -132,8 +136,10 @@ namespace Kotlib.Objects
 		/// Indique si la liste est en lecture seule
 		/// </summary>
 		/// <value><c>true</c> si la liste est en lecture seule, sinon, <c>false</c>.</value>
-		public bool IsReadOnly {
-			get {
+		public bool IsReadOnly
+		{
+			get
+			{
 				return false;
 			}
 		}
@@ -142,11 +148,14 @@ namespace Kotlib.Objects
 		/// Retournel'élément à la position <c>index</c>
 		/// </summary>
 		/// <param name="index">Position de l'élément.</param>
-		public T this[int index] {
-			get {
+		public T this[int index]
+		{
+			get
+			{
 				return _list[index];
 			}
-			set {
+			set
+			{
 				_RemoveUpdatedEvent(_list[index]);
 				_list[index] = value;
 				_AddUpdatedEvent(_list[index]);
@@ -161,7 +170,8 @@ namespace Kotlib.Objects
 		/// <param name="item">Item.</param>
 		public void Add(T item)
 		{
-			if (_list.IndexOf(item) == -1) {
+			if (_list.IndexOf(item) == -1)
+			{
 				_AddUpdatedEvent(item);
 				_list.Add(item);
 				OnCollectionChanged(NotifyCollectionChangedAction.Add);
@@ -185,7 +195,8 @@ namespace Kotlib.Objects
 		/// <param name="item">Elément à insérer.</param>
 		public void Insert(int index, T item)
 		{
-			if (_list.IndexOf(item) == -1) {
+			if (_list.IndexOf(item) == -1)
+			{
 				_AddUpdatedEvent(item);
 				_list.Insert(index, item);
 			}
@@ -197,7 +208,8 @@ namespace Kotlib.Objects
 		/// <param name="index">Position de l'élément.</param>
 		public void RemoveAt(int index)
 		{
-			if (index >= 0 && index < _list.Count) {
+			if (index >= 0 && index < _list.Count)
+			{
 				_RemoveUpdatedEvent(_list[index]);
 				_list.RemoveAt(index);
 			}
@@ -241,11 +253,22 @@ namespace Kotlib.Objects
 		/// <param name="item">Elément à supprimer.</param>
 		public bool Remove(T item)
 		{
-			if (_list.IndexOf(item) > -1) {
+			if (_list.IndexOf(item) > -1)
+			{
 				_RemoveUpdatedEvent(item);
 				return _list.Remove(item);
 			}
 			return false;
+		}
+		
+		/// <summary>
+		/// Supprime tous les éléments suivant les conditions predicate
+		/// </summary>
+		/// <param name="predicate">Conditions</param>
+		/// <returns>Nombre d'éléments supprimés</returns>
+		public int RemoveAll(Predicate<T> predicate)
+		{
+			return _list.RemoveAll(predicate);
 		}
 
 		/// <summary>
@@ -264,6 +287,15 @@ namespace Kotlib.Objects
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return (IEnumerator)_list.GetEnumerator();
+		}
+		
+		/// <summary>
+		/// Retourne la liste des éléments
+		/// </summary>
+		/// <value>Liste des éléments</value>
+		public List<T> Items
+		{
+			get { return _list; }
 		}
 
 	}

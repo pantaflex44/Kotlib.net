@@ -58,7 +58,8 @@ namespace Kotlib.Objects
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		public void OnPropertyChanged(string name = null)
 		{
-			if (name == null) {
+			if (name == null)
+			{
 				var stackTrace = new StackTrace(1, false);
 				var type = stackTrace.GetFrame(1).GetMethod().DeclaringType;
 				name = type.Name;
@@ -103,10 +104,13 @@ namespace Kotlib.Objects
 		/// </summary>
 		/// <value>Identifiant unique.</value>
 		[XmlElement(ElementName = "Id")]
-		public Guid Id {
+		public Guid Id
+		{
 			get { return _id; }
-			set {
-				if (value != _id) {
+			set
+			{
+				if (value != _id)
+				{
 					_id = value;
 					OnPropertyChanged();
 				}
@@ -119,9 +123,11 @@ namespace Kotlib.Objects
 		/// </summary>
 		/// <value>Nom, 255 caractères maximum.</value>
 		[XmlElement(ElementName = "Name")]
-		public string Name {
+		public string Name
+		{
 			get { return _name; }
-			set {
+			set
+			{
 				value = value.Trim();
 
 				if (value.Length > 255)
@@ -130,7 +136,8 @@ namespace Kotlib.Objects
 				if (value == "")
 					throw new ArgumentException("Dénomination du moyen de paiement requise.");
 
-				if (value != _name) {
+				if (value != _name)
+				{
 					_name = value;
 					OnPropertyChanged();
 				}
@@ -218,9 +225,11 @@ namespace Kotlib.Objects
 		/// </summary>
 		/// <value>Numéro de la carte bancaire.</value>
 		[XmlElement(ElementName = "Number")]
-		public string Number {
+		public string Number
+		{
 			get { return _number; }
-			set {
+			set
+			{
 				value = value.Trim().Replace(" ", "").Replace("\n", "").Replace("\r", "").Replace("\t", "");
 
 				if (value.Length > 18)
@@ -229,7 +238,8 @@ namespace Kotlib.Objects
 				if (value != "" && !Regex.IsMatch(value, @"^(?:4[0-9]{12}(?:[0-9]{3})?|(?:5[1-5][0-9]{2}|222[1-9]|22[3-9][0-9]|2[3-6][0-9]{2}|27[01][0-9]|2720)[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|6(?:011|5[0-9]{2})[0-9]{12}|(?:2131|1800|35\d{3})\d{11})$", RegexOptions.IgnoreCase))
 					throw new ArgumentException("Numéro de carte bancaire invalide.");
 
-				if (value != _number) {
+				if (value != _number)
+				{
 					_number = value;
 					OnPropertyChanged();
 				}
@@ -242,9 +252,11 @@ namespace Kotlib.Objects
 		/// </summary>
 		/// <value>Numéro CVV/CCV.</value>
 		[XmlElement(ElementName = "CVV")]
-		public string CVV {
+		public string CVV
+		{
 			get { return _cvv; }
-			set {
+			set
+			{
 				value = value.Trim().Replace(" ", "").Replace("\n", "").Replace("\r", "").Replace("\t", "");
 
 				if (value.Length > 4)
@@ -253,7 +265,8 @@ namespace Kotlib.Objects
 				if (value != "" && !Regex.IsMatch(value, @"^[0-9]{3,4}$", RegexOptions.IgnoreCase))
 					throw new ArgumentException("Numéro CVV/CCV invalide.");
 
-				if (value != _cvv) {
+				if (value != _cvv)
+				{
 					_cvv = value;
 					OnPropertyChanged();
 				}
@@ -266,10 +279,13 @@ namespace Kotlib.Objects
 		/// </summary>
 		/// <value>Date de validité (année, mois).</value>
 		[XmlIgnore]
-		public CardDate Date {
+		public CardDate Date
+		{
 			get { return _date; }
-			set {
-				if (value != _date) {
+			set
+			{
+				if (value != _date)
+				{
 					_date = value;
 					OnPropertyChanged();
 				}
@@ -279,15 +295,20 @@ namespace Kotlib.Objects
 		/// Date au format brute
 		/// </summary>
 		[XmlElement(ElementName = "Date")]
-		public string FlatDate {
+		public string FlatDate
+		{
 			get { return string.Format("{0}-{1}", Date.Year, Date.Month); }
-			set {
+			set
+			{
 				var vs = value.Split('-');
-				try {
+				try
+				{
 					int year = Convert.ToInt32(vs[0]);
 					int month = Convert.ToInt32(vs[1]);
 					Date = new CardDate(year, month);
-				} catch {
+				}
+				catch
+				{
 					Date = new CardDate(1970, 1);
 				}
 			}
@@ -331,12 +352,15 @@ namespace Kotlib.Objects
 		/// </summary>
 		/// <value>Numéro du chèque.</value>
 		[XmlElement(ElementName = "Number")]
-		public int Number {
+		public int Number
+		{
 			get { return _number; }
-			set {
+			set
+			{
 				value = Math.Abs(value);
 
-				if (value != _number) {
+				if (value != _number)
+				{
 					_number = value;
 					OnPropertyChanged();
 				}
@@ -414,14 +438,17 @@ namespace Kotlib.Objects
 		/// </summary>
 		/// <value>Référence / Note du transfer, 4000 caractères maximum.</value>
 		[XmlIgnore]
-		public string Ref {
+		public string Ref
+		{
 			get { return _ref; }
-			set {
+			set
+			{
 				value = value.Trim();
 				if (value.Length > 4000)
 					value = value.Substring(0, 4000);
 
-				if (value != _ref) {
+				if (value != _ref)
+				{
 					_ref = value;
 					OnPropertyChanged();
 				}
@@ -431,7 +458,8 @@ namespace Kotlib.Objects
 		/// Référence au format brute
 		/// </summary>
 		[XmlElement(ElementName = "Ref")]
-		public XmlCDataSection RefCData {
+		public XmlCDataSection RefCData
+		{
 			get { return _xmlDoc.CreateCDataSection(Ref); }
 			set { Ref = value.Data; }
 		}
@@ -476,14 +504,17 @@ namespace Kotlib.Objects
 		/// </summary>
 		/// <value>Référence / Note du transfer, 4000 caractères maximum.</value>
 		[XmlIgnore]
-		public string Ref {
+		public string Ref
+		{
 			get { return _ref; }
-			set {
+			set
+			{
 				value = value.Trim();
 				if (value.Length > 4000)
 					value = value.Substring(0, 4000);
 
-				if (value != _ref) {
+				if (value != _ref)
+				{
 					_ref = value;
 					OnPropertyChanged();
 				}
@@ -493,7 +524,8 @@ namespace Kotlib.Objects
 		/// Référence au format brute
 		/// </summary>
 		[XmlElement(ElementName = "Ref")]
-		public XmlCDataSection RefCData {
+		public XmlCDataSection RefCData
+		{
 			get { return _xmlDoc.CreateCDataSection(Ref); }
 			set { Ref = value.Data; }
 		}
@@ -538,14 +570,17 @@ namespace Kotlib.Objects
 		/// </summary>
 		/// <value>Référence / Note du transfer, 4000 caractères maximum.</value>
 		[XmlIgnore]
-		public string Ref {
+		public string Ref
+		{
 			get { return _ref; }
-			set {
+			set
+			{
 				value = value.Trim();
 				if (value.Length > 4000)
 					value = value.Substring(0, 4000);
 
-				if (value != _ref) {
+				if (value != _ref)
+				{
 					_ref = value;
 					OnPropertyChanged();
 				}
@@ -555,7 +590,8 @@ namespace Kotlib.Objects
 		/// Référence au format brute
 		/// </summary>
 		[XmlElement(ElementName = "Ref")]
-		public XmlCDataSection RefCData {
+		public XmlCDataSection RefCData
+		{
 			get { return _xmlDoc.CreateCDataSection(Ref); }
 			set { Ref = value.Data; }
 		}

@@ -27,57 +27,60 @@ using Kotlib.Objects;
 namespace Kotlib.test
 {
 
-    class MainClass
-    {
+	class MainClass
+	{
 
-        public static void Main(string[] args)
-        {
-            var me = new Identity("Christophe LEMOINE")
-            {
-                Lastname = "LEMOINE",
-                Forname = "Christophe"
-            };
+		public static void Main(string[] args)
+		{
+			var me = new Identity("Christophe LEMOINE")
+			{
+				Lastname = "LEMOINE",
+				Forname = "Christophe"
+			};
 
-            var bc = new BankCard("CIC Mastercard Tof")
-            {
-                Number = "5135 1800 0000 0001",
-                CVV = "123",
-                Date = new CardDate(2025, 12)
-            };
-            bc.Name = "CIC Mastercard";
+			var bc = new BankCard("CIC Mastercard Tof")
+			{
+				Number = "5135 1800 0000 0001",
+				CVV = "123",
+				Date = new CardDate(2025, 12)
+			};
+			bc.Name = "CIC Mastercard";
 
-            var ba = new BankAccount("CIC Compte courant", me)
-            {
-                BankName = "CIC",
-                Iban = "FR76 1180 8009 1012 3456 7890 147",
-                Bic = "CMCIFRPP",
-                Contact = new Identity("CIC COUERON")
-                {
-                    Address = "CIC\n1 RUE DE CHEZ TOI\n12345 CHEZ TOI\n",
-                    Phone = "0102030405"
-                },
-                Paytypes = new PaytypeList() { bc }
-            };
+			var ba = new BankAccount("CIC Compte courant", me)
+			{
+				BankName = "CIC",
+				Iban = "FR76 1180 8009 1012 3456 7890 147",
+				Bic = "CMCIFRPP",
+				Contact = new Identity("CIC COUERON")
+				{
+					Address = "CIC\n1 RUE DE CHEZ TOI\n12345 CHEZ TOI\n",
+					Phone = "0102030405"
+				},
+				Paytypes = new PaytypeList() { bc }
+			};
+			
 
-            var fi = Financial.Create(
-                name: "Mon dossier financier",
-                owner: me,
-                accounts: new AccountList() { ba },
-                loadDefaults: true
-            );
-            fi.Paytypes.Add(bc);
-            fi.UpdatedEvent += (sender, e) => Console.WriteLine("fi1 updated " + sender.GetType().UnderlyingSystemType);
-            string filepath = fi.SaveToFile(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), password: "bob");
+			var fi = Financial.Create(
+				         name: "Mon dossier financier",
+				         owner: me,
+				         accounts: new AccountList() { ba },
+				         loadDefaults: true
+			         );
+			fi.Paytypes.Add(bc);
+			fi.UpdatedEvent += (sender, e) => Console.WriteLine("fi1 updated " + sender.GetType().UnderlyingSystemType);
+			string filepath = fi.SaveToFile(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), password: "bob");
+			
+			Console.WriteLine("Solde total: {0}", fi.AmountAt(DateTime.Now, addInitialAmount: true).ToString("C"));
 
-            var fi2 = Financial.LoadFromFile(filepath, password: "bob");
-            byte[] datas2 = fi2.Serialize();
-            Console.WriteLine(Encoding.UTF8.GetString(datas2));
+			var fi2 = Financial.LoadFromFile(filepath, password: "bob");
+			byte[] datas2 = fi2.Serialize();
+			Console.WriteLine(Encoding.UTF8.GetString(datas2));
 
             
             
-            Console.ReadLine();
-        }
+			Console.ReadLine();
+		}
 
-    }
+	}
 
 }

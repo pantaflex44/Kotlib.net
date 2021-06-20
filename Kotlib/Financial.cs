@@ -45,11 +45,14 @@ namespace Kotlib
 		/// Année de validité
 		/// </summary>
 		[XmlAttribute("year")]
-		public int Year { 
-			get {
+		public int Year
+		{ 
+			get
+			{
 				return _year;
 			}
-			set {
+			set
+			{
 				if (value < 1970)
 					throw new ArgumentException("L'année de validité d'une carte bancaire doit être supérieure à 1970");
 				
@@ -62,11 +65,14 @@ namespace Kotlib
 		/// Mois de validité
 		/// </summary>
 		[XmlAttribute("month")]
-		public int Month {
-			get {
+		public int Month
+		{
+			get
+			{
 				return _month;
 			}
-			set {
+			set
+			{
 				if (value < 1 || value > 12)
 					throw new ArgumentException("Le mois de validité d'une carte bancaire doit être compris entre Janvier (1) et Décembre (12)");
 				
@@ -110,7 +116,8 @@ namespace Kotlib
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		public void OnPropertyChanged(string name = null)
 		{
-			if (name == null) {
+			if (name == null)
+			{
 				var stackTrace = new StackTrace(1, false);
 				var type = stackTrace.GetFrame(1).GetMethod().DeclaringType;
 				name = type.Name;
@@ -124,12 +131,25 @@ namespace Kotlib
 		/// <summary>
 		/// Informe que le dossier financier a été modifié
 		/// </summary>
+		/// <param name="sender">Objet emettant le signal</param>
+		/// <param name="e">Arguments</param>
 		public void OnUpdated(object sender, EventArgs e)
 		{
 			if (UpdatedEvent != null)
 				UpdatedEvent.Invoke(sender, e);
 		}
 
+		/// <summary>
+		/// Informe que le dossier financier viend etre sauvegardé
+		/// </summary>
+		/// <param name="sender">Objet emettant le signal</param>
+		/// <param name="e">Arguments</param>
+		public void OnSaved(object sender, EventArgs e)
+		{
+			if (SavedEvent != null)
+				SavedEvent.Invoke(sender, e);
+		}
+		
 		#endregion
 
 		#region Evénements
@@ -143,6 +163,11 @@ namespace Kotlib
 		/// Se produit lorsque le dossier financier a été modifié
 		/// </summary>
 		public event EventHandler UpdatedEvent;
+		
+		/// <summary>
+		/// Se produit lorsque le dossier financier est sauvegardé
+		/// </summary>
+		public event EventHandler SavedEvent;
 
 		#endregion
 
@@ -154,10 +179,13 @@ namespace Kotlib
 		/// </summary>
 		/// <value>Identifiant unique.</value>
 		[XmlElement(ElementName = "Id")]
-		public Guid Id {
+		public Guid Id
+		{
 			get { return _id; }
-			set {
-				if (value != _id) {
+			set
+			{
+				if (value != _id)
+				{
 					_id = value;
 					OnPropertyChanged();
 				}
@@ -170,9 +198,11 @@ namespace Kotlib
 		/// </summary>
 		/// <value>Nom, 255 caractères maximum.</value>
 		[XmlElement(ElementName = "Name")]
-		public string Name {
+		public string Name
+		{
 			get { return _name; }
-			set {
+			set
+			{
 				value = value.Trim();
 
 				if (value.Length > 255)
@@ -181,7 +211,8 @@ namespace Kotlib
 				if (value == "")
 					throw new ArgumentException("Dénomination du dossier financier requise.");
 
-				if (value != _name) {
+				if (value != _name)
+				{
 					_name = value;
 					OnPropertyChanged();
 				}
@@ -205,10 +236,13 @@ namespace Kotlib
 		/// </summary>
 		/// <value>Date de création.</value>
 		[XmlAttribute(AttributeName = "created")]
-		public DateTime Created {
+		public DateTime Created
+		{
 			get { return _created; }
-			set {
-				if (value != _created) {
+			set
+			{
+				if (value != _created)
+				{
 					_created = value;
 					OnPropertyChanged();
 				}
@@ -221,10 +255,13 @@ namespace Kotlib
 		/// </summary>
 		/// <value>Date de modification.</value>
 		[XmlAttribute(AttributeName = "updated")]
-		public DateTime Updated {
+		public DateTime Updated
+		{
 			get { return _updated; }
-			set {
-				if (value != _updated) {
+			set
+			{
+				if (value != _updated)
+				{
 					_updated = value;
 					if (_updated < _created)
 						_updated = _created;
@@ -240,14 +277,17 @@ namespace Kotlib
 		/// </summary>
 		/// <value>Notes, 4000 caractères maximum.</value>
 		[XmlIgnore]
-		public string Note {
+		public string Note
+		{
 			get { return _note; }
-			set {
+			set
+			{
 				value = value.Trim();
 				if (value.Length > 4000)
 					value = value.Substring(0, 4000);
 
-				if (value != _note) {
+				if (value != _note)
+				{
 					_note = value;
 					OnPropertyChanged();
 				}
@@ -258,7 +298,8 @@ namespace Kotlib
 		/// Note au format données brutes
 		/// </summary>
 		[XmlElement(ElementName = "Note")]
-		public XmlCDataSection NoteCData {
+		public XmlCDataSection NoteCData
+		{
 			get { return _xmlDoc.CreateCDataSection(Note); }
 			set { Note = value.Data; }
 		}
@@ -269,13 +310,16 @@ namespace Kotlib
 		/// </summary>
 		/// <value>Propriétaire du dossier financier.</value>
 		[XmlElement(ElementName = "Owner")]
-		public Identity Owner {
+		public Identity Owner
+		{
 			get { return _owner; }
-			set {
+			set
+			{
 				if (value == null)
 					throw new ArgumentException("Une identité correcte est requise pour le propriétaire du dossier financier.");
 
-				if (value != _owner) {
+				if (value != _owner)
+				{
 					_owner = value;
 					OnPropertyChanged();
 				}
@@ -300,10 +344,13 @@ namespace Kotlib
 		/// <value>Liste des moyens de paiements.</value>
 		[XmlArray(ElementName = "Paytypes")]
 		[XmlArrayItem(ElementName = "Paytype")]
-		public PaytypeList Paytypes {
+		public PaytypeList Paytypes
+		{
 			get { return _paytypes; }
-			set {
-				if (value != null && value != _paytypes) {
+			set
+			{
+				if (value != null && value != _paytypes)
+				{
 					if (_paytypes != null)
 						_paytypes.UpdatedEvent -= OnUpdated;
 
@@ -320,10 +367,13 @@ namespace Kotlib
 		/// <value>Liste des catégories.</value>
 		[XmlArray(ElementName = "Categories")]
 		[XmlArrayItem(ElementName = "Category")]
-		public CategoryList Categories {
+		public CategoryList Categories
+		{
 			get { return _categories; }
-			set {
-				if (value != null && value != _categories) {
+			set
+			{
+				if (value != null && value != _categories)
+				{
 					if (_categories != null)
 						_categories.UpdatedEvent -= OnUpdated;
 
@@ -340,10 +390,13 @@ namespace Kotlib
 		/// <value>Liste des tiers.</value>
 		[XmlArray(ElementName = "Thirdparties")]
 		[XmlArrayItem(ElementName = "Identity")]
-		public ThirdpartyList Thirdparties {
+		public ThirdpartyList Thirdparties
+		{
 			get { return _thirdparties; }
-			set {
-				if (value != null && value != _thirdparties) {
+			set
+			{
+				if (value != null && value != _thirdparties)
+				{
 					if (_thirdparties != null)
 						_thirdparties.UpdatedEvent -= OnUpdated;
 
@@ -360,10 +413,13 @@ namespace Kotlib
 		/// <value>Liste des éléments bancaires.</value>
 		[XmlArray(ElementName = "Accounts")]
 		[XmlArrayItem(ElementName = "Account")]
-		public AccountList Accounts {
+		public AccountList Accounts
+		{
 			get { return _accounts; }
-			set {
-				if (value != null && value != _accounts) {
+			set
+			{
+				if (value != null && value != _accounts)
+				{
 					if (_accounts != null)
 						_accounts.UpdatedEvent -= OnUpdated;
 
@@ -434,6 +490,9 @@ namespace Kotlib
 			var datas = Save(password);
 
 			File.WriteAllBytes(fp, datas);
+			
+			OnSaved(this, new EventArgs());
+			
 			return fp;
 		}
 
@@ -449,7 +508,10 @@ namespace Kotlib
 				datas = Core.Crypto.Decrypt(datas, password);
 
 			datas = Core.Compression.Decompress(datas);
-			return Deserialize<Financial>(datas);
+			var fi = Deserialize<Financial>(datas);
+			
+			fi.Accounts.CleanTransfers();
+			return fi;
 		}
 
 		/// <summary>
@@ -488,7 +550,8 @@ namespace Kotlib
 			string note = "",
 			bool loadDefaults = false)
 		{
-			return new Financial(name, owner) {
+			return new Financial(name, owner)
+			{
 				Created = DateTime.Now,
 				Updated = DateTime.Now,
 				Accounts = accounts,
@@ -498,7 +561,45 @@ namespace Kotlib
 				Note = note.Trim() == "" ? (loadDefaults ? "Modèle par défaut d'un dossier financier" : "") : note
 			};
 		}
-        
+     
+		/// <summary>
+		/// Retourne le solde total (opérations et transferts inclus) d'un élément bancaire à la date spécifiée
+		/// </summary>
+		/// <param name="account">Elément bancaire concerné</param>
+		/// <param name="date">Date du solde</param>
+		/// <param name="addInitialAmount"><c>true</c>, ajoute le solde initial, sinon, <c>false</c></param>
+		/// <returns>Solde total</returns>
+		public double AmountAt(Account account, DateTime date, bool addInitialAmount = true)
+		{
+			var amount_account = account.AmountAt(date, addInitialAmount: false);
+			var amount_transfers = Accounts.Transfers.AmountAt(account, date, addInitialAmount: false);
+			
+			return (addInitialAmount ? account.InitialAmount : 0.0d) + amount_account + amount_transfers;
+		}
+		
+		/// <summary>
+		/// Retourne le solde total de tous les éléments bancaires ainsi que tous les transferts associés
+		/// </summary>
+		/// <param name="date">Date de solde</param>
+		/// <param name="addInitialAmount"><c>true</c>, ajoute le solde initial, sinon, <c>false</c></param>
+		/// <returns>Solde total</returns>
+		public double AmountAt(DateTime date, bool addInitialAmount = true)
+		{
+			var amounts = 0.0d;
+			
+			Accounts.Items.ForEach(a =>
+				{
+					amounts += a.AmountAt(date, addInitialAmount: false);
+					amounts += Accounts.Transfers.AmountAt(a, date, addInitialAmount: false);
+					
+					if (addInitialAmount)
+						amounts += a.InitialAmount;
+				}
+			);
+			
+			return amounts;
+		}
+		
 	}
     
 }

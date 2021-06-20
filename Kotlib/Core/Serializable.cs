@@ -40,7 +40,8 @@ namespace Kotlib.Core
 		{
 			byte[] datas = { };
 
-			using (var ms = new MemoryStream()) {
+			using (var ms = new MemoryStream())
+			{
 				var xs = new XmlSerializer(this.GetType());
 
 				var ns = new XmlSerializerNamespaces();
@@ -64,7 +65,8 @@ namespace Kotlib.Core
 		/// <typeparam name="T">Type d'objet à reconstituer.</typeparam>
 		public static T Deserialize<T>(byte[] datas)
 		{
-			using (var ms = new MemoryStream(datas)) {
+			using (var ms = new MemoryStream(datas))
+			{
 				var xs = new XmlSerializer(typeof(T));
 				return (T)xs.Deserialize(ms);
 			}

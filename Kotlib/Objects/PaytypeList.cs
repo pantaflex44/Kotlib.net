@@ -42,8 +42,10 @@ namespace Kotlib.Objects
 		/// Retourne une liste vide
 		/// </summary>
 		/// <value>Liste vide.</value>
-		public static PaytypeList Empty {
-			get {
+		public static PaytypeList Empty
+		{
+			get
+			{
 				return new PaytypeList();
 			}
 		}
@@ -51,10 +53,12 @@ namespace Kotlib.Objects
 		/// <summary>
 		/// Retourne une liste de moyens par défaut
 		/// </summary>
-		public static PaytypeList Defaults {
-			get {
+		public static PaytypeList Defaults
+		{
+			get
+			{
 				return new PaytypeList(from item in GetAvaillablePaytypes()
-				                                   select (Paytype)Activator.CreateInstance(item.Item3, item.Item1));
+					                      select (Paytype)Activator.CreateInstance(item.Item3, item.Item1));
 			}
 		}
 
@@ -81,9 +85,9 @@ namespace Kotlib.Objects
 		/// </summary>
 		/// <returns>Moyen de paiement trouvé.</returns>
 		/// <param name="id">Identifiant unique.</param>
-		public Paytype GetById(string id)
+		public Paytype GetById(Guid id)
 		{
-			return this.ToList().First(a => a.Id.Equals(Guid.Parse(id.Trim())));
+			return this.ToList().FirstOrDefault(a => a.Id.Equals(id));
 		}
 
 		/// <summary>
@@ -93,10 +97,10 @@ namespace Kotlib.Objects
 		public static List<Tuple<string, string, Type>> GetAvaillablePaytypes()
 		{
 			return (from da in AppDomain.CurrentDomain.GetAssemblies()
-			                 from at in da.GetTypes()
-			                 where typeof(Paytype).IsAssignableFrom(at) && !at.Equals(typeof(Paytype)) && !at.Equals(typeof(Collection))
-			                 where Attribute.IsDefined(at, typeof(DisplayNameAttribute)) && Attribute.IsDefined(at, typeof(DescriptionAttribute))
-			                 select new Tuple<string, string, Type>((Attribute.GetCustomAttribute(at, typeof(DisplayNameAttribute)) as DisplayNameAttribute).DisplayName, (Attribute.GetCustomAttribute(at, typeof(DescriptionAttribute)) as DescriptionAttribute).Description, at)).ToList();
+			        from at in da.GetTypes()
+			        where typeof(Paytype).IsAssignableFrom(at) && !at.Equals(typeof(Paytype)) && !at.Equals(typeof(Collection))
+			        where Attribute.IsDefined(at, typeof(DisplayNameAttribute)) && Attribute.IsDefined(at, typeof(DescriptionAttribute))
+			        select new Tuple<string, string, Type>((Attribute.GetCustomAttribute(at, typeof(DisplayNameAttribute)) as DisplayNameAttribute).DisplayName, (Attribute.GetCustomAttribute(at, typeof(DescriptionAttribute)) as DescriptionAttribute).Description, at)).ToList();
 		}
 
 		/// <summary>
@@ -107,11 +111,11 @@ namespace Kotlib.Objects
 		public static List<Tuple<string, string, Type>> GetAvaillablePaytypes(string categoryName)
 		{
 			return (from da in AppDomain.CurrentDomain.GetAssemblies()
-			                 from at in da.GetTypes()
-			                 where typeof(Paytype).IsAssignableFrom(at) && !at.Equals(typeof(Paytype)) && !at.Equals(typeof(Collection))
-			                 where Attribute.IsDefined(at, typeof(CategoryAttribute)) && Attribute.IsDefined(at, typeof(DisplayNameAttribute)) && Attribute.IsDefined(at, typeof(DescriptionAttribute))
-			                 where ((Attribute.GetCustomAttribute(at, typeof(CategoryAttribute)) as CategoryAttribute).Category).Contains(categoryName)
-			                 select new Tuple<string, string, Type>((Attribute.GetCustomAttribute(at, typeof(DisplayNameAttribute)) as DisplayNameAttribute).DisplayName, (Attribute.GetCustomAttribute(at, typeof(DescriptionAttribute)) as DescriptionAttribute).Description, at)).ToList();
+			        from at in da.GetTypes()
+			        where typeof(Paytype).IsAssignableFrom(at) && !at.Equals(typeof(Paytype)) && !at.Equals(typeof(Collection))
+			        where Attribute.IsDefined(at, typeof(CategoryAttribute)) && Attribute.IsDefined(at, typeof(DisplayNameAttribute)) && Attribute.IsDefined(at, typeof(DescriptionAttribute))
+			        where ((Attribute.GetCustomAttribute(at, typeof(CategoryAttribute)) as CategoryAttribute).Category).Contains(categoryName)
+			        select new Tuple<string, string, Type>((Attribute.GetCustomAttribute(at, typeof(DisplayNameAttribute)) as DisplayNameAttribute).DisplayName, (Attribute.GetCustomAttribute(at, typeof(DescriptionAttribute)) as DescriptionAttribute).Description, at)).ToList();
 		}
 
 		/// <summary>

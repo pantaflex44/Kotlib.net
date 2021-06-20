@@ -23,6 +23,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -53,7 +54,8 @@ namespace Kotlib.Objects
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		public void OnPropertyChanged(string name = null)
 		{
-			if (name == null) {
+			if (name == null)
+			{
 				var stackTrace = new StackTrace(1, false);
 				var type = stackTrace.GetFrame(1).GetMethod().DeclaringType;
 				name = type.Name;
@@ -98,10 +100,13 @@ namespace Kotlib.Objects
 		/// </summary>
 		/// <value>Identifiant unique.</value>
 		[XmlElement(ElementName = "Id")]
-		public Guid Id {
+		public Guid Id
+		{
 			get { return _id; }
-			set {
-				if (value != _id) {
+			set
+			{
+				if (value != _id)
+				{
 					_id = value;
 					OnPropertyChanged();
 				}
@@ -114,9 +119,11 @@ namespace Kotlib.Objects
 		/// </summary>
 		/// <value>Nom, 255 caractères maximum.</value>
 		[XmlElement(ElementName = "Name")]
-		public string Name {
+		public string Name
+		{
 			get { return _name; }
-			set {
+			set
+			{
 				value = value.Trim();
 
 				if (value.Length > 255)
@@ -125,7 +132,8 @@ namespace Kotlib.Objects
 				if (value == "")
 					throw new ArgumentException("Dénomination de l'élément bancaire requis.");
 
-				if (value != _name) {
+				if (value != _name)
+				{
 					_name = value;
 					OnPropertyChanged();
 				}
@@ -150,10 +158,13 @@ namespace Kotlib.Objects
 		/// <value>Liste des moyens de paiements.</value>
 		[XmlArray(ElementName = "Paytypes")]
 		[XmlArrayItem(ElementName = "Paytype")]
-		public PaytypeList Paytypes {
+		public PaytypeList Paytypes
+		{
 			get { return _paytypes; }
-			set {
-				if (value != null && value != _paytypes) {
+			set
+			{
+				if (value != null && value != _paytypes)
+				{
 					if (_paytypes != null)
 						_paytypes.UpdatedEvent -= OnUpdated;
 
@@ -169,29 +180,47 @@ namespace Kotlib.Objects
 		/// </summary>
 		/// <value>Solde initial.</value>
 		[XmlAttribute(AttributeName = "initial_amount")]
-		public double InitialAmount {
+		public double InitialAmount
+		{
 			get { return _initialamount; }
-			set {
-				if (!value.Equals(_initialamount)) {
+			set
+			{
+				if (!value.Equals(_initialamount))
+				{
 					_initialamount = value;
 					OnPropertyChanged();
 				}
 			}
 		}
 
+		/// <summary>
+		/// Retourne le solde du compte
+		/// </summary>
+		[XmlIgnore()]
+		public double Amount
+		{
+			get
+			{
+				return AmountAt(DateTime.Now);
+			}
+		}
+		
 		private double _allowedcredit = 0.0d;
 		/// <summary>
 		/// Découvert autorisé
 		/// </summary>
 		/// <value>Découvert autorisé.</value>
 		[XmlAttribute(AttributeName = "allowed_credit")]
-		public double AllowedCredit {
+		public double AllowedCredit
+		{
 			get { return _allowedcredit; }
-			set {
+			set
+			{
 				if (value < 0.0d)
 					throw new ArgumentException("Le montant du découvert autorisé doit être positif.");
 
-				if (!value.Equals(_allowedcredit)) {
+				if (!value.Equals(_allowedcredit))
+				{
 					_allowedcredit = value;
 					OnPropertyChanged();
 				}
@@ -204,14 +233,17 @@ namespace Kotlib.Objects
 		/// </summary>
 		/// <value>Notes, 4000 caractères maximum.</value>
 		[XmlIgnore]
-		public string Note {
+		public string Note
+		{
 			get { return _note; }
-			set {
+			set
+			{
 				value = value.Trim();
 				if (value.Length > 4000)
 					value = value.Substring(0, 4000);
 
-				if (value != _note) {
+				if (value != _note)
+				{
 					_note = value;
 					OnPropertyChanged();
 				}
@@ -222,7 +254,8 @@ namespace Kotlib.Objects
 		/// Note au format brute
 		/// </summary>
 		[XmlElement(ElementName = "Note")]
-		public XmlCDataSection NoteCData {
+		public XmlCDataSection NoteCData
+		{
 			get { return _xmlDoc.CreateCDataSection(Note); }
 			set { Note = value.Data; }
 		}
@@ -233,13 +266,16 @@ namespace Kotlib.Objects
 		/// </summary>
 		/// <value>Propriétaire de cet élément bancaire.</value>
 		[XmlElement(ElementName = "Owner")]
-		public Identity Owner {
+		public Identity Owner
+		{
 			get { return _owner; }
-			set {
+			set
+			{
 				if (value == null)
 					throw new ArgumentException("Une identité correcte est requise pour le propriétaire de cet élément bancaire.");
 
-				if (value != _owner) {
+				if (value != _owner)
+				{
 					_owner = value;
 					OnPropertyChanged();
 				}
@@ -263,23 +299,52 @@ namespace Kotlib.Objects
 		/// </summary>
 		/// <value>Culture de l'élément bancaire.</value>
 		[XmlAttribute(AttributeName = "culture")]
-		public string Culture {
+		public string Culture
+		{
 			get { return _culture; }
-			set {
+			set
+			{
 				value = value.Trim();
-				if (value.ToLower() != _culture.ToLower()) {
-					try {
+				if (value.ToLower() != _culture.ToLower())
+				{
+					try
+					{
 						var ci = new CultureInfo(value);
 						_culture = ci.Name;
 						ci = null;
 						OnPropertyChanged();
-					} catch {
+					}
+					catch
+					{
 						throw new ArgumentException("La culture employée pour ce compte est incorrecte.");
 					}
 				}
 			}
 		}
 
+		private OperationList _operations = null;
+		/// <summary>
+		/// Liste des opérations
+		/// </summary>
+		/// <value>Liste des opérations.</value>
+		[XmlArray(ElementName = "Operations")]
+		[XmlArrayItem(ElementName = "Operation")]
+		public OperationList Operations
+		{
+			get { return _operations; }
+			set
+			{
+				if (value != null && value != _operations)
+				{
+					if (_operations != null)
+						_operations.UpdatedEvent -= OnUpdated;
+
+					_operations = value;
+					_operations.UpdatedEvent += OnUpdated;
+				}
+			}
+		}
+		
 		#endregion
 
 		/// <summary>
@@ -292,6 +357,7 @@ namespace Kotlib.Objects
 			InitialAmount = 0.0d;
 			AllowedCredit = 0.0d;
 			Culture = CultureInfo.CurrentCulture.Name;
+			Operations = OperationList.Empty;
 		}
 		/// <summary>
 		/// Constructeur
@@ -305,6 +371,22 @@ namespace Kotlib.Objects
 			Owner = owner;
 		}
 
+		/// <summary>
+		/// Retourne le solde à la date souhaité
+		/// </summary>
+		/// <param name="date">Date souhaitée</param>
+		/// <param name="addInitialAmount"><c>true</c>, ajoute le solde initial, sinon, <c>false</c></param>
+		/// <returns>Solde</returns>
+		public double AmountAt(DateTime date, bool addInitialAmount = true)
+		{
+			var amts = Operations.Items.Where(a => a.Date <= date).Select(a => a.Amount).ToList();
+			
+			if(addInitialAmount)
+				amts.Insert(0, InitialAmount);
+			
+			return amts.Sum();
+		}
+		
 	}
 
 	/// <summary>
@@ -324,9 +406,11 @@ namespace Kotlib.Objects
 		/// </summary>
 		/// <value>Nom, 255 caractères maximum.</value>
 		[XmlElement(ElementName = "BankName")]
-		public string BankName {
+		public string BankName
+		{
 			get { return _bankname; }
-			set {
+			set
+			{
 				value = value.Trim();
 
 				if (value.Length > 255)
@@ -335,7 +419,8 @@ namespace Kotlib.Objects
 				if (value == "")
 					throw new ArgumentException("Dénomination de la banque requise.");
 
-				if (value != _bankname) {
+				if (value != _bankname)
+				{
 					_bankname = value;
 					OnPropertyChanged();
 				}
@@ -359,9 +444,11 @@ namespace Kotlib.Objects
 		/// </summary>
 		/// <value>Iban.</value>
 		[XmlElement(ElementName = "Iban")]
-		public string Iban {
+		public string Iban
+		{
 			get { return _iban; }
-			set {
+			set
+			{
 				value = value.Trim().Replace(" ", "").Replace("\n", "").Replace("\r", "").Replace("\t", "");
 
 				if (value.Length > 34)
@@ -370,7 +457,8 @@ namespace Kotlib.Objects
 				if (value != "" && !Regex.IsMatch(value, @"^(?:(?:IT|SM)\d{2}[A-Z]\d{22}|CY\d{2}[A-Z]\d{23}|NL\d{2}[A-Z]{4}\d{10}|LV\d{2}[A-Z]{4}\d{13}|(?:BG|BH|GB|IE)\d{2}[A-Z]{4}\d{14}|GI\d{2}[A-Z]{4}\d{15}|RO\d{2}[A-Z]{4}\d{16}|KW\d{2}[A-Z]{4}\d{22}|MT\d{2}[A-Z]{4}\d{23}|NO\d{13}|(?:DK|FI|GL|FO)\d{16}|MK\d{17}|(?:AT|EE|KZ|LU|XK)\d{18}|(?:BA|HR|LI|CH|CR)\d{19}|(?:GE|DE|LT|ME|RS)\d{20}|IL\d{21}|(?:AD|CZ|ES|MD|SA)\d{22}|PT\d{23}|(?:BE|IS)\d{24}|(?:FR|MR|MC)\d{25}|(?:AL|DO|LB|PL)\d{26}|(?:AZ|HU)\d{27}|(?:GR|MU)\d{28})$", RegexOptions.IgnoreCase))
 					throw new ArgumentException("Iban incorrect.");
 
-				if (value != _iban) {
+				if (value != _iban)
+				{
 					_iban = value;
 					OnPropertyChanged();
 				}
@@ -383,9 +471,11 @@ namespace Kotlib.Objects
 		/// </summary>
 		/// <value>Bic.</value>
 		[XmlElement(ElementName = "Bic")]
-		public string Bic {
+		public string Bic
+		{
 			get { return _bic; }
-			set {
+			set
+			{
 				value = value.Trim().Replace(" ", "").Replace("\n", "").Replace("\r", "").Replace("\t", "");
 
 				if (value.Length > 34)
@@ -394,7 +484,8 @@ namespace Kotlib.Objects
 				if (value != "" && !Regex.IsMatch(value, @"^{6}[a-z]{2}[0-9a-z]{2}([0-9a-z]{4})?\z", RegexOptions.IgnoreCase))
 					throw new ArgumentException("Bic incorrect.");
 
-				if (value != _bic) {
+				if (value != _bic)
+				{
 					_bic = value;
 					OnPropertyChanged();
 				}
@@ -407,10 +498,13 @@ namespace Kotlib.Objects
 		/// </summary>
 		/// <value>Coordonnées et contact.</value>
 		[XmlElement(ElementName = "Contact")]
-		public Identity Contact {
+		public Identity Contact
+		{
 			get { return _contact; }
-			set {
-				if (value != _contact) {
+			set
+			{
+				if (value != _contact)
+				{
 					_contact = value;
 					OnPropertyChanged();
 				}
@@ -456,13 +550,16 @@ namespace Kotlib.Objects
 		/// </summary>
 		/// <value>Informations de la carte de paiement.</value>
 		[XmlElement(ElementName = "Card")]
-		public BankCard Card {
+		public BankCard Card
+		{
 			get { return _card; }
-			set {
+			set
+			{
 				if (value == null)
 					throw new ArgumentException("Les informations de la carte de paiement sont requises.");
 
-				if (value != _card) {
+				if (value != _card)
+				{
 					_card = value;
 					OnPropertyChanged();
 				}
@@ -520,10 +617,13 @@ namespace Kotlib.Objects
 		/// </summary>
 		/// <value><c>true</c> si c'est un portefeuille électronique; sinon, <c>false</c>.</value>
 		[XmlAttribute(AttributeName = "electronic")]
-		public bool Electronic {
+		public bool Electronic
+		{
 			get { return _electronic; }
-			set {
-				if (value != _electronic) {
+			set
+			{
+				if (value != _electronic)
+				{
 					_electronic = value;
 					OnPropertyChanged();
 				}

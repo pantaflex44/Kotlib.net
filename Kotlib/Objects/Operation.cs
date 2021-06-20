@@ -1,5 +1,5 @@
 ﻿//
-//  Identity.cs
+//  Operation.cs
 //
 //  Author:
 //       Christophe LEMOINE <pantafle@tuta.io>
@@ -23,20 +23,20 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
+using System.Text.RegularExpressions;
 
 namespace Kotlib.Objects
 {
-
+	
 	/// <summary>
-	/// Carte d'identité
+	/// Représente une opération bancaire.
 	/// </summary>
-	[XmlRoot(ElementName = "Identity")]
-	public class Identity: INotifyPropertyChanged
+	[XmlRoot(ElementName = "Operation")]
+	public class Operation: INotifyPropertyChanged
 	{
-
+		
 		#region Fonctions privées
 
 		/// <summary>
@@ -61,7 +61,7 @@ namespace Kotlib.Objects
 		}
 
 		/// <summary>
-		/// Informe que le dossier financier a été modifié
+		/// Informe que l'opération a été modifiée
 		/// </summary>
 		public void OnUpdated(object sender, EventArgs e)
 		{
@@ -87,8 +87,6 @@ namespace Kotlib.Objects
 
 		#region Propriétés publiques
 
-		private static readonly XmlDocument _xmlDoc = new XmlDocument();
-
 		private Guid _id = Guid.Empty;
 		/// <summary>
 		/// Identifiant unique
@@ -110,8 +108,9 @@ namespace Kotlib.Objects
 
 		private string _name = "";
 		/// <summary>
-		/// Dénomination de la carte d'identité
+		/// Nom donné à l'opération
 		/// </summary>
+		/// <example>Prélèvement électricité</example>
 		/// <value>Nom, 255 caractères maximum.</value>
 		[XmlElement(ElementName = "Name")]
 		public string Name
@@ -125,7 +124,7 @@ namespace Kotlib.Objects
 					value = value.Substring(0, 255);
 
 				if (value == "")
-					throw new ArgumentException("Une carte d'identité requiert un nom.");
+					throw new ArgumentException("Dénomination de l'opération requise.");
 
 				if (value != _name)
 				{
@@ -141,163 +140,139 @@ namespace Kotlib.Objects
 		public bool ShouldSerializeName()
 		{
 			if (Name.Trim() == "")
-				throw new ArgumentException("Une carte d'identité requiert un nom.");
+				throw new ArgumentException("Dénomination de l'opération requise.");
 
 			return true;
 		}
-
-		private string _forname = "";
+		
+		private DateTime _date = DateTime.Now;
 		/// <summary>
-		/// Prénom
+		/// Date de l'opération
 		/// </summary>
-		/// <value>Prénom, 255 caractères maximum.</value>
-		[XmlElement(ElementName = "Forname")]
-		public string Forname
+		/// <value>Date de l'opération</value>
+		[XmlAttribute(AttributeName = "date")]
+		public DateTime Date
 		{
-			get { return _forname; }
+			get { return _date; }
 			set
 			{
-				value = value.Trim();
-
-				if (value.Length > 255)
-					value = value.Substring(0, 255);
-
-				if (value != _forname)
+				if (value != _date)
 				{
-					_forname = value;
+					_date = value;
 					OnPropertyChanged();
 				}
 			}
 		}
-
-		private string _lastname = "";
+		
+		private double _amount = 0.0d;
 		/// <summary>
-		/// Nom de famille
+		/// Montant de l'opération
 		/// </summary>
-		/// <value>Nom de famille, 255 caractères maximum.</value>
-		[XmlElement(ElementName = "Lastname")]
-		public string Lastname
+		/// <value>Montant de l'opération.</value>
+		[XmlAttribute(AttributeName = "amount")]
+		public double Amount
 		{
-			get { return _lastname; }
+			get { return _amount; }
 			set
 			{
-				value = value.Trim();
-
-				if (value.Length > 255)
-					value = value.Substring(0, 255);
-
-				if (value != _lastname)
+				if (!value.Equals(_amount))
 				{
-					_lastname = value;
+					_amount = value;
 					OnPropertyChanged();
 				}
 			}
 		}
-
-		private string _phone = "";
+		
+		private Guid _toId = Guid.Empty;
 		/// <summary>
-		/// Numéro de téléphone
+		/// Identité du destinataire
 		/// </summary>
-		/// <value>Numéro de téléphone.</value>
-		[XmlElement(ElementName = "Phone")]
-		public string Phone
-		{
-			get { return _phone; }
+		/// <value>Identifiant unique de l'identité du destinataire</value>
+		[XmlElement(ElementName = "To")]
+		public Guid ToId
+		{ 
+			get { return _toId; }
 			set
 			{
-				value = value.Trim();
-
-				if (value != _phone)
-				{
-					_phone = value;
-					OnPropertyChanged();
-				}
-			}
-		}
-
-		private string _url = "";
-		/// <summary>
-		/// Site internet
-		/// </summary>
-		/// <value>Site internet.</value>
-		[XmlElement(ElementName = "Url")]
-		public string Url
-		{
-			get { return _url; }
-			set
-			{
-				value = value.Trim();
-
-				if (value != "" && !Uri.IsWellFormedUriString(value, UriKind.RelativeOrAbsolute))
-					throw new ArgumentException("Url du site Internet invalide.");
-
-				if (value != _url)
-				{
-					_url = value;
-					OnPropertyChanged();
-				}
-			}
-		}
-
-		private string _mail = "";
-		/// <summary>
-		/// Adresse email
-		/// </summary>
-		/// <value>Adresse email.</value>
-		[XmlElement(ElementName = "Mail")]
-		public string Mail
-		{
-			get { return _mail; }
-			set
-			{
-				value = value.Trim();
-
-				if (value != "" && !Regex.IsMatch(value, @"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z", RegexOptions.IgnoreCase))
-					throw new ArgumentException("Adresse email invalide.");
-
-				if (value != _mail)
-				{
-					_mail = value;
-					OnPropertyChanged();
-				}
-			}
-		}
-
-		private string _address = "";
-		/// <summary>
-		/// Adresse postale
-		/// </summary>
-		/// <value>Adresse postale, 4000 caractères maximum.</value>
-		[XmlIgnore]
-		public string Address
-		{
-			get { return _address; }
-			set
-			{
-				value = value.Trim();
-				if (value.Length > 4000)
-					value = value.Substring(0, 4000);
-
-				if (value != _address)
-				{
-					_address = value;
-					OnPropertyChanged();
-				}
+				if (value == Guid.Empty)
+					throw new ArgumentException("L'identité d'un destinataire est requis.");
+				
+				_toId = value;
 			}
 		}
 		/// <summary>
-		/// Adresse au format brute
+		/// Vérifie si la propriété est correctement définie avant d'être sérialisée
 		/// </summary>
-		[XmlElement(ElementName = "Address")]
-		public XmlCDataSection AddressCData
+		/// <returns><c>true</c></returns>
+		public bool ShouldSerializeToId()
 		{
-			get { return _xmlDoc.CreateCDataSection(Address); }
-			set { Address = value.Data; }
-		}
+			if (CategoryId == Guid.Empty)
+				throw new ArgumentException("L'identité d'un destinataire est requis.");
 
+			return true;
+		}
+				
+		private Guid _paytypeId = Guid.Empty;
+		/// <summary>
+		/// Type d'opération (moyen de paiement ou d'encaissement)
+		/// </summary>
+		/// <value>Identifiant unique du moyen de paiement ou d'encaissement</value>
+		[XmlElement(ElementName = "Type")]
+		public Guid TypeId
+		{ 
+			get { return _paytypeId; }
+			set
+			{
+				if (value == Guid.Empty)
+					throw new ArgumentException("Un moyen de paiement / d'encaissement est requis.");
+				
+				_paytypeId = value;
+			}
+		}
+		/// <summary>
+		/// Vérifie si la propriété est correctement définie avant d'être sérialisée
+		/// </summary>
+		/// <returns><c>true</c></returns>
+		public bool ShouldSerializeTypeId()
+		{
+			if (TypeId == Guid.Empty)
+				throw new ArgumentException("Un moyen de paiement / d'encaissement est requis.");
+
+			return true;
+		}
+		
+		private Guid _categoryId = Guid.Empty;
+		/// <summary>
+		/// Catégorie dans laquelle classer cette opération
+		/// </summary>
+		/// <value>Identifiant unique de la catégorie</value>
+		[XmlElement(ElementName = "Category")]
+		public Guid CategoryId
+		{ 
+			get { return _categoryId; }
+			set
+			{
+				if (value == Guid.Empty)
+					throw new ArgumentException("Une catégorie est requise.");
+				
+				_categoryId = value;
+			}
+		}
+		/// <summary>
+		/// Vérifie si la propriété est correctement définie avant d'être sérialisée
+		/// </summary>
+		/// <returns><c>true</c></returns>
+		public bool ShouldSerializeCategoryId()
+		{
+			if (CategoryId == Guid.Empty)
+				throw new ArgumentException("Une catégorie est requise.");
+
+			return true;
+		}
+		
 		private string _note = "";
 		/// <summary>
-		/// Notes appliquées à cette identité.
+		/// Notes appliquées à cette catégory.
 		/// </summary>
 		/// <value>Notes, 4000 caractères maximum.</value>
 		[XmlIgnore]
@@ -317,6 +292,7 @@ namespace Kotlib.Objects
 				}
 			}
 		}
+		private static readonly XmlDocument _xmlDoc = new XmlDocument();
 		/// <summary>
 		/// Note au format brute
 		/// </summary>
@@ -327,25 +303,56 @@ namespace Kotlib.Objects
 			set { Note = value.Data; }
 		}
 
+		private bool _active = true;
+		/// <summary>
+		/// Retourne ou définit si l'opération est comptabilisée ou non
+		/// </summary>
+		/// <value>Etat de l'opération</value>
+		[XmlAttribute(AttributeName = "active")]
+		public  bool Active
+		{
+			get { return _active; }
+			set
+			{
+				if (value != _active)
+				{
+					_active = value;
+					OnPropertyChanged();
+				}
+			}
+		}
+		
 		#endregion
 
 		/// <summary>
 		/// Constructeurs
 		/// </summary>
-		public Identity()
+		public Operation()
 		{
 			Id = Guid.NewGuid();
 		}
 		/// <summary>
 		/// Constructeur
 		/// </summary>
-		/// <param name="name">Nom de la carte d'identité.</param>
-		public Identity(string name)
+		/// <param name="name">Nom de l'opération.</param>
+		/// <param name="date">Date de l'opération</param>
+		/// <param name="amount">Montant de l'opération</param>"
+		/// <param name="toId">Identifiant unique de l'identité du destinataire</param>
+		/// <param name="typeId">Identifiant unique du moyen d'encaissement ou de paiement</param>
+		/// <param name="categoryId">Identifiant unique de la catégorie de classement</param>
+		/// <param name="active"><c>true</c>, l'opération est comptabilisée, sinon, <c>false</c>. Optionnel, <c>true</c> par défaut</param>
+		public Operation(string name, DateTime date, double amount, Guid toId, Guid typeId, Guid categoryId, bool active = true)
 			: this()
 		{
 			Name = name;
+			Date = date;
+			Amount = amount;
+			ToId = toId;
+			TypeId = typeId;
+			CategoryId = categoryId;
+			Active = active;
 		}
-
+		
 	}
-
+	
 }
