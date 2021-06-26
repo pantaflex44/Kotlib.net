@@ -2,7 +2,7 @@
 //  PaytypeList.cs
 //
 //  Author:
-//       Christophe LEMOINE <pantafle@tuta.io>
+//       Christophe LEMOINE <pantaflex@tuta.io>
 //
 //  Copyright (c) 2021 Christophe LEMOINE
 //

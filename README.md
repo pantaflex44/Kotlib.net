@@ -17,6 +17,13 @@
 >
 >  **Participations**:
 >
+>  **Aide**:
+>
+>  - Serveur Discord [NaN | Not a Name  (323076998576603137)](https://discord.com/invite/notaname), salon <u>csharp</u>
+>    - Remerciements pour leurs aides et conseils:
+>      - *Sehnsucht©*
+>      - *Hipster de microservices*
+>
 >  **Divers:**
 >
 >  - [PF44 - Code lover (pantaflex44.me)](https://pantaflex44.me/)

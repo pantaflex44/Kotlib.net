@@ -2,7 +2,7 @@
 //  Financial.cs
 //
 //  Author:
-//       Christophe LEMOINE <pantafle@tuta.io>
+//       Christophe LEMOINE <pantaflex@tuta.io>
 //
 //  Copyright (c) 2021 Christophe LEMOINE
 //
@@ -20,15 +20,15 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using Kotlib.Objects;
+using Kotlib.Tools;
 
 namespace Kotlib
 {
@@ -150,6 +150,20 @@ namespace Kotlib
 				SavedEvent.Invoke(sender, e);
 		}
 		
+		/// <summary>
+		/// S'execute lorsque qu'un événement est posté
+		/// </summary>
+		/// <param name="date">Date de l'occurence</param>
+		/// <param name="postEvent">Occurence et ses informations</param>
+		private void EventPosted(DateTime date, Event postEvent)
+		{
+			var account = Accounts.GetById(postEvent.AccountId);
+			if(!account.Equals(default(Account)))
+			{
+				//TODO: Traiter l'opération ou le transfert à poster
+			}
+		}
+		
 		#endregion
 
 		#region Evénements
@@ -222,7 +236,7 @@ namespace Kotlib
 		/// Verifie que la propriété est correcte avant d'être sérialisée
 		/// </summary>
 		/// <returns><c>true</c></returns>
-		public bool ShouldSerializeName()
+		private bool ShouldSerializeName()
 		{
 			if (Name.Trim() == "")
 				throw new ArgumentException("Dénomination du dossier financier requise.");
@@ -329,7 +343,7 @@ namespace Kotlib
 		/// Vérifie si la propriété est correctement définie avant d'être sérialisée
 		/// </summary>
 		/// <returns><c>true</c></returns>
-		public bool ShouldSerializeOwner()
+		private bool ShouldSerializeOwner()
 		{
 			if (Owner == null)
 				throw new ArgumentException("Une identité correcte est requise pour le propriétaire du dossier financier.");
@@ -429,6 +443,77 @@ namespace Kotlib
 			}
 		}
 
+		private EventList _events = null;
+		/// <summary>
+		/// Liste des événements programmés
+		/// </summary>
+		/// <value>Liste des événements programmés.</value>
+		[XmlArray(ElementName = "Events")]
+		[XmlArrayItem(ElementName = "Event")]
+		public EventList Events
+		{
+			get { return _events; }
+			set
+			{
+				if (value != null && value != _events)
+				{
+					if (_events != null)
+					{
+						_events.UpdatedEvent -= OnUpdated;
+						_events.PostRaisedEvent -= EventPosted;
+					}
+
+					_events = value;
+					_events.UpdatedEvent += OnUpdated;
+					_events.PostRaisedEvent += EventPosted;
+				}
+			}
+		}
+		
+		private string _cultureName = CultureInfo.CurrentCulture.Name;
+		private Currency _currency = null;
+		/// <summary>
+		/// Culture de l'élément bancaire
+		/// </summary>
+		/// <value>Culture de l'élément bancaire.</value>
+		[XmlAttribute(AttributeName = "culture")]
+		public string CultureName
+		{
+			get { return _cultureName; }
+			set
+			{
+				value = value.Trim();
+				if (value.ToLower() != _cultureName.ToLower())
+				{
+					try
+					{
+						var ci = new CultureInfo(value);
+						_cultureName = ci.Name;
+						_currency = new Currency(ci);
+						ci = null;
+						OnPropertyChanged();
+					}
+					catch
+					{
+						throw new ArgumentException("La culture employée pour ce dossier financier est incorrecte.");
+					}
+				}
+			}
+		}
+		/// <summary>
+		/// Retourne la culture du dossier financier
+		/// </summary>
+		public Currency Currency
+		{
+			get
+			{
+				if (_currency == null)
+					_currency = new Currency(new CultureInfo(CultureName));
+				
+				return _currency; 
+			}
+		}
+		
 		#endregion
 
 		/// <summary>
@@ -535,18 +620,22 @@ namespace Kotlib
 		/// <param name="name">Nom du dossier financier</param>
 		/// <param name="owner">Identité du propriétaire</param>
 		/// <param name="accounts">Liste des éléments bancaires rattachés au dossier financier</param>
+		/// <param name="cultureName">Nom de la culture employée définissant la monnaie utilisée dans ce dossier financier: eg: fr_FR, en_US</param>
 		/// <param name="paytypes">Liste des moyens financiers, optionnel</param>
 		/// <param name="categories">Liste des catégories, optionnel</param>
 		/// <param name="thirdparties">Liste des tiers, optionnel</param>
+		/// <param name="events">Liste d'événements programmés</param>
 		/// <param name="note">Note apposée au dossier financier, optionnel</param>
 		/// <param name="loadDefaults"><c>true</c>, charge les valeurs par défaut, sinon <c>false</c>, créé un dossier vide, optionnel</param>
 		/// <returns>Dossier financier nouvellement créé</returns>
 		public static Financial Create(string name,
 			Identity owner,
 			AccountList accounts,
+			string cultureName = "fr_FR",
 			PaytypeList paytypes = null,
 			CategoryList categories = null,
 			ThirdpartyList thirdparties = null,
+			EventList events = null,
 			string note = "",
 			bool loadDefaults = false)
 		{
@@ -555,10 +644,12 @@ namespace Kotlib
 				Created = DateTime.Now,
 				Updated = DateTime.Now,
 				Accounts = accounts,
+				CultureName = cultureName,
 				Thirdparties = thirdparties ?? new ThirdpartyList() { owner },
 				Paytypes = paytypes ?? (loadDefaults ? PaytypeList.Defaults : PaytypeList.Empty),
 				Categories = categories ?? (loadDefaults ? CategoryList.Defaults : CategoryList.Empty),
-				Note = note.Trim() == "" ? (loadDefaults ? "Modèle par défaut d'un dossier financier" : "") : note
+				Note = note.Trim() == "" ? (loadDefaults ? "Modèle par défaut d'un dossier financier" : "") : note,
+				Events = events ?? (loadDefaults ? EventList.Defaults : EventList.Empty),
 			};
 		}
      
@@ -571,8 +662,8 @@ namespace Kotlib
 		/// <returns>Solde total</returns>
 		public double AmountAt(Account account, DateTime date, bool addInitialAmount = true)
 		{
-			var amount_account = account.AmountAt(date, addInitialAmount: false);
-			var amount_transfers = Accounts.Transfers.AmountAt(account, date, addInitialAmount: false);
+			var amount_account = account.PartialAmountAt(date, addInitialAmount: false);
+			var amount_transfers = Accounts.Transfers.PartialAmountAt(account, date, addInitialAmount: false);
 			
 			return (addInitialAmount ? account.InitialAmount : 0.0d) + amount_account + amount_transfers;
 		}
@@ -589,8 +680,7 @@ namespace Kotlib
 			
 			Accounts.Items.ForEach(a =>
 				{
-					amounts += a.AmountAt(date, addInitialAmount: false);
-					amounts += Accounts.Transfers.AmountAt(a, date, addInitialAmount: false);
+					amounts += AmountAt(a, date, addInitialAmount: false);
 					
 					if (addInitialAmount)
 						amounts += a.InitialAmount;
@@ -600,6 +690,41 @@ namespace Kotlib
 			return amounts;
 		}
 		
+		/// <summary>
+		/// Poste toutes les prochaines occurences programmées 
+		/// </summary>
+		public void AutoPost()
+		{
+			Events.Items.ForEach(e => e.Post());
+		}
+		
+		/// <summary>
+		/// Poste toutes les occurences programmées jusqu'a la date spécifiée
+		/// </summary>
+		public void AutoPostUntil(DateTime date)
+		{
+			Events.Items.ForEach(e => e.PostUntil(date));
+		}
+		
+		/// <summary>
+		/// Poste toutes les occurences restantes programmées 
+		/// </summary>
+		public void AutoPostOverdue()
+		{
+			Events.Items.ForEach(e => e.PostOverdue());
+		}
+		
+		/// <summary>
+		/// Poste toutes les occurences programmées 
+		/// </summary>
+		public void AutoPostAll()
+		{
+			Events.Items.ForEach(e => e.PostAll());
+		}
+
+		
 	}
+	
+	
     
 }

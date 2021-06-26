@@ -24,6 +24,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Objects\PaytypeList.cs~RFdc379c.TMP" />
     <None Include="..\kotlib.png">
       <Pack>True</Pack>
@@ -33,6 +37,10 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
 
 </Project>

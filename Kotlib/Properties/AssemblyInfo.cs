@@ -9,8 +9,12 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle ("Kotlib")]
 [assembly: AssemblyDescription ("Librairie .Net 4.5.2 pour la gestion assistée par ordinateur des finances personelles")]
-[assembly: AssemblyConfiguration ("")]
-[assembly: AssemblyCompany ("Christophe LEMOINE")]
+#if DEBUG
+[assembly: AssemblyConfiguration("Debug")]
+#else
+[assembly: AssemblyConfiguration("Release")]
+#endif
+[assembly: AssemblyCompany ("Christophe LEMOINE <pantaflex@tuta.io>")]
 [assembly: AssemblyProduct ("Kotlib_452.dll")]
 [assembly: AssemblyCopyright ("Copyright (c)2021 Christophe LEMOINE")]
 [assembly: AssemblyTrademark ("Licence GNU/GPL v3")]
@@ -24,7 +28,7 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can use the default the Revision and 
 // Build Numbers by using the '*' as shown below:
-[assembly: AssemblyVersion ("0.1.*")]
+[assembly: AssemblyVersion ("0.1")]
 [assembly: AssemblyFileVersion ("0.1")]
 [assembly: AssemblyInformationalVersion ("")]
 [assembly: CLSCompliant (true)]

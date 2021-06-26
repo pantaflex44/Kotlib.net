@@ -2,7 +2,7 @@
 //  Identity.cs
 //
 //  Author:
-//       Christophe LEMOINE <pantafle@tuta.io>
+//       Christophe LEMOINE <pantaflex@tuta.io>
 //
 //  Copyright (c) 2021 Christophe LEMOINE
 //
@@ -138,7 +138,7 @@ namespace Kotlib.Objects
 		/// Vérifie si la propriété est correctement définie avant d'être sérialisée
 		/// </summary>
 		/// <returns><c>true</c></returns>
-		public bool ShouldSerializeName()
+		private bool ShouldSerializeName()
 		{
 			if (Name.Trim() == "")
 				throw new ArgumentException("Une carte d'identité requiert un nom.");

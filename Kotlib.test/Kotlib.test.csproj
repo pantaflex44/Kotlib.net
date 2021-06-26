@@ -6,7 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Kotlib\Kotlib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
 
 </Project>

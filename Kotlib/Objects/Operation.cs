@@ -2,7 +2,7 @@
 //  Operation.cs
 //
 //  Author:
-//       Christophe LEMOINE <pantafle@tuta.io>
+//       Christophe LEMOINE <pantaflex@tuta.io>
 //
 //  Copyright (c) 2021 Christophe LEMOINE
 //
@@ -137,7 +137,7 @@ namespace Kotlib.Objects
 		/// Vérifie si la propriété est correctement définie avant d'être sérialisée
 		/// </summary>
 		/// <returns><c>true</c></returns>
-		public bool ShouldSerializeName()
+		private bool ShouldSerializeName()
 		{
 			if (Name.Trim() == "")
 				throw new ArgumentException("Dénomination de l'opération requise.");
@@ -204,7 +204,7 @@ namespace Kotlib.Objects
 		/// Vérifie si la propriété est correctement définie avant d'être sérialisée
 		/// </summary>
 		/// <returns><c>true</c></returns>
-		public bool ShouldSerializeToId()
+		private bool ShouldSerializeToId()
 		{
 			if (CategoryId == Guid.Empty)
 				throw new ArgumentException("L'identité d'un destinataire est requis.");
@@ -233,7 +233,7 @@ namespace Kotlib.Objects
 		/// Vérifie si la propriété est correctement définie avant d'être sérialisée
 		/// </summary>
 		/// <returns><c>true</c></returns>
-		public bool ShouldSerializeTypeId()
+		private bool ShouldSerializeTypeId()
 		{
 			if (TypeId == Guid.Empty)
 				throw new ArgumentException("Un moyen de paiement / d'encaissement est requis.");
@@ -262,7 +262,7 @@ namespace Kotlib.Objects
 		/// Vérifie si la propriété est correctement définie avant d'être sérialisée
 		/// </summary>
 		/// <returns><c>true</c></returns>
-		public bool ShouldSerializeCategoryId()
+		private bool ShouldSerializeCategoryId()
 		{
 			if (CategoryId == Guid.Empty)
 				throw new ArgumentException("Une catégorie est requise.");

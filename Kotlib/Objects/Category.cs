@@ -2,7 +2,7 @@
 //  Category.cs
 //
 //  Author:
-//       Christophe LEMOINE <pantafle@tuta.io>
+//       Christophe LEMOINE <pantaflex@tuta.io>
 //
 //  Copyright (c) 2021 Christophe LEMOINE
 //
@@ -46,7 +46,8 @@ namespace Kotlib.Objects
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		public void OnPropertyChanged(string name = null)
 		{
-			if (name == null) {
+			if (name == null)
+			{
 				var stackTrace = new StackTrace(1, false);
 				var type = stackTrace.GetFrame(1).GetMethod().DeclaringType;
 				name = type.Name;
@@ -91,10 +92,13 @@ namespace Kotlib.Objects
 		/// </summary>
 		/// <value>Identifiant unique.</value>
 		[XmlElement(ElementName = "Id")]
-		public Guid Id {
+		public Guid Id
+		{
 			get { return _id; }
-			set {
-				if (value != _id) {
+			set
+			{
+				if (value != _id)
+				{
 					_id = value;
 					OnPropertyChanged();
 				}
@@ -107,9 +111,11 @@ namespace Kotlib.Objects
 		/// </summary>
 		/// <value>Nom, 255 caractères maximum.</value>
 		[XmlElement(ElementName = "Name")]
-		public string Name {
+		public string Name
+		{
 			get { return _name; }
-			set {
+			set
+			{
 				value = value.Trim();
 
 				if (value.Length > 255)
@@ -118,7 +124,8 @@ namespace Kotlib.Objects
 				if (value == "")
 					throw new ArgumentException("Dénomination de la catégorie requise.");
 
-				if (value != _name) {
+				if (value != _name)
+				{
 					_name = value;
 					OnPropertyChanged();
 				}
@@ -128,7 +135,7 @@ namespace Kotlib.Objects
 		/// Vérifie si la propriété est correctement définie avant d'être sérialisée
 		/// </summary>
 		/// <returns><c>true</c></returns>
-		public bool ShouldSerializeName()
+		private bool ShouldSerializeName()
 		{
 			if (Name.Trim() == "")
 				throw new ArgumentException("Dénomination de la catégorie requise.");
@@ -143,10 +150,13 @@ namespace Kotlib.Objects
 		/// <value>Sous catégories.</value>
 		[XmlArray("Childs")]
 		[XmlArrayItem("Category")]
-		public CategoryList Childs {
+		public CategoryList Childs
+		{
 			get { return _childs; }
-			set {
-				if (value != null && value != _childs) {
+			set
+			{
+				if (value != null && value != _childs)
+				{
 					if (_childs != null)
 						_childs.UpdatedEvent -= OnUpdated;
 

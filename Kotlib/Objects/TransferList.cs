@@ -2,7 +2,7 @@
 //  TransferList.cs
 //
 //  Author:
-//       Christophe LEMOINE <pantafle@tuta.io>
+//       Christophe LEMOINE <pantaflex@tuta.io>
 //
 //  Copyright (c) 2021 Christophe LEMOINE
 //
@@ -89,13 +89,13 @@ namespace Kotlib.Objects
 		}
 
 		/// <summary>
-		/// Retourne le solde à la date souhaité
+		/// Retourne le solde des transferts à la date souhaité
 		/// </summary>
 		/// <param name="account">Element bancaire associé aux transferts</param>
 		/// <param name="date">Date souhaitée</param>
 		/// <param name="addInitialAmount"><c>true</c>, ajoute le solde initial, sinon, <c>false</c></param>
 		/// <returns>Solde</returns>
-		public double AmountAt(Account account, DateTime date, bool addInitialAmount = true)
+		public double PartialAmountAt(Account account, DateTime date, bool addInitialAmount = true)
 		{
 			var f = Items.Where(a => a.Date <= date && a.FromAccountId.Equals(account.Id)).Select(a => a.Amount).ToList();
 			var sf = Math.Abs(f.Sum());

@@ -2,7 +2,7 @@
 //  OperationList.cs
 //
 //  Author:
-//       Christophe LEMOINE <pantafle@tuta.io>
+//       Christophe LEMOINE <pantaflex@tuta.io>
 //
 //  Copyright (c) 2021 Christophe LEMOINE
 //
@@ -88,6 +88,9 @@ namespace Kotlib.Objects
 			return this.ToList().FirstOrDefault(a => a.Id.Equals(id));
 		}
 
+		
+		
+		
 	}
 
 }

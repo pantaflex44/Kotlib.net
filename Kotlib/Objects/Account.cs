@@ -2,7 +2,7 @@
 //  Account.cs
 //
 //  Author:
-//       Christophe LEMOINE <pantafle@tuta.io>
+//       Christophe LEMOINE <pantaflex@tuta.io>
 //
 //  Copyright (c) 2021 Christophe LEMOINE
 //
@@ -143,7 +143,7 @@ namespace Kotlib.Objects
 		/// Vérifie si la propriété est correctement définie avant d'être sérialisée
 		/// </summary>
 		/// <returns><c>true</c></returns>
-		public bool ShouldSerializeName()
+		private bool ShouldSerializeName()
 		{
 			if (Name.Trim() == "")
 				throw new ArgumentException("Dénomination de l'élément bancaire requis.");
@@ -194,14 +194,14 @@ namespace Kotlib.Objects
 		}
 
 		/// <summary>
-		/// Retourne le solde du compte
+		/// Retourne le solde des opérations
 		/// </summary>
 		[XmlIgnore()]
-		public double Amount
+		public double PartialAmount
 		{
 			get
 			{
-				return AmountAt(DateTime.Now);
+				return PartialAmountAt(DateTime.Now);
 			}
 		}
 		
@@ -285,41 +285,12 @@ namespace Kotlib.Objects
 		/// Vérifie si la propriété est correctement définie avant d'être sérialisée
 		/// </summary>
 		/// <returns><c>true</c></returns>
-		public bool ShouldSerializeOwner()
+		private bool ShouldSerializeOwner()
 		{
 			if (Owner == null)
 				throw new ArgumentException("Une identité correcte est requise pour le propriétaire de cet élément bancaire.");
 
 			return true;
-		}
-
-		private string _culture = CultureInfo.CurrentCulture.Name;
-		/// <summary>
-		/// Culture de l'élément bancaire
-		/// </summary>
-		/// <value>Culture de l'élément bancaire.</value>
-		[XmlAttribute(AttributeName = "culture")]
-		public string Culture
-		{
-			get { return _culture; }
-			set
-			{
-				value = value.Trim();
-				if (value.ToLower() != _culture.ToLower())
-				{
-					try
-					{
-						var ci = new CultureInfo(value);
-						_culture = ci.Name;
-						ci = null;
-						OnPropertyChanged();
-					}
-					catch
-					{
-						throw new ArgumentException("La culture employée pour ce compte est incorrecte.");
-					}
-				}
-			}
 		}
 
 		private OperationList _operations = null;
@@ -356,7 +327,6 @@ namespace Kotlib.Objects
 			Paytypes = PaytypeList.Empty;
 			InitialAmount = 0.0d;
 			AllowedCredit = 0.0d;
-			Culture = CultureInfo.CurrentCulture.Name;
 			Operations = OperationList.Empty;
 		}
 		/// <summary>
@@ -372,16 +342,16 @@ namespace Kotlib.Objects
 		}
 
 		/// <summary>
-		/// Retourne le solde à la date souhaité
+		/// Retourne le solde des opérations à la date souhaité
 		/// </summary>
 		/// <param name="date">Date souhaitée</param>
 		/// <param name="addInitialAmount"><c>true</c>, ajoute le solde initial, sinon, <c>false</c></param>
 		/// <returns>Solde</returns>
-		public double AmountAt(DateTime date, bool addInitialAmount = true)
+		public double PartialAmountAt(DateTime date, bool addInitialAmount = true)
 		{
 			var amts = Operations.Items.Where(a => a.Date <= date).Select(a => a.Amount).ToList();
 			
-			if(addInitialAmount)
+			if (addInitialAmount)
 				amts.Insert(0, InitialAmount);
 			
 			return amts.Sum();
@@ -430,7 +400,7 @@ namespace Kotlib.Objects
 		/// Vérifie si la propriété est correctement définie avant d'être sérialisée
 		/// </summary>
 		/// <returns><c>true</c></returns>
-		public bool ShouldSerializeBankName()
+		private bool ShouldSerializeBankName()
 		{
 			if (Owner == null)
 				throw new ArgumentException("Dénomination de la banque requise.");
@@ -569,7 +539,7 @@ namespace Kotlib.Objects
 		/// Vérifie si la propriété est correctement définie avant d'être sérialisée
 		/// </summary>
 		/// <returns><c>true</c></returns>
-		public bool ShouldSerializeCard()
+		private bool ShouldSerializeCard()
 		{
 			if (Card == null)
 				throw new ArgumentException("Les informations de la carte de paiement sont requises.");
