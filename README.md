@@ -5,7 +5,7 @@
 - Compatibilité .Net 5 : `Kotlib.dll`
 - Compatibilité .Net 4.5.2 : `Kotlib_452.dll`
 
-[pantaflex44/Kotlib.net: Librairie .Net 5 pour la gestion assistée par ordinateur des finances personnelles. (github.com)](https://github.com/pantaflex44/Kotlib.net)
+[pantaflex44/Kotlib.net: Librairie .Net pour la gestion assistée par ordinateur des finances personnelles. (github.com)](https://github.com/pantaflex44/Kotlib.net)
 
 
 
