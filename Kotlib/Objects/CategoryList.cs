@@ -31,6 +31,62 @@ namespace Kotlib.Objects
 	/// </summary>
 	public class CategoryList : ObjectList<Category>
 	{
+		
+		#region Evénements
+		
+		/// <summary>
+		/// Délégué en charge des événements d'ajout, modification et supppression
+		/// </summary>
+		/// <param name="item">Elément concené</param>
+		public delegate void CategoryEventHandler(Category item);
+		/// <summary>
+		/// Un élément a été ajouté
+		/// </summary>
+		public event CategoryEventHandler CategoryAddedEvent;
+		/// <summary>
+		/// Un élément a été modifié
+		/// </summary>
+		public event CategoryEventHandler CategoryUpdatedEvent;
+		/// <summary>
+		/// Un élément a été supprimé
+		/// </summary>
+		public event CategoryEventHandler CategoryRemovedEvent;
+		
+		#endregion
+		
+		#region Fonctions privées
+		
+		/// <summary>
+		/// Informe qu'un élément a été ajouté
+		/// </summary>
+		/// <param name="item">Elément concerné</param>
+		public void OnCategoryAdded(Category item)
+		{
+			if (CategoryAddedEvent != null)
+				CategoryAddedEvent(item);
+		}
+		
+		/// <summary>
+		/// Informe qu'un élément a été modifié
+		/// </summary>
+		/// <param name="item">Elément concerné</param>
+		public void OnCategoryUpdated(Category item)
+		{
+			if (CategoryUpdatedEvent != null)
+				CategoryUpdatedEvent(item);
+		}
+		
+		/// <summary>
+		/// Informe qu'un élément a été supprimé
+		/// </summary>
+		/// <param name="item">Elément concerné</param>
+		public void OnCategoryRemoved(Category item)
+		{
+			if (CategoryRemovedEvent != null)
+				CategoryRemovedEvent(item);
+		}
+		
+		#endregion
 
 		#region Propriétés publiques
 
@@ -154,6 +210,90 @@ namespace Kotlib.Objects
 			return this.ToList().FirstOrDefault(a => a.Id.Equals(id));
 		}
 
+		/// <summary>
+		/// Retourne l'élément à la position <c>index</c>
+		/// </summary>
+		/// <param name="index">Position de l'élément.</param>
+		public new Category this[int index]
+		{
+			get
+			{
+				return base[index];
+			}
+			set
+			{
+				OnCategoryRemoved(base[index]);
+					
+				base[index] = value;
+				
+				base[index].UpdatedEvent += (sender, e) => OnCategoryUpdated((Category)sender);
+				OnCategoryAdded(base[index]);
+			}
+		}
+		
+		/// <summary>
+		/// Supprime l'élément de la liste à la position spécifié
+		/// </summary>
+		/// <param name="index">Position de l'élément.</param>
+		public new void RemoveAt(int index)
+		{
+			if (index >= 0 && index < base.Count)
+			{
+				OnCategoryRemoved(base[index]);
+				base.RemoveAt(index);
+			}
+		}
+
+		/// <summary>
+		/// Vide la liste de ses éléments
+		/// </summary>
+		public new void Clear()
+		{
+			foreach (var e in Items)
+			{
+				OnCategoryRemoved(e);
+			}
+
+			base.Clear();
+		}
+		
+		/// <summary>
+		/// Supprime un élément de la liste
+		/// </summary>
+		/// <returns>true, l'élément est supprimé, sinon, false.</returns>
+		/// <param name="item">Elément à supprimer.</param>
+		public new bool Remove(Category item)
+		{
+			if (base.IndexOf(item) > -1)
+				OnCategoryRemoved(item);
+			
+			return base.Remove(item);
+		}
+		
+		/// <summary>
+		/// Ajoute un élément à la liste
+		/// </summary>
+		/// <param name="item">Item.</param>
+		public new void Add(Category item)
+		{
+			OnCategoryAdded(item);
+			item.UpdatedEvent += (sender, e) => OnCategoryUpdated((Category)sender);
+			base.Add(item);
+		}
+		
+		/// <summary>
+		/// Insert un élément à la position spécifiée
+		/// </summary>
+		/// <param name="index">Position d'insertion.</param>
+		/// <param name="item">Elément à insérer.</param>
+		public new void Insert(int index, Category item)
+		{
+			OnCategoryAdded(item);
+			item.UpdatedEvent += (sender, e) => OnCategoryUpdated((Category)sender);
+			base.Insert(index, item);
+		}
+
+		
 	}
 
 }

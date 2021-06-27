@@ -33,7 +33,60 @@ namespace Kotlib.Objects
 	public class PaytypeList : ObjectList<Paytype>
 	{
 
+		#region Evénements
+		
+		/// <summary>
+		/// Délégué en charge des événements d'ajout, modification et supppression
+		/// </summary>
+		/// <param name="item">Elément concené</param>
+		public delegate void PaytypeEventHandler(Paytype item);
+		/// <summary>
+		/// Un élément a été ajouté
+		/// </summary>
+		public event PaytypeEventHandler PaytypeAddedEvent;
+		/// <summary>
+		/// Un élément a été modifié
+		/// </summary>
+		public event PaytypeEventHandler PaytypeUpdatedEvent;
+		/// <summary>
+		/// Un élément a été supprimé
+		/// </summary>
+		public event PaytypeEventHandler PaytypeRemovedEvent;
+		
+		#endregion
+		
 		#region Fonctions privées
+		
+		/// <summary>
+		/// Informe qu'un élément a été ajouté
+		/// </summary>
+		/// <param name="item">Elément concerné</param>
+		public void OnPaytypeAdded(Paytype item)
+		{
+			if (PaytypeAddedEvent != null)
+				PaytypeAddedEvent(item);
+		}
+		
+		/// <summary>
+		/// Informe qu'un élément a été modifié
+		/// </summary>
+		/// <param name="item">Elément concerné</param>
+		public void OnPaytypeUpdated(Paytype item)
+		{
+			if (PaytypeUpdatedEvent != null)
+				PaytypeUpdatedEvent(item);
+		}
+		
+		/// <summary>
+		/// Informe qu'un élément a été supprimé
+		/// </summary>
+		/// <param name="item">Elément concerné</param>
+		public void OnPaytypeRemoved(Paytype item)
+		{
+			if (PaytypeRemovedEvent != null)
+				PaytypeRemovedEvent(item);
+		}
+		
 		#endregion
 
 		#region Propriétés publiques
@@ -136,6 +189,89 @@ namespace Kotlib.Objects
 			return GetAvaillablePaytypes("collection");
 		}
 
+		/// <summary>
+		/// Retourne l'élément à la position <c>index</c>
+		/// </summary>
+		/// <param name="index">Position de l'élément.</param>
+		public new Paytype this[int index]
+		{
+			get
+			{
+				return base[index];
+			}
+			set
+			{
+				OnPaytypeRemoved(base[index]);
+					
+				base[index] = value;
+				
+				base[index].UpdatedEvent += (sender, e) => OnPaytypeUpdated((Paytype)sender);
+				OnPaytypeAdded(base[index]);
+			}
+		}
+		
+		/// <summary>
+		/// Supprime l'élément de la liste à la position spécifié
+		/// </summary>
+		/// <param name="index">Position de l'élément.</param>
+		public new void RemoveAt(int index)
+		{
+			if (index >= 0 && index < base.Count)
+			{
+				OnPaytypeRemoved(base[index]);
+				base.RemoveAt(index);
+			}
+		}
+
+		/// <summary>
+		/// Vide la liste de ses éléments
+		/// </summary>
+		public new void Clear()
+		{
+			foreach (var e in Items)
+			{
+				OnPaytypeRemoved(e);
+			}
+
+			base.Clear();
+		}
+		
+		/// <summary>
+		/// Supprime un élément de la liste
+		/// </summary>
+		/// <returns>true, l'élément est supprimé, sinon, false.</returns>
+		/// <param name="item">Elément à supprimer.</param>
+		public new bool Remove(Paytype item)
+		{
+			if (base.IndexOf(item) > -1)
+				OnPaytypeRemoved(item);
+			
+			return base.Remove(item);
+		}
+		
+		/// <summary>
+		/// Ajoute un élément à la liste
+		/// </summary>
+		/// <param name="item">Item.</param>
+		public new void Add(Paytype item)
+		{
+			OnPaytypeAdded(item);
+			item.UpdatedEvent += (sender, e) => OnPaytypeUpdated((Paytype)sender);
+			base.Add(item);
+		}
+		
+		/// <summary>
+		/// Insert un élément à la position spécifiée
+		/// </summary>
+		/// <param name="index">Position d'insertion.</param>
+		/// <param name="item">Elément à insérer.</param>
+		public new void Insert(int index, Paytype item)
+		{
+			OnPaytypeAdded(item);
+			item.UpdatedEvent += (sender, e) => OnPaytypeUpdated((Paytype)sender);
+			base.Insert(index, item);
+		}
+		
 
 
 	}

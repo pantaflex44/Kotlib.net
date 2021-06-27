@@ -151,6 +151,17 @@ namespace Kotlib
 		}
 		
 		/// <summary>
+		/// Informe qu'un événement programmé vient d'être posté
+		/// </summary>
+		/// <param name="date">Date programmée</param>
+		/// <param name="postEvent">Evénement et ses détails</param>
+		public void OnPostRaised(DateTime date, Event postEvent)
+		{
+			if (PostRaisedEvent != null)
+				PostRaisedEvent(date, postEvent);
+		}
+		
+		/// <summary>
 		/// S'execute lorsque qu'un événement est posté
 		/// </summary>
 		/// <param name="date">Date de l'occurence</param>
@@ -158,9 +169,12 @@ namespace Kotlib
 		private void EventPosted(DateTime date, Event postEvent)
 		{
 			var account = Accounts.GetById(postEvent.AccountId);
-			if(!account.Equals(default(Account)))
+			if (!account.Equals(default(Account)))
 			{
 				//TODO: Traiter l'opération ou le transfert à poster
+				
+				
+				OnPostRaised(date, postEvent);
 			}
 		}
 		
@@ -183,6 +197,11 @@ namespace Kotlib
 		/// </summary>
 		public event EventHandler SavedEvent;
 
+		/// <summary>
+		/// Se produit lorsque qu'un événement programmé est posté
+		/// </summary>
+		public event Event.PostDelegate PostRaisedEvent;
+		
 		#endregion
 
 		#region Propriétés publiques

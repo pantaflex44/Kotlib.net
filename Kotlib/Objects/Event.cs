@@ -549,8 +549,7 @@ namespace Kotlib.Objects
 				return false;
 			}
 			
-			OnPostRaised(NextDate, this);
-			
+			var curentDate = NextDate;
 			NextDate = ComputeNextDate(NextDate);
 			
 			_counter--;
@@ -558,6 +557,9 @@ namespace Kotlib.Objects
 				_counter = 0;
 			
 			Active &= (NextDate.Date <= EndDate.Date && _counter > 0);
+			
+			OnPostRaised(curentDate, this);
+			
 			return Active;
 		}
 		

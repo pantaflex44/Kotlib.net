@@ -32,6 +32,62 @@ namespace Kotlib.Objects
 	public class IdentityList : ObjectList<Identity>
 	{
 
+		#region Evénements
+		
+		/// <summary>
+		/// Délégué en charge des événements d'ajout, modification et supppression
+		/// </summary>
+		/// <param name="item">Elément concené</param>
+		public delegate void IdentityEventHandler(Identity item);
+		/// <summary>
+		/// Un élément a été ajouté
+		/// </summary>
+		public event IdentityEventHandler IdentityAddedEvent;
+		/// <summary>
+		/// Un élément a été modifié
+		/// </summary>
+		public event IdentityEventHandler IdentityUpdatedEvent;
+		/// <summary>
+		/// Un élément a été supprimé
+		/// </summary>
+		public event IdentityEventHandler IdentityRemovedEvent;
+		
+		#endregion
+		
+		#region Fonctions privées
+		
+		/// <summary>
+		/// Informe qu'un élément a été ajouté
+		/// </summary>
+		/// <param name="item">Elément concerné</param>
+		public void OnIdentityAdded(Identity item)
+		{
+			if (IdentityAddedEvent != null)
+				IdentityAddedEvent(item);
+		}
+		
+		/// <summary>
+		/// Informe qu'un élément a été modifié
+		/// </summary>
+		/// <param name="item">Elément concerné</param>
+		public void OnIdentityUpdated(Identity item)
+		{
+			if (IdentityUpdatedEvent != null)
+				IdentityUpdatedEvent(item);
+		}
+		
+		/// <summary>
+		/// Informe qu'un élément a été supprimé
+		/// </summary>
+		/// <param name="item">Elément concerné</param>
+		public void OnIdentityRemoved(Identity item)
+		{
+			if (IdentityRemovedEvent != null)
+				IdentityRemovedEvent(item);
+		}
+		
+		#endregion
+		
 		#region Propriétés publiques
 
 		/// <summary>
@@ -74,6 +130,90 @@ namespace Kotlib.Objects
 			return this.ToList().FirstOrDefault(a => a.Id.Equals(id));
 		}
 
+		/// <summary>
+		/// Retourne l'élément à la position <c>index</c>
+		/// </summary>
+		/// <param name="index">Position de l'élément.</param>
+		public new Identity this[int index]
+		{
+			get
+			{
+				return base[index];
+			}
+			set
+			{
+				OnIdentityRemoved(base[index]);
+					
+				base[index] = value;
+				
+				base[index].UpdatedEvent += (sender, e) => OnIdentityUpdated((Identity)sender);
+				OnIdentityAdded(base[index]);
+			}
+		}
+		
+		/// <summary>
+		/// Supprime l'élément de la liste à la position spécifié
+		/// </summary>
+		/// <param name="index">Position de l'élément.</param>
+		public new void RemoveAt(int index)
+		{
+			if (index >= 0 && index < base.Count)
+			{
+				OnIdentityRemoved(base[index]);
+				base.RemoveAt(index);
+			}
+		}
+
+		/// <summary>
+		/// Vide la liste de ses éléments
+		/// </summary>
+		public new void Clear()
+		{
+			foreach (var e in Items)
+			{
+				OnIdentityRemoved(e);
+			}
+
+			base.Clear();
+		}
+		
+		/// <summary>
+		/// Supprime un élément de la liste
+		/// </summary>
+		/// <returns>true, l'élément est supprimé, sinon, false.</returns>
+		/// <param name="item">Elément à supprimer.</param>
+		public new bool Remove(Identity item)
+		{
+			if (base.IndexOf(item) > -1)
+				OnIdentityRemoved(item);
+			
+			return base.Remove(item);
+		}
+		
+		/// <summary>
+		/// Ajoute un élément à la liste
+		/// </summary>
+		/// <param name="item">Item.</param>
+		public new void Add(Identity item)
+		{
+			OnIdentityAdded(item);
+			item.UpdatedEvent += (sender, e) => OnIdentityUpdated((Identity)sender);
+			base.Add(item);
+		}
+		
+		/// <summary>
+		/// Insert un élément à la position spécifiée
+		/// </summary>
+		/// <param name="index">Position d'insertion.</param>
+		/// <param name="item">Elément à insérer.</param>
+		public new void Insert(int index, Identity item)
+		{
+			OnIdentityAdded(item);
+			item.UpdatedEvent += (sender, e) => OnIdentityUpdated((Identity)sender);
+			base.Insert(index, item);
+		}
+		
+		
 	}
 
 }

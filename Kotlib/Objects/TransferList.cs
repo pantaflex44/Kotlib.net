@@ -32,7 +32,60 @@ namespace Kotlib.Objects
 	public class TransferList : ObjectList<Transfer>
 	{
 
+		#region Evénements
+		
+		/// <summary>
+		/// Délégué en charge des événements d'ajout, modification et supppression
+		/// </summary>
+		/// <param name="item">Elément concené</param>
+		public delegate void TransferEventHandler(Transfer item);
+		/// <summary>
+		/// Un élément a été ajouté
+		/// </summary>
+		public event TransferEventHandler TransferAddedEvent;
+		/// <summary>
+		/// Un élément a été modifié
+		/// </summary>
+		public event TransferEventHandler TransferUpdatedEvent;
+		/// <summary>
+		/// Un élément a été supprimé
+		/// </summary>
+		public event TransferEventHandler TransferRemovedEvent;
+		
+		#endregion
+		
 		#region Fonctions privées
+		
+		/// <summary>
+		/// Informe qu'un élément a été ajouté
+		/// </summary>
+		/// <param name="item">Elément concerné</param>
+		public void OnTransferAdded(Transfer item)
+		{
+			if (TransferAddedEvent != null)
+				TransferAddedEvent(item);
+		}
+		
+		/// <summary>
+		/// Informe qu'un élément a été modifié
+		/// </summary>
+		/// <param name="item">Elément concerné</param>
+		public void OnTransferUpdated(Transfer item)
+		{
+			if (TransferUpdatedEvent != null)
+				TransferUpdatedEvent(item);
+		}
+		
+		/// <summary>
+		/// Informe qu'un élément a été supprimé
+		/// </summary>
+		/// <param name="item">Elément concerné</param>
+		public void OnTransferRemoved(Transfer item)
+		{
+			if (TransferRemovedEvent != null)
+				TransferRemovedEvent(item);
+		}
+		
 		#endregion
 
 		#region Propriétés publiques
@@ -106,6 +159,91 @@ namespace Kotlib.Objects
 			var amts = new double[] { (addInitialAmount ? account.InitialAmount : 0.0d), -sf, st };
 			return amts.Sum();
 		}
+		
+		/// <summary>
+		/// Retourne l'élément à la position <c>index</c>
+		/// </summary>
+		/// <param name="index">Position de l'élément.</param>
+		public new Transfer this[int index]
+		{
+			get
+			{
+				return base[index];
+			}
+			set
+			{
+				OnTransferRemoved(base[index]);
+					
+				base[index] = value;
+				
+				base[index].UpdatedEvent += (sender, e) => OnTransferUpdated((Transfer)sender);
+				OnTransferAdded(base[index]);
+			}
+		}
+		
+		/// <summary>
+		/// Supprime l'élément de la liste à la position spécifié
+		/// </summary>
+		/// <param name="index">Position de l'élément.</param>
+		public new void RemoveAt(int index)
+		{
+			if (index >= 0 && index < base.Count)
+			{
+				OnTransferRemoved(base[index]);
+				base.RemoveAt(index);
+			}
+		}
+
+		/// <summary>
+		/// Vide la liste de ses éléments
+		/// </summary>
+		public new void Clear()
+		{
+			foreach (var e in Items)
+			{
+				OnTransferRemoved(e);
+			}
+
+			base.Clear();
+		}
+		
+		/// <summary>
+		/// Supprime un élément de la liste
+		/// </summary>
+		/// <returns>true, l'élément est supprimé, sinon, false.</returns>
+		/// <param name="item">Elément à supprimer.</param>
+		public new bool Remove(Transfer item)
+		{
+			if (base.IndexOf(item) > -1)
+				OnTransferRemoved(item);
+			
+			return base.Remove(item);
+		}
+		
+		/// <summary>
+		/// Ajoute un élément à la liste
+		/// </summary>
+		/// <param name="item">Item.</param>
+		public new void Add(Transfer item)
+		{
+			OnTransferAdded(item);
+			item.UpdatedEvent += (sender, e) => OnTransferUpdated((Transfer)sender);
+			base.Add(item);
+		}
+		
+		/// <summary>
+		/// Insert un élément à la position spécifiée
+		/// </summary>
+		/// <param name="index">Position d'insertion.</param>
+		/// <param name="item">Elément à insérer.</param>
+		public new void Insert(int index, Transfer item)
+		{
+			OnTransferAdded(item);
+			item.UpdatedEvent += (sender, e) => OnTransferUpdated((Transfer)sender);
+			base.Insert(index, item);
+		}
+		
+		
 		
 	}
 

@@ -44,6 +44,36 @@ namespace Kotlib.Objects
 			if (PostRaisedEvent != null)
 				PostRaisedEvent.Invoke(date, postEvent);
 		}
+		
+		/// <summary>
+		/// Informe qu'un élément a été ajouté
+		/// </summary>
+		/// <param name="item">Elément concerné</param>
+		public void OnPostEventAdded(Event item)
+		{
+			if (PostEventAddedEvent != null)
+				PostEventAddedEvent(item);
+		}
+		
+		/// <summary>
+		/// Informe qu'un élément a été modifié
+		/// </summary>
+		/// <param name="item">Elément concerné</param>
+		public void OnPostEventUpdated(Event item)
+		{
+			if (PostEventUpdatedEvent != null)
+				PostEventUpdatedEvent(item);
+		}
+		
+		/// <summary>
+		/// Informe qu'un élément a été supprimé
+		/// </summary>
+		/// <param name="item">Elément concerné</param>
+		public void OnPostEventRemoved(Event item)
+		{
+			if (PostEventRemovedEvent != null)
+				PostEventRemovedEvent(item);
+		}
 
 		/// <summary>
 		/// Lie l'événement UpdatedEvent d'un objet à celui de la liste d'objets
@@ -89,6 +119,24 @@ namespace Kotlib.Objects
 		/// Se produit lorsqu'une occurence programmée est postée
 		/// </summary>
 		public event PostDelegate PostRaisedEvent;
+		
+		/// <summary>
+		/// Délégué en charge des événements d'ajout, modification et supppression
+		/// </summary>
+		/// <param name="item">Elément concené</param>
+		public delegate void PostEventEventHandler(Event item);
+		/// <summary>
+		/// Un élément a été ajouté
+		/// </summary>
+		public event PostEventEventHandler PostEventAddedEvent;
+		/// <summary>
+		/// Un élément a été modifié
+		/// </summary>
+		public event PostEventEventHandler PostEventUpdatedEvent;
+		/// <summary>
+		/// Un élément a été supprimé
+		/// </summary>
+		public event PostEventEventHandler PostEventRemovedEvent;
 		
 		#endregion
 
@@ -158,8 +206,13 @@ namespace Kotlib.Objects
 			set
 			{
 				_RemovePostRaisedEvent(base[index]);
+				OnPostEventRemoved(base[index]);
+				
 				base[index] = value;
+				base[index].UpdatedEvent += (sender, e) => OnPostEventUpdated((Event)sender);
+				
 				_AddPostRaisedEvent(base[index]);
+				OnPostEventAdded(base[index]);
 			}
 		}
 		
@@ -172,6 +225,8 @@ namespace Kotlib.Objects
 			if (base.IndexOf(item) == -1)
 			{
 				_AddPostRaisedEvent(item);
+				OnPostEventAdded(item);
+				item.UpdatedEvent += (sender, e) => OnPostEventUpdated((Event)sender);
 				base.Add(item);
 			}
 		}
@@ -185,6 +240,8 @@ namespace Kotlib.Objects
 		{
 			if (base.IndexOf(item) == -1)
 			{
+				OnPostEventAdded(item);
+				item.UpdatedEvent += (sender, e) => OnPostEventUpdated((Event)sender);
 				_AddPostRaisedEvent(item);
 				base.Insert(index, item);
 			}
@@ -199,6 +256,7 @@ namespace Kotlib.Objects
 			if (index >= 0 && index < base.Count)
 			{
 				_RemovePostRaisedEvent(base[index]);
+				OnPostEventRemoved(base[index]);
 				base.RemoveAt(index);
 			}
 		}
@@ -209,7 +267,10 @@ namespace Kotlib.Objects
 		public new void Clear()
 		{
 			foreach (var e in base.Items)
+			{
 				_RemovePostRaisedEvent(e);
+				OnPostEventRemoved(e);
+			}
 
 			base.Clear();
 		}
@@ -224,6 +285,7 @@ namespace Kotlib.Objects
 			if (base.IndexOf(item) > -1)
 			{
 				_RemovePostRaisedEvent(item);
+				OnPostEventRemoved(item);
 				return base.Remove(item);
 			}
 			return false;

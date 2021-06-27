@@ -34,6 +34,62 @@ namespace Kotlib.Objects
 	public class AccountList : ObjectList<Account>
 	{
 
+		#region Evénements
+		
+		/// <summary>
+		/// Délégué en charge des événements d'ajout, modification et supppression
+		/// </summary>
+		/// <param name="account">Elément concené</param>
+		public delegate void AccountEventHandler(Account account);
+		/// <summary>
+		/// Un élément a été ajouté
+		/// </summary>
+		public event AccountEventHandler AccountAddedEvent;
+		/// <summary>
+		/// Un élément a été modifié
+		/// </summary>
+		public event AccountEventHandler AccountUpdatedEvent;
+		/// <summary>
+		/// Un élément a été supprimé
+		/// </summary>
+		public event AccountEventHandler AccountRemovedEvent;
+		
+		#endregion
+		
+		#region Fonctions privées
+		
+		/// <summary>
+		/// Informe qu'un élément a été ajouté
+		/// </summary>
+		/// <param name="account">Elément concerné</param>
+		public void OnAccountAdded(Account account)
+		{
+			if (AccountAddedEvent != null)
+				AccountAddedEvent(account);
+		}
+		
+		/// <summary>
+		/// Informe qu'un élément a été modifié
+		/// </summary>
+		/// <param name="account">Elément concerné</param>
+		public void OnAccountUpdated(Account account)
+		{
+			if (AccountUpdatedEvent != null)
+				AccountUpdatedEvent(account);
+		}
+		
+		/// <summary>
+		/// Informe qu'un élément a été supprimé
+		/// </summary>
+		/// <param name="account">Elément concerné</param>
+		public void OnAccountRemoved(Account account)
+		{
+			if (AccountRemovedEvent != null)
+				AccountRemovedEvent(account);
+		}
+		
+		#endregion
+		
 		#region Propriétés publiques
 
 		/// <summary>
@@ -115,7 +171,13 @@ namespace Kotlib.Objects
 			set
 			{
 				Transfers.RemoveAll(a => a.FromAccountId.Equals(base[index].Id) || a.ToAccountId.Equals(base[index].Id));
+				
+				OnAccountRemoved(base[index]);
+					
 				base[index] = value;
+				
+				base[index].UpdatedEvent += (sender, e) => OnAccountUpdated((Account)sender);
+				OnAccountAdded(base[index]);
 			}
 		}
 		
@@ -128,6 +190,8 @@ namespace Kotlib.Objects
 			if (index >= 0 && index < base.Count)
 			{
 				Transfers.RemoveAll(a => a.FromAccountId.Equals(base[index].Id) || a.ToAccountId.Equals(base[index].Id));
+
+				OnAccountRemoved(base[index]);
 				base.RemoveAt(index);
 			}
 		}
@@ -138,7 +202,10 @@ namespace Kotlib.Objects
 		public new void Clear()
 		{
 			foreach (var e in Items)
+			{
 				Transfers.RemoveAll(a => a.FromAccountId.Equals(e.Id) || a.ToAccountId.Equals(e.Id));
+				OnAccountRemoved(e);
+			}
 
 			base.Clear();
 		}
@@ -151,9 +218,34 @@ namespace Kotlib.Objects
 		public new bool Remove(Account item)
 		{
 			if (base.IndexOf(item) > -1)
+			{
 				Transfers.RemoveAll(a => a.FromAccountId.Equals(item.Id) || a.ToAccountId.Equals(item.Id));
-			
+				OnAccountRemoved(item);
+			}
 			return base.Remove(item);
+		}
+		
+		/// <summary>
+		/// Ajoute un élément à la liste
+		/// </summary>
+		/// <param name="item">Item.</param>
+		public new void Add(Account item)
+		{
+			OnAccountAdded(item);
+			item.UpdatedEvent += (sender, e) => OnAccountUpdated((Account)sender);
+			base.Add(item);
+		}
+		
+		/// <summary>
+		/// Insert un élément à la position spécifiée
+		/// </summary>
+		/// <param name="index">Position d'insertion.</param>
+		/// <param name="item">Elément à insérer.</param>
+		public new void Insert(int index, Account item)
+		{
+			OnAccountAdded(item);
+			item.UpdatedEvent += (sender, e) => OnAccountUpdated((Account)sender);
+			base.Insert(index, item);
 		}
 
 		/// <summary>

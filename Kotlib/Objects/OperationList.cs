@@ -32,7 +32,60 @@ namespace Kotlib.Objects
 	public class OperationList : ObjectList<Operation>
 	{
 
+		#region Evénements
+		
+		/// <summary>
+		/// Délégué en charge des événements d'ajout, modification et supppression
+		/// </summary>
+		/// <param name="item">Elément concené</param>
+		public delegate void OperationEventHandler(Operation item);
+		/// <summary>
+		/// Un élément a été ajouté
+		/// </summary>
+		public event OperationEventHandler OperationAddedEvent;
+		/// <summary>
+		/// Un élément a été modifié
+		/// </summary>
+		public event OperationEventHandler OperationUpdatedEvent;
+		/// <summary>
+		/// Un élément a été supprimé
+		/// </summary>
+		public event OperationEventHandler OperationRemovedEvent;
+		
+		#endregion
+		
 		#region Fonctions privées
+		
+		/// <summary>
+		/// Informe qu'un élément a été ajouté
+		/// </summary>
+		/// <param name="item">Elément concerné</param>
+		public void OnOperationAdded(Operation item)
+		{
+			if (OperationAddedEvent != null)
+				OperationAddedEvent(item);
+		}
+		
+		/// <summary>
+		/// Informe qu'un élément a été modifié
+		/// </summary>
+		/// <param name="item">Elément concerné</param>
+		public void OnOperationUpdated(Operation item)
+		{
+			if (OperationUpdatedEvent != null)
+				OperationUpdatedEvent(item);
+		}
+		
+		/// <summary>
+		/// Informe qu'un élément a été supprimé
+		/// </summary>
+		/// <param name="item">Elément concerné</param>
+		public void OnOperationRemoved(Operation item)
+		{
+			if (OperationRemovedEvent != null)
+				OperationRemovedEvent(item);
+		}
+		
 		#endregion
 
 		#region Propriétés publiques
@@ -88,6 +141,89 @@ namespace Kotlib.Objects
 			return this.ToList().FirstOrDefault(a => a.Id.Equals(id));
 		}
 
+		/// <summary>
+		/// Retourne l'élément à la position <c>index</c>
+		/// </summary>
+		/// <param name="index">Position de l'élément.</param>
+		public new Operation this[int index]
+		{
+			get
+			{
+				return base[index];
+			}
+			set
+			{
+				OnOperationRemoved(base[index]);
+					
+				base[index] = value;
+				
+				base[index].UpdatedEvent += (sender, e) => OnOperationUpdated((Operation)sender);
+				OnOperationAdded(base[index]);
+			}
+		}
+		
+		/// <summary>
+		/// Supprime l'élément de la liste à la position spécifié
+		/// </summary>
+		/// <param name="index">Position de l'élément.</param>
+		public new void RemoveAt(int index)
+		{
+			if (index >= 0 && index < base.Count)
+			{
+				OnOperationRemoved(base[index]);
+				base.RemoveAt(index);
+			}
+		}
+
+		/// <summary>
+		/// Vide la liste de ses éléments
+		/// </summary>
+		public new void Clear()
+		{
+			foreach (var e in Items)
+			{
+				OnOperationRemoved(e);
+			}
+
+			base.Clear();
+		}
+		
+		/// <summary>
+		/// Supprime un élément de la liste
+		/// </summary>
+		/// <returns>true, l'élément est supprimé, sinon, false.</returns>
+		/// <param name="item">Elément à supprimer.</param>
+		public new bool Remove(Operation item)
+		{
+			if (base.IndexOf(item) > -1)
+				OnOperationRemoved(item);
+			
+			return base.Remove(item);
+		}
+		
+		/// <summary>
+		/// Ajoute un élément à la liste
+		/// </summary>
+		/// <param name="item">Item.</param>
+		public new void Add(Operation item)
+		{
+			OnOperationAdded(item);
+			item.UpdatedEvent += (sender, e) => OnOperationUpdated((Operation)sender);
+			base.Add(item);
+		}
+		
+		/// <summary>
+		/// Insert un élément à la position spécifiée
+		/// </summary>
+		/// <param name="index">Position d'insertion.</param>
+		/// <param name="item">Elément à insérer.</param>
+		public new void Insert(int index, Operation item)
+		{
+			OnOperationAdded(item);
+			item.UpdatedEvent += (sender, e) => OnOperationUpdated((Operation)sender);
+			base.Insert(index, item);
+		}
+		
 		
 		
 		
