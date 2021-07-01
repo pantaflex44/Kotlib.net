@@ -226,7 +226,7 @@ namespace Kotlib.Objects
 					
 				base[index] = value;
 				
-				base[index].UpdatedEvent += (sender, e) => OnCategoryUpdated((Category)sender);
+				base[index].UpdatedEvent += (sender, e) => OnCategoryUpdated(base[index]);
 				OnCategoryAdded(base[index]);
 			}
 		}
@@ -277,7 +277,7 @@ namespace Kotlib.Objects
 		public new void Add(Category item)
 		{
 			OnCategoryAdded(item);
-			item.UpdatedEvent += (sender, e) => OnCategoryUpdated((Category)sender);
+			item.UpdatedEvent += (sender, e) => OnCategoryUpdated(item);
 			base.Add(item);
 		}
 		
@@ -289,7 +289,7 @@ namespace Kotlib.Objects
 		public new void Insert(int index, Category item)
 		{
 			OnCategoryAdded(item);
-			item.UpdatedEvent += (sender, e) => OnCategoryUpdated((Category)sender);
+			item.UpdatedEvent += (sender, e) => OnCategoryUpdated(item);
 			base.Insert(index, item);
 		}
 

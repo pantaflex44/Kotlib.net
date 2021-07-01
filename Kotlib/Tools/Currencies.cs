@@ -97,7 +97,7 @@ namespace Kotlib.Tools
 		/// <param name="value">Valeur monétaire</param>
 		/// <param name="iso">Formattage ISO</param>
 		/// <returns>Valeur formattée</returns>
-		public string Format(double value, bool iso = false)
+		public string Format(decimal value, bool iso = false)
 		{
 			if (_culture == null)
 				_culture = new CultureInfo(CultureName);
@@ -115,9 +115,9 @@ namespace Kotlib.Tools
 		/// <param name="value">Valeur monétaire</param>
 		/// <param name="iso">Formattage ISO</param>
 		/// <returns>Valeur formattée</returns>
-		public string Format(decimal value, bool iso = false)
+		public string Format(double value, bool iso = false)
 		{
-			return Format(Convert.ToDouble(value), iso);
+			return Format(Convert.ToDecimal(value), iso);
 		}
 		
 		/// <summary>
@@ -128,7 +128,7 @@ namespace Kotlib.Tools
 		/// <returns>Valeur formattée</returns>
 		public string Format(float value, bool iso = false)
 		{
-			return Format(Convert.ToDouble(value), iso);
+			return Format(Convert.ToDecimal(value), iso);
 		}
 		
 		/// <summary>
@@ -139,7 +139,7 @@ namespace Kotlib.Tools
 		/// <returns>Valeur formattée</returns>
 		public string Format(int value, bool iso = false)
 		{
-			return Format(Convert.ToDouble(value), iso);
+			return Format(Convert.ToDecimal(value), iso);
 		}
 		
 	}

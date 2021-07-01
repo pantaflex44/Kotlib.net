@@ -146,7 +146,7 @@ namespace Kotlib.Objects
 					
 				base[index] = value;
 				
-				base[index].UpdatedEvent += (sender, e) => OnIdentityUpdated((Identity)sender);
+				base[index].UpdatedEvent += (sender, e) => OnIdentityUpdated(base[index]);
 				OnIdentityAdded(base[index]);
 			}
 		}
@@ -197,7 +197,7 @@ namespace Kotlib.Objects
 		public new void Add(Identity item)
 		{
 			OnIdentityAdded(item);
-			item.UpdatedEvent += (sender, e) => OnIdentityUpdated((Identity)sender);
+			item.UpdatedEvent += (sender, e) => OnIdentityUpdated(item);
 			base.Add(item);
 		}
 		
@@ -209,7 +209,7 @@ namespace Kotlib.Objects
 		public new void Insert(int index, Identity item)
 		{
 			OnIdentityAdded(item);
-			item.UpdatedEvent += (sender, e) => OnIdentityUpdated((Identity)sender);
+			item.UpdatedEvent += (sender, e) => OnIdentityUpdated(item);
 			base.Insert(index, item);
 		}
 		

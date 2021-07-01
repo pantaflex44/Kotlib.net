@@ -1,0 +1,2622 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Kotlib</name>
+    </assembly>
+    <members>
+        <member name="T:Kotlib.Core.Compression">
+            <summary>
+            Regroupe les méthodes de compression / décompression
+            </summary>
+        </member>
+        <member name="M:Kotlib.Core.Compression.Compress(System.Byte[])">
+            <summary>
+            Compresse des données
+            </summary>
+            <returns>Les données compressées.</returns>
+            <param name="original">Données originales.</param>
+        </member>
+        <member name="M:Kotlib.Core.Compression.Decompress(System.Byte[])">
+            <summary>
+            Décompresse les données
+            </summary>
+            <returns>Données décompressées.</returns>
+            <param name="compressed">Données compressées.</param>
+        </member>
+        <member name="T:Kotlib.Core.Crypto">
+            <summary>
+            Regroupe les méthodes de cryptage et décryptage
+            </summary>
+        </member>
+        <member name="M:Kotlib.Core.Crypto.Encrypt(System.Byte[],System.String)">
+            <summary>
+            Cryptage des données
+            </summary>
+            <returns>Données cryptées.</returns>
+            <param name="original">Données originales.</param>
+            <param name="password">Mot de passe.</param>
+        </member>
+        <member name="M:Kotlib.Core.Crypto.Decrypt(System.Byte[],System.String)">
+            <summary>
+            Décryptage des données
+            </summary>
+            <returns>Données décryptées.</returns>
+            <param name="crypted">Données cryptées.</param>
+            <param name="password">Mot de passe.</param>
+        </member>
+        <member name="T:Kotlib.Core.Serializable">
+            <summary>
+            Méthodes pour la sérialisation et la désérialisation d'un objet
+            </summary>
+        </member>
+        <member name="M:Kotlib.Core.Serializable.Serialize">
+            <summary>
+            Serialisation d'un objet
+            </summary>
+            <returns>Tableau de données représentant un objet sérialisé.</returns>
+        </member>
+        <member name="M:Kotlib.Core.Serializable.Deserialize``1(System.Byte[])">
+            <summary>
+            Désérialisation d'un objet
+            </summary>
+            <returns>Objet reconstitué.</returns>
+            <param name="datas">Données à sérialisées.</param>
+            <typeparam name="T">Type d'objet à reconstituer.</typeparam>
+        </member>
+        <member name="T:Kotlib.CardDate">
+            <summary>
+            Représente la date de validité d'une carte bancaire
+            </summary>
+        </member>
+        <member name="P:Kotlib.CardDate.Year">
+            <summary>
+            Année de validité
+            </summary>
+        </member>
+        <member name="P:Kotlib.CardDate.Month">
+            <summary>
+            Mois de validité
+            </summary>
+        </member>
+        <member name="M:Kotlib.CardDate.#ctor">
+            <summary>
+            Constructeur
+            </summary>
+        </member>
+        <member name="M:Kotlib.CardDate.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="year">Année de validité</param>
+            <param name="month">Mois de validité</param>
+        </member>
+        <member name="T:Kotlib.Financial">
+            <summary>
+            Dossier financier
+            </summary>
+        </member>
+        <member name="M:Kotlib.Financial.OnPropertyChanged(System.String)">
+            <summary>
+            Informe qu'une propriété est modifiée
+            </summary>
+            <param name="name">Nom de la propriété,
+            ou vide pour le nom de la propriété appelante.</param>
+        </member>
+        <member name="M:Kotlib.Financial.OnUpdated(System.Object,System.EventArgs)">
+            <summary>
+            Informe que le dossier financier a été modifié
+            </summary>
+            <param name="sender">Objet emettant le signal</param>
+            <param name="e">Arguments</param>
+        </member>
+        <member name="M:Kotlib.Financial.OnSaved(System.Object,System.EventArgs)">
+            <summary>
+            Informe que le dossier financier viend etre sauvegardé
+            </summary>
+            <param name="sender">Objet emettant le signal</param>
+            <param name="e">Arguments</param>
+        </member>
+        <member name="M:Kotlib.Financial.OnPostRaised(System.DateTime,Kotlib.Objects.Event)">
+            <summary>
+            Informe qu'un événement programmé vient d'être posté
+            </summary>
+            <param name="date">Date programmée</param>
+            <param name="postEvent">Evénement et ses détails</param>
+        </member>
+        <member name="M:Kotlib.Financial.EventPosted(System.DateTime,Kotlib.Objects.Event)">
+            <summary>
+            S'execute lorsque qu'un événement est posté
+            </summary>
+            <param name="date">Date de l'occurence</param>
+            <param name="postEvent">Occurence et ses informations</param>
+        </member>
+        <member name="E:Kotlib.Financial.PropertyChanged">
+            <summary>
+            Se produit lorsque qu'une propriété est modifiée
+            </summary>
+        </member>
+        <member name="E:Kotlib.Financial.UpdatedEvent">
+            <summary>
+            Se produit lorsque le dossier financier a été modifié
+            </summary>
+        </member>
+        <member name="E:Kotlib.Financial.SavedEvent">
+            <summary>
+            Se produit lorsque le dossier financier est sauvegardé
+            </summary>
+        </member>
+        <member name="E:Kotlib.Financial.PostRaisedEvent">
+            <summary>
+            Se produit lorsque qu'un événement programmé est posté
+            </summary>
+        </member>
+        <member name="P:Kotlib.Financial.Id">
+            <summary>
+            Identifiant unique
+            </summary>
+            <value>Identifiant unique.</value>
+        </member>
+        <member name="P:Kotlib.Financial.Name">
+            <summary>
+            Dénomination du dossier financier
+            </summary>
+            <value>Nom, 255 caractères maximum.</value>
+        </member>
+        <member name="M:Kotlib.Financial.ShouldSerializeName">
+            <summary>
+            Verifie que la propriété est correcte avant d'être sérialisée
+            </summary>
+            <returns><c>true</c></returns>
+        </member>
+        <member name="P:Kotlib.Financial.Created">
+            <summary>
+            Date de création
+            </summary>
+            <value>Date de création.</value>
+        </member>
+        <member name="P:Kotlib.Financial.Updated">
+            <summary>
+            Date de la dernière modification
+            </summary>
+            <value>Date de modification.</value>
+        </member>
+        <member name="P:Kotlib.Financial.Note">
+            <summary>
+            Notes appliquées au dossier financier.
+            </summary>
+            <value>Notes, 4000 caractères maximum.</value>
+        </member>
+        <member name="P:Kotlib.Financial.NoteCData">
+            <summary>
+            Note au format données brutes
+            </summary>
+        </member>
+        <member name="P:Kotlib.Financial.Owner">
+            <summary>
+            Propriétaire du dossier financier
+            </summary>
+            <value>Propriétaire du dossier financier.</value>
+        </member>
+        <member name="M:Kotlib.Financial.ShouldSerializeOwner">
+            <summary>
+            Vérifie si la propriété est correctement définie avant d'être sérialisée
+            </summary>
+            <returns><c>true</c></returns>
+        </member>
+        <member name="P:Kotlib.Financial.Paytypes">
+            <summary>
+            Liste des moyens de paiements
+            </summary>
+            <value>Liste des moyens de paiements.</value>
+        </member>
+        <member name="P:Kotlib.Financial.Categories">
+            <summary>
+            Liste des catégories
+            </summary>
+            <value>Liste des catégories.</value>
+        </member>
+        <member name="P:Kotlib.Financial.Thirdparties">
+            <summary>
+            Liste des tiers
+            </summary>
+            <value>Liste des tiers.</value>
+        </member>
+        <member name="P:Kotlib.Financial.Accounts">
+            <summary>
+            Liste des éléments bancaires
+            </summary>
+            <value>Liste des éléments bancaires.</value>
+        </member>
+        <member name="P:Kotlib.Financial.Events">
+            <summary>
+            Liste des événements programmés
+            </summary>
+            <value>Liste des événements programmés.</value>
+        </member>
+        <member name="P:Kotlib.Financial.CultureName">
+            <summary>
+            Culture de l'élément bancaire
+            </summary>
+            <value>Culture de l'élément bancaire.</value>
+        </member>
+        <member name="P:Kotlib.Financial.Currency">
+            <summary>
+            Retourne la culture du dossier financier
+            </summary>
+        </member>
+        <member name="M:Kotlib.Financial.#ctor">
+            <summary>
+            Constructeurs
+            </summary>
+        </member>
+        <member name="M:Kotlib.Financial.#ctor(System.String,Kotlib.Objects.Identity)">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="name">Nom du dossier financier.</param>
+            <param name="owner">Identité du propriétaire.</param>
+        </member>
+        <member name="M:Kotlib.Financial.Save(System.String)">
+            <summary>
+            Sauvegarde ce dossier financier
+            </summary>
+            <param name="password">Mot de passe pour le cryptage des données, laisser vide pour ne pas crypter</param>
+            <returns>Données brutes représentant le dossier financier</returns>
+        </member>
+        <member name="M:Kotlib.Financial.SaveToFile(System.String,System.String)">
+            <summary>
+            Sauvegarde ce dossier financier dans un fichier
+            </summary>
+            <param name="directory">Chemin du répertoire recevant le dossier financier</param>
+            <param name="password">Mot de passe pour le cryptage des données, laisser vide pour ne pas crypter</param>
+        </member>
+        <member name="M:Kotlib.Financial.Load(System.Byte[],System.String)">
+            <summary>
+            Transforme les données brutes en dossier financier
+            </summary>
+            <param name="datas">Données brutes à traiter</param>
+            <param name="password">Mot de passe pour le décryptage des données, laisser vide pour ne pas décrypter</param>
+            <returns>Dossier financier résultant des données brutes passées en paramètre</returns>
+        </member>
+        <member name="M:Kotlib.Financial.LoadFromFile(System.String,System.String)">
+            <summary>
+            Transforme les données brutes d'un fichier en dossier financier
+            </summary>
+            <param name="filepath">Chemin du fichier à traiter</param>
+            <param name="password">Mot de passe pour le décryptage des données, laisser vide pour ne pas décrypter</param>
+            <returns>Tâche permettant la conversion du fichier en dossier financier</returns>
+        </member>
+        <member name="M:Kotlib.Financial.Create(System.String,Kotlib.Objects.Identity,Kotlib.Objects.AccountList,System.String,Kotlib.Objects.PaytypeList,Kotlib.Objects.CategoryList,Kotlib.Objects.ThirdpartyList,Kotlib.Objects.EventList,System.String,System.Boolean)">
+            <summary>
+            Créé un nouveau dossier financier
+            </summary>
+            <param name="name">Nom du dossier financier</param>
+            <param name="owner">Identité du propriétaire</param>
+            <param name="accounts">Liste des éléments bancaires rattachés au dossier financier</param>
+            <param name="cultureName">Nom de la culture employée définissant la monnaie utilisée dans ce dossier financier: eg: fr_FR, en_US</param>
+            <param name="paytypes">Liste des moyens financiers, optionnel</param>
+            <param name="categories">Liste des catégories, optionnel</param>
+            <param name="thirdparties">Liste des tiers, optionnel</param>
+            <param name="events">Liste d'événements programmés</param>
+            <param name="note">Note apposée au dossier financier, optionnel</param>
+            <param name="loadDefaults"><c>true</c>, charge les valeurs par défaut, sinon <c>false</c>, créé un dossier vide, optionnel</param>
+            <returns>Dossier financier nouvellement créé</returns>
+        </member>
+        <member name="M:Kotlib.Financial.AmountAt(Kotlib.Objects.Account,System.DateTime,System.Boolean)">
+            <summary>
+            Retourne le solde total (opérations et transferts inclus) d'un élément bancaire à la date spécifiée
+            </summary>
+            <param name="account">Elément bancaire concerné</param>
+            <param name="date">Date du solde</param>
+            <param name="addInitialAmount"><c>true</c>, ajoute le solde initial, sinon, <c>false</c></param>
+            <returns>Solde total</returns>
+        </member>
+        <member name="M:Kotlib.Financial.AmountAt(System.DateTime,System.Boolean)">
+            <summary>
+            Retourne le solde total de tous les éléments bancaires ainsi que tous les transferts associés
+            </summary>
+            <param name="date">Date de solde</param>
+            <param name="addInitialAmount"><c>true</c>, ajoute le solde initial, sinon, <c>false</c></param>
+            <returns>Solde total</returns>
+        </member>
+        <member name="M:Kotlib.Financial.AutoPost">
+            <summary>
+            Poste toutes les prochaines occurences programmées 
+            </summary>
+        </member>
+        <member name="M:Kotlib.Financial.AutoPostUntil(System.DateTime)">
+            <summary>
+            Poste toutes les occurences programmées jusqu'a la date spécifiée
+            </summary>
+        </member>
+        <member name="M:Kotlib.Financial.AutoPostOverdue">
+            <summary>
+            Poste toutes les occurences restantes programmées 
+            </summary>
+        </member>
+        <member name="M:Kotlib.Financial.AutoPostAll">
+            <summary>
+            Poste toutes les occurences programmées 
+            </summary>
+        </member>
+        <member name="T:Kotlib.Objects.Account">
+            <summary>
+            Moyen de paiement
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Account.OnPropertyChanged(System.String)">
+            <summary>
+            Informe qu'une propriété est modifiée
+            </summary>
+            <param name="name">Nom de la propriété,
+            ou vide pour le nom de la propriété appelante.</param>
+        </member>
+        <member name="M:Kotlib.Objects.Account.OnUpdated(System.Object,System.EventArgs)">
+            <summary>
+            Informe que le dossier financier a été modifié
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.Account.PropertyChanged">
+            <summary>
+            Se produit lorsque qu'une propriété est modifiée
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.Account.UpdatedEvent">
+            <summary>
+            Se produit lorsque le dossier financier a été modifié
+            </summary>
+        </member>
+        <member name="P:Kotlib.Objects.Account.Id">
+            <summary>
+            Identifiant unique
+            </summary>
+            <value>Identifiant unique.</value>
+        </member>
+        <member name="P:Kotlib.Objects.Account.Name">
+            <summary>
+            Dénomination de l'élément bancaire
+            </summary>
+            <value>Nom, 255 caractères maximum.</value>
+        </member>
+        <member name="M:Kotlib.Objects.Account.ShouldSerializeName">
+            <summary>
+            Vérifie si la propriété est correctement définie avant d'être sérialisée
+            </summary>
+            <returns><c>true</c></returns>
+        </member>
+        <member name="P:Kotlib.Objects.Account.Paytypes">
+            <summary>
+            Liste des moyens de paiements
+            </summary>
+            <value>Liste des moyens de paiements.</value>
+        </member>
+        <member name="P:Kotlib.Objects.Account.InitialAmount">
+            <summary>
+            Solde initial
+            </summary>
+            <value>Solde initial.</value>
+        </member>
+        <member name="P:Kotlib.Objects.Account.PartialAmount">
+            <summary>
+            Retourne le solde des opérations
+            </summary>
+        </member>
+        <member name="P:Kotlib.Objects.Account.AllowedCredit">
+            <summary>
+            Découvert autorisé
+            </summary>
+            <value>Découvert autorisé.</value>
+        </member>
+        <member name="P:Kotlib.Objects.Account.Note">
+            <summary>
+            Notes appliquées à cet élément bancaire.
+            </summary>
+            <value>Notes, 4000 caractères maximum.</value>
+        </member>
+        <member name="P:Kotlib.Objects.Account.NoteCData">
+            <summary>
+            Note au format brute
+            </summary>
+        </member>
+        <member name="P:Kotlib.Objects.Account.Owner">
+            <summary>
+            Propriétaire de cet élément bancaire
+            </summary>
+            <value>Propriétaire de cet élément bancaire.</value>
+        </member>
+        <member name="M:Kotlib.Objects.Account.ShouldSerializeOwner">
+            <summary>
+            Vérifie si la propriété est correctement définie avant d'être sérialisée
+            </summary>
+            <returns><c>true</c></returns>
+        </member>
+        <member name="P:Kotlib.Objects.Account.Operations">
+            <summary>
+            Liste des opérations
+            </summary>
+            <value>Liste des opérations.</value>
+        </member>
+        <member name="M:Kotlib.Objects.Account.#ctor">
+            <summary>
+            Constructeurs
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Account.#ctor(System.String,Kotlib.Objects.Identity)">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="name">Nom de l'élément bancaire.</param>
+            <param name="owner">Identité du propriétaire.</param>
+        </member>
+        <member name="M:Kotlib.Objects.Account.PartialAmountAt(System.DateTime,System.Boolean)">
+            <summary>
+            Retourne le solde des opérations à la date souhaité
+            </summary>
+            <param name="date">Date souhaitée</param>
+            <param name="addInitialAmount"><c>true</c>, ajoute le solde initial, sinon, <c>false</c></param>
+            <returns>Solde</returns>
+        </member>
+        <member name="T:Kotlib.Objects.BankAccount">
+            <summary>
+            Compte bancaire
+            </summary>
+        </member>
+        <member name="P:Kotlib.Objects.BankAccount.BankName">
+            <summary>
+            Dénomination de la banque
+            </summary>
+            <value>Nom, 255 caractères maximum.</value>
+        </member>
+        <member name="M:Kotlib.Objects.BankAccount.ShouldSerializeBankName">
+            <summary>
+            Vérifie si la propriété est correctement définie avant d'être sérialisée
+            </summary>
+            <returns><c>true</c></returns>
+        </member>
+        <member name="P:Kotlib.Objects.BankAccount.Iban">
+            <summary>
+            Iban
+            </summary>
+            <value>Iban.</value>
+        </member>
+        <member name="P:Kotlib.Objects.BankAccount.Bic">
+            <summary>
+            Bic
+            </summary>
+            <value>Bic.</value>
+        </member>
+        <member name="P:Kotlib.Objects.BankAccount.Contact">
+            <summary>
+            Coordonnées et contact
+            </summary>
+            <value>Coordonnées et contact.</value>
+        </member>
+        <member name="M:Kotlib.Objects.BankAccount.#ctor">
+            <summary>
+            Constructeur
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.BankAccount.#ctor(System.String,Kotlib.Objects.Identity)">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="name">Nom du compte en banque.</param>
+            <param name="owner">Identité du propriétaire.</param>
+        </member>
+        <member name="T:Kotlib.Objects.Paycard">
+            <summary>
+            Carte de paiement
+            </summary>
+        </member>
+        <member name="P:Kotlib.Objects.Paycard.Card">
+            <summary>
+            Informations de la carte de paiement
+            </summary>
+            <value>Informations de la carte de paiement.</value>
+        </member>
+        <member name="M:Kotlib.Objects.Paycard.ShouldSerializeCard">
+            <summary>
+            Vérifie si la propriété est correctement définie avant d'être sérialisée
+            </summary>
+            <returns><c>true</c></returns>
+        </member>
+        <member name="M:Kotlib.Objects.Paycard.#ctor">
+            <summary>
+            Constructeur
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Paycard.#ctor(System.String,Kotlib.Objects.Identity,Kotlib.Objects.BankCard)">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="name">Nom du moyen de paiement.</param>
+            <param name="owner">Identité du propriétaire.</param>
+            <param name="card">Informations de la carte de paiement</param>
+        </member>
+        <member name="T:Kotlib.Objects.Wallet">
+            <summary>
+            Carte bancaire
+            </summary>
+        </member>
+        <member name="P:Kotlib.Objects.Wallet.Electronic">
+            <summary>
+            Portefeuille électronique
+            </summary>
+            <value><c>true</c> si c'est un portefeuille électronique; sinon, <c>false</c>.</value>
+        </member>
+        <member name="M:Kotlib.Objects.Wallet.#ctor">
+            <summary>
+            Constructeurs
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Wallet.#ctor(System.String,Kotlib.Objects.Identity)">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="name">Nom donné au portefeuille d'espèces.</param>
+            <param name="owner">Identité du propriétaire</param>
+        </member>
+        <member name="T:Kotlib.Objects.AccountList">
+            <summary>
+            Liste d'éléments bancaires
+            </summary>
+        </member>
+        <member name="T:Kotlib.Objects.AccountList.AccountEventHandler">
+            <summary>
+            Délégué en charge des événements d'ajout, modification et supppression
+            </summary>
+            <param name="account">Elément concené</param>
+        </member>
+        <member name="E:Kotlib.Objects.AccountList.AccountAddedEvent">
+            <summary>
+            Un élément a été ajouté
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.AccountList.AccountUpdatedEvent">
+            <summary>
+            Un élément a été modifié
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.AccountList.AccountRemovedEvent">
+            <summary>
+            Un élément a été supprimé
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.AccountList.OnAccountAdded(Kotlib.Objects.Account)">
+            <summary>
+            Informe qu'un élément a été ajouté
+            </summary>
+            <param name="account">Elément concerné</param>
+        </member>
+        <member name="M:Kotlib.Objects.AccountList.OnAccountUpdated(Kotlib.Objects.Account)">
+            <summary>
+            Informe qu'un élément a été modifié
+            </summary>
+            <param name="account">Elément concerné</param>
+        </member>
+        <member name="M:Kotlib.Objects.AccountList.OnAccountRemoved(Kotlib.Objects.Account)">
+            <summary>
+            Informe qu'un élément a été supprimé
+            </summary>
+            <param name="account">Elément concerné</param>
+        </member>
+        <member name="P:Kotlib.Objects.AccountList.Empty">
+            <summary>
+            Retourne une liste vide
+            </summary>
+            <value>Liste vide.</value>
+        </member>
+        <member name="P:Kotlib.Objects.AccountList.Transfers">
+            <summary>
+            Liste des transferts
+            </summary>
+            <value>Liste des transferts.</value>
+        </member>
+        <member name="M:Kotlib.Objects.AccountList.#ctor">
+            <summary>
+            Constructeur
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.AccountList.#ctor(System.Collections.Generic.IEnumerable{Kotlib.Objects.Account})">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="items">Liste à charger</param>
+        </member>
+        <member name="M:Kotlib.Objects.AccountList.GetById(System.Guid)">
+            <summary>
+            Retourne le premier élément bancaire trouvé possédant l'identifiant unique passé en paramètre
+            </summary>
+            <returns>Elément bancaire trouvé.</returns>
+            <param name="id">Identifiant unique.</param>
+        </member>
+        <member name="P:Kotlib.Objects.AccountList.Item(System.Int32)">
+            <summary>
+            Retournel'élément à la position <c>index</c>
+            </summary>
+            <param name="index">Position de l'élément.</param>
+        </member>
+        <member name="M:Kotlib.Objects.AccountList.RemoveAt(System.Int32)">
+            <summary>
+            Supprime l'élément de la liste à la position spécifié
+            </summary>
+            <param name="index">Position de l'élément.</param>
+        </member>
+        <member name="M:Kotlib.Objects.AccountList.Clear">
+            <summary>
+            Vide la liste de ses éléments
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.AccountList.Remove(Kotlib.Objects.Account)">
+            <summary>
+            Supprime un élément de la liste
+            </summary>
+            <returns>true, l'élément est supprimé, sinon, false.</returns>
+            <param name="item">Elément à supprimer.</param>
+        </member>
+        <member name="M:Kotlib.Objects.AccountList.Add(Kotlib.Objects.Account)">
+            <summary>
+            Ajoute un élément à la liste
+            </summary>
+            <param name="item">Item.</param>
+        </member>
+        <member name="M:Kotlib.Objects.AccountList.Insert(System.Int32,Kotlib.Objects.Account)">
+            <summary>
+            Insert un élément à la position spécifiée
+            </summary>
+            <param name="index">Position d'insertion.</param>
+            <param name="item">Elément à insérer.</param>
+        </member>
+        <member name="M:Kotlib.Objects.AccountList.GetAvaillableAccounts">
+            <summary>
+            Retourne la liste des éléments bancaires disponibles
+            </summary>
+            <returns>Liste des éléments bancaires disponibles</returns>
+        </member>
+        <member name="M:Kotlib.Objects.AccountList.CleanTransfers">
+            <summary>
+            Nettoie la liste des transferts.
+            Supprime tous les transferts ayant un compte émetteur ou destinataure inconnu.
+            </summary>
+        </member>
+        <member name="T:Kotlib.Objects.Category">
+            <summary>
+            Catégorie
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Category.OnPropertyChanged(System.String)">
+            <summary>
+            Informe qu'une propriété est modifiée
+            </summary>
+            <param name="name">Nom de la propriété,
+            ou vide pour le nom de la propriété appelante.</param>
+        </member>
+        <member name="M:Kotlib.Objects.Category.OnUpdated(System.Object,System.EventArgs)">
+            <summary>
+            Informe que le dossier financier a été modifié
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.Category.PropertyChanged">
+            <summary>
+            Se produit lorsque qu'une propriété est modifiée
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.Category.UpdatedEvent">
+            <summary>
+            Se produit lorsque le dossier financier a été modifié
+            </summary>
+        </member>
+        <member name="P:Kotlib.Objects.Category.Id">
+            <summary>
+            Identifiant unique
+            </summary>
+            <value>Identifiant unique.</value>
+        </member>
+        <member name="P:Kotlib.Objects.Category.Name">
+            <summary>
+            Dénomination de la catégorie
+            </summary>
+            <value>Nom, 255 caractères maximum.</value>
+        </member>
+        <member name="M:Kotlib.Objects.Category.ShouldSerializeName">
+            <summary>
+            Vérifie si la propriété est correctement définie avant d'être sérialisée
+            </summary>
+            <returns><c>true</c></returns>
+        </member>
+        <member name="P:Kotlib.Objects.Category.Childs">
+            <summary>
+            Liste des sous catégories
+            </summary>
+            <value>Sous catégories.</value>
+        </member>
+        <member name="M:Kotlib.Objects.Category.#ctor">
+            <summary>
+            Constructeurs
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Category.#ctor(System.String,Kotlib.Objects.CategoryList)">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="name">Nom de la catégorie.</param>
+            <param name="childs">Liste des catégories enfants.</param>
+        </member>
+        <member name="T:Kotlib.Objects.CategoryList">
+            <summary>
+            Liste de catégories
+            </summary>
+        </member>
+        <member name="T:Kotlib.Objects.CategoryList.CategoryEventHandler">
+            <summary>
+            Délégué en charge des événements d'ajout, modification et supppression
+            </summary>
+            <param name="item">Elément concené</param>
+        </member>
+        <member name="E:Kotlib.Objects.CategoryList.CategoryAddedEvent">
+            <summary>
+            Un élément a été ajouté
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.CategoryList.CategoryUpdatedEvent">
+            <summary>
+            Un élément a été modifié
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.CategoryList.CategoryRemovedEvent">
+            <summary>
+            Un élément a été supprimé
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.CategoryList.OnCategoryAdded(Kotlib.Objects.Category)">
+            <summary>
+            Informe qu'un élément a été ajouté
+            </summary>
+            <param name="item">Elément concerné</param>
+        </member>
+        <member name="M:Kotlib.Objects.CategoryList.OnCategoryUpdated(Kotlib.Objects.Category)">
+            <summary>
+            Informe qu'un élément a été modifié
+            </summary>
+            <param name="item">Elément concerné</param>
+        </member>
+        <member name="M:Kotlib.Objects.CategoryList.OnCategoryRemoved(Kotlib.Objects.Category)">
+            <summary>
+            Informe qu'un élément a été supprimé
+            </summary>
+            <param name="item">Elément concerné</param>
+        </member>
+        <member name="P:Kotlib.Objects.CategoryList.Empty">
+            <summary>
+            Retourne une liste vide
+            </summary>
+            <value>Liste vide.</value>
+        </member>
+        <member name="P:Kotlib.Objects.CategoryList.Defaults">
+            <summary>
+            Retourne une liste de moyens par défaut
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.CategoryList.#ctor">
+            <summary>
+            Constructeur
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.CategoryList.#ctor(System.Collections.Generic.IEnumerable{Kotlib.Objects.Category})">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="items">Liste à charger</param>
+        </member>
+        <member name="M:Kotlib.Objects.CategoryList.GetById(System.Guid)">
+            <summary>
+            Retourne la premiere catégorie trouvée possédant l'identifiant unique passé en paramètre
+            </summary>
+            <returns>Catégorie trouvée.</returns>
+            <param name="id">Identifiant unique.</param>
+        </member>
+        <member name="P:Kotlib.Objects.CategoryList.Item(System.Int32)">
+            <summary>
+            Retourne l'élément à la position <c>index</c>
+            </summary>
+            <param name="index">Position de l'élément.</param>
+        </member>
+        <member name="M:Kotlib.Objects.CategoryList.RemoveAt(System.Int32)">
+            <summary>
+            Supprime l'élément de la liste à la position spécifié
+            </summary>
+            <param name="index">Position de l'élément.</param>
+        </member>
+        <member name="M:Kotlib.Objects.CategoryList.Clear">
+            <summary>
+            Vide la liste de ses éléments
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.CategoryList.Remove(Kotlib.Objects.Category)">
+            <summary>
+            Supprime un élément de la liste
+            </summary>
+            <returns>true, l'élément est supprimé, sinon, false.</returns>
+            <param name="item">Elément à supprimer.</param>
+        </member>
+        <member name="M:Kotlib.Objects.CategoryList.Add(Kotlib.Objects.Category)">
+            <summary>
+            Ajoute un élément à la liste
+            </summary>
+            <param name="item">Item.</param>
+        </member>
+        <member name="M:Kotlib.Objects.CategoryList.Insert(System.Int32,Kotlib.Objects.Category)">
+            <summary>
+            Insert un élément à la position spécifiée
+            </summary>
+            <param name="index">Position d'insertion.</param>
+            <param name="item">Elément à insérer.</param>
+        </member>
+        <member name="T:Kotlib.Objects.RepeatType">
+            <summary>
+            Méthodes de répétition
+            </summary>
+        </member>
+        <member name="F:Kotlib.Objects.RepeatType.Day">
+            <summary>
+            Répéter tous les jours
+            </summary>
+        </member>
+        <member name="F:Kotlib.Objects.RepeatType.Week">
+            <summary>
+            Répéter toutes les semaines
+            </summary>
+        </member>
+        <member name="F:Kotlib.Objects.RepeatType.Month">
+            <summary>
+            Répéter tous les mois
+            </summary>
+        </member>
+        <member name="F:Kotlib.Objects.RepeatType.Year">
+            <summary>
+            Répéter tous les ans
+            </summary>
+        </member>
+        <member name="T:Kotlib.Objects.Event">
+            <summary>
+            Programmation d'une opération ou d'un transfert
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Event.OnPropertyChanged(System.String)">
+            <summary>
+            Informe qu'une propriété est modifiée
+            </summary>
+            <param name="name">Nom de la propriété,
+            ou vide pour le nom de la propriété appelante.</param>
+        </member>
+        <member name="M:Kotlib.Objects.Event.OnUpdated(System.Object,System.EventArgs)">
+            <summary>
+            Informe que le dossier financier a été modifié
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Event.OnPostRaised(System.DateTime,Kotlib.Objects.Event)">
+            <summary>
+            Informe que le dossier financier a été modifié
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Event.ComputeNextDate(System.DateTime)">
+            <summary>
+            Calcule la date suivante en fonction des paramatres RepeatType et RepeatStep
+            </summary>
+            <param name="date">Date initilale</param>
+            <returns></returns>
+        </member>
+        <member name="M:Kotlib.Objects.Event.ComputeCounts">
+            <summary>
+            Calcule et met à jour le nombre de répétitions entre la date de fin 
+            et celle du début en fonction de la méthode de répétition
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Event.ComputeEndDate">
+            <summary>
+            Calcule et met à jour la date de fin en fonction de 
+            celle du début et de la méthode de répétition
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.Event.PropertyChanged">
+            <summary>
+            Se produit lorsque qu'une propriété est modifiée
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.Event.UpdatedEvent">
+            <summary>
+            Se produit lorsque le dossier financier a été modifié
+            </summary>
+        </member>
+        <member name="T:Kotlib.Objects.Event.PostDelegate">
+            <summary>
+            Délégué en charge de transmettre les informations des événements postés
+            </summary>
+            <param name="date">Date de l'occurence</param>
+            <param name="postEvent">Objet représentant l'occurence postée</param>
+        </member>
+        <member name="E:Kotlib.Objects.Event.PostRaisedEvent">
+            <summary>
+            Se produit lorsqu'une occurence programmée est postée
+            </summary>
+        </member>
+        <member name="P:Kotlib.Objects.Event.Id">
+            <summary>
+            Identifiant unique
+            </summary>
+            <value>Identifiant unique.</value>
+        </member>
+        <member name="P:Kotlib.Objects.Event.Name">
+            <summary>
+            Dénomination de la programmation
+            </summary>
+            <value>Nom, 255 caractères maximum.</value>
+        </member>
+        <member name="M:Kotlib.Objects.Event.ShouldSerializeName">
+            <summary>
+            Vérifie si la propriété est correctement définie avant d'être sérialisée
+            </summary>
+            <returns><c>true</c></returns>
+        </member>
+        <member name="P:Kotlib.Objects.Event.Active">
+            <summary>
+            Retourne ou définit si la programmation est active ou non
+            </summary>
+            <value>Etat de la programmation</value>
+        </member>
+        <member name="P:Kotlib.Objects.Event.AccountId">
+            <summary>
+            Identifiant unique de l'élément bancaire associé à cette programmation
+            </summary>
+            <value>Identifiant unique de l'élément bancaire associé à cette programmation</value>
+        </member>
+        <member name="P:Kotlib.Objects.Event.StartDate">
+            <summary>
+            Date et heure de début de la programmation
+            </summary>
+            <value></value>
+        </member>
+        <member name="P:Kotlib.Objects.Event.EndDate">
+            <summary>
+            Date et heure de fin de la programmation
+            </summary>
+            <value></value>
+        </member>
+        <member name="P:Kotlib.Objects.Event.NextDate">
+            <summary>
+            Date et heure de la prochaine occurence
+            </summary>
+            <value></value>
+        </member>
+        <member name="P:Kotlib.Objects.Event.HasFuture">
+            <summary>
+            Informe s'il existe au moins une occurence apres la prochaine connue
+            </summary>
+        </member>
+        <member name="P:Kotlib.Objects.Event.RepeatType">
+            <summary>
+            Méthode de répétition
+            eg: tous les X jours, tous les X mois
+            </summary>
+            <value>Méthode de répétition</value>
+        </member>
+        <member name="P:Kotlib.Objects.Event.RepeatStep">
+            <summary>
+            Nombre de fois que la méthode est répétée
+            eg: X jours, X mois
+            </summary>
+            <value>Nombre de fois que la méthode est répétée</value>
+        </member>
+        <member name="P:Kotlib.Objects.Event.Counter">
+            <summary>
+            Retoune le nombre d'occurences restantes
+            </summary>
+        </member>
+        <member name="P:Kotlib.Objects.Event.RepeatCount">
+            <summary>
+            Nombre de répétitions
+            eg: répéter la méthode X fois
+            </summary>
+            <value>Nombre de répétitions</value>
+        </member>
+        <member name="M:Kotlib.Objects.Event.#ctor">
+            <summary>
+            Constructeurs
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Event.#ctor(System.String,System.Guid,System.DateTime,System.Nullable{System.DateTime},System.Int32,System.Int32,Kotlib.Objects.RepeatType)">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="name">Nom de la programmation.</param>
+            <param name="accountId">Identifiant unique de l'élément bancaire concerné</param>
+            <param name="startDate">Date de début de la programmation</param>
+            <param name="endDate">Date de fin (optionnel)</param>
+            <param name="count">Nombre de répétitions (optionnel)</param>
+            <param name="step"><paramref name="step">step</paramref> fois par <paramref name="type">type</paramref> </param>
+            <param name="type">Méthode de répétition. (Day | Week | Month | Year)</param>
+        </member>
+        <member name="M:Kotlib.Objects.Event.Reset">
+            <summary>
+            Remise à zéro de la prochaine occurence à la date de départ
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Event.GetCalendar">
+            <summary>
+            Retourne la liste des dates programmées
+            </summary>
+            <returns>Liste des dates programmées</returns>
+        </member>
+        <member name="M:Kotlib.Objects.Event.GetNextCalendar">
+            <summary>
+            Retourne la liste des dates restantes programmées
+            </summary>
+            <returns>Liste des dates restantes programmées</returns>
+        </member>
+        <member name="M:Kotlib.Objects.Event.Post">
+            <summary>
+            Poste la prochaine occurence, qu'elle soit passée, présente ou future
+            </summary>
+            <returns><c>true</c>, s'il existe une prochaine occurence, sinon, <c>false</c></returns>
+        </member>
+        <member name="M:Kotlib.Objects.Event.PostUntil(System.DateTime)">
+            <summary>
+            Poste toutes les occurences restantes jusqu'a la date spécifiée, comprise
+            </summary>
+            <param name="date"></param>
+        </member>
+        <member name="M:Kotlib.Objects.Event.PostAll">
+            <summary>
+            Poste toutes les occurences restantes du calendrier
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Event.PostOverdue">
+            <summary>
+            Poste toutes les occurences restantes jusqu'a ce jour
+            </summary>
+        </member>
+        <member name="T:Kotlib.Objects.EventList">
+            <summary>
+            Liste des événements programmés
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.EventList.OnPostRaised(System.DateTime,Kotlib.Objects.Event)">
+            <summary>
+            Informe que le dossier financier a été modifié
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.EventList.OnPostEventAdded(Kotlib.Objects.Event)">
+            <summary>
+            Informe qu'un élément a été ajouté
+            </summary>
+            <param name="item">Elément concerné</param>
+        </member>
+        <member name="M:Kotlib.Objects.EventList.OnPostEventUpdated(Kotlib.Objects.Event)">
+            <summary>
+            Informe qu'un élément a été modifié
+            </summary>
+            <param name="item">Elément concerné</param>
+        </member>
+        <member name="M:Kotlib.Objects.EventList.OnPostEventRemoved(Kotlib.Objects.Event)">
+            <summary>
+            Informe qu'un élément a été supprimé
+            </summary>
+            <param name="item">Elément concerné</param>
+        </member>
+        <member name="M:Kotlib.Objects.EventList._AddPostRaisedEvent(Kotlib.Objects.Event)">
+            <summary>
+            Lie l'événement UpdatedEvent d'un objet à celui de la liste d'objets
+            </summary>
+            <param name="item">Objet à lier.</param>
+        </member>
+        <member name="M:Kotlib.Objects.EventList._RemovePostRaisedEvent(Kotlib.Objects.Event)">
+            <summary>
+            Annule le routage d'événement pour l'objet supprimé
+            </summary>
+            <param name="item">Objet à délier.</param>
+        </member>
+        <member name="T:Kotlib.Objects.EventList.PostDelegate">
+            <summary>
+            Délégué en charge de transmettre les informations des événements postés
+            </summary>
+            <param name="date">Date de l'occurence</param>
+            <param name="postEvent">Objet représentant l'occurence postée</param>
+        </member>
+        <member name="E:Kotlib.Objects.EventList.PostRaisedEvent">
+            <summary>
+            Se produit lorsqu'une occurence programmée est postée
+            </summary>
+        </member>
+        <member name="T:Kotlib.Objects.EventList.PostEventEventHandler">
+            <summary>
+            Délégué en charge des événements d'ajout, modification et supppression
+            </summary>
+            <param name="item">Elément concené</param>
+        </member>
+        <member name="E:Kotlib.Objects.EventList.PostEventAddedEvent">
+            <summary>
+            Un élément a été ajouté
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.EventList.PostEventUpdatedEvent">
+            <summary>
+            Un élément a été modifié
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.EventList.PostEventRemovedEvent">
+            <summary>
+            Un élément a été supprimé
+            </summary>
+        </member>
+        <member name="P:Kotlib.Objects.EventList.Empty">
+            <summary>
+            Retourne une liste vide
+            </summary>
+            <value>Liste vide.</value>
+        </member>
+        <member name="P:Kotlib.Objects.EventList.Defaults">
+            <summary>
+            Retourne une liste d'évnelent prgrammés par défaut
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.EventList.#ctor">
+            <summary>
+            Constructeur
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.EventList.#ctor(System.Collections.Generic.IEnumerable{Kotlib.Objects.Event})">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="items">Liste à charger</param>
+        </member>
+        <member name="M:Kotlib.Objects.EventList.GetById(System.Guid)">
+            <summary>
+            Retourne le premier événement programmé trouvé possédant l'identifiant unique passé en paramètre
+            </summary>
+            <returns>Evénement programmé trouvé.</returns>
+            <param name="id">Identifiant unique.</param>
+        </member>
+        <member name="P:Kotlib.Objects.EventList.Item(System.Int32)">
+            <summary>
+            Retournel'élément à la position <c>index</c>
+            </summary>
+            <param name="index">Position de l'élément.</param>
+        </member>
+        <member name="M:Kotlib.Objects.EventList.Add(Kotlib.Objects.Event)">
+            <summary>
+            Ajoute un élément à la liste
+            </summary>
+            <param name="item">Item.</param>
+        </member>
+        <member name="M:Kotlib.Objects.EventList.Insert(System.Int32,Kotlib.Objects.Event)">
+            <summary>
+            Insert un élément à la position spécifiée
+            </summary>
+            <param name="index">Position d'insertion.</param>
+            <param name="item">Elément à insérer.</param>
+        </member>
+        <member name="M:Kotlib.Objects.EventList.RemoveAt(System.Int32)">
+            <summary>
+            Supprime l'élément de la liste à la position spécifié
+            </summary>
+            <param name="index">Position de l'élément.</param>
+        </member>
+        <member name="M:Kotlib.Objects.EventList.Clear">
+            <summary>
+            Vide la liste de ses éléments
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.EventList.Remove(Kotlib.Objects.Event)">
+            <summary>
+            Supprime un élément de la liste
+            </summary>
+            <returns>true, l'élément est supprimé, sinon, false.</returns>
+            <param name="item">Elément à supprimer.</param>
+        </member>
+        <member name="T:Kotlib.Objects.Identity">
+            <summary>
+            Carte d'identité
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Identity.OnPropertyChanged(System.String)">
+            <summary>
+            Informe qu'une propriété est modifiée
+            </summary>
+            <param name="name">Nom de la propriété,
+            ou vide pour le nom de la propriété appelante.</param>
+        </member>
+        <member name="M:Kotlib.Objects.Identity.OnUpdated(System.Object,System.EventArgs)">
+            <summary>
+            Informe que le dossier financier a été modifié
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.Identity.PropertyChanged">
+            <summary>
+            Se produit lorsque qu'une propriété est modifiée
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.Identity.UpdatedEvent">
+            <summary>
+            Se produit lorsque le dossier financier a été modifié
+            </summary>
+        </member>
+        <member name="P:Kotlib.Objects.Identity.Id">
+            <summary>
+            Identifiant unique
+            </summary>
+            <value>Identifiant unique.</value>
+        </member>
+        <member name="P:Kotlib.Objects.Identity.Name">
+            <summary>
+            Dénomination de la carte d'identité
+            </summary>
+            <value>Nom, 255 caractères maximum.</value>
+        </member>
+        <member name="M:Kotlib.Objects.Identity.ShouldSerializeName">
+            <summary>
+            Vérifie si la propriété est correctement définie avant d'être sérialisée
+            </summary>
+            <returns><c>true</c></returns>
+        </member>
+        <member name="P:Kotlib.Objects.Identity.Forname">
+            <summary>
+            Prénom
+            </summary>
+            <value>Prénom, 255 caractères maximum.</value>
+        </member>
+        <member name="P:Kotlib.Objects.Identity.Lastname">
+            <summary>
+            Nom de famille
+            </summary>
+            <value>Nom de famille, 255 caractères maximum.</value>
+        </member>
+        <member name="P:Kotlib.Objects.Identity.Phone">
+            <summary>
+            Numéro de téléphone
+            </summary>
+            <value>Numéro de téléphone.</value>
+        </member>
+        <member name="P:Kotlib.Objects.Identity.Url">
+            <summary>
+            Site internet
+            </summary>
+            <value>Site internet.</value>
+        </member>
+        <member name="P:Kotlib.Objects.Identity.Mail">
+            <summary>
+            Adresse email
+            </summary>
+            <value>Adresse email.</value>
+        </member>
+        <member name="P:Kotlib.Objects.Identity.Address">
+            <summary>
+            Adresse postale
+            </summary>
+            <value>Adresse postale, 4000 caractères maximum.</value>
+        </member>
+        <member name="P:Kotlib.Objects.Identity.AddressCData">
+            <summary>
+            Adresse au format brute
+            </summary>
+        </member>
+        <member name="P:Kotlib.Objects.Identity.Note">
+            <summary>
+            Notes appliquées à cette identité.
+            </summary>
+            <value>Notes, 4000 caractères maximum.</value>
+        </member>
+        <member name="P:Kotlib.Objects.Identity.NoteCData">
+            <summary>
+            Note au format brute
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Identity.#ctor">
+            <summary>
+            Constructeurs
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Identity.#ctor(System.String)">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="name">Nom de la carte d'identité.</param>
+        </member>
+        <member name="T:Kotlib.Objects.IdentityList">
+            <summary>
+            Liste de carte d'identité
+            </summary>
+        </member>
+        <member name="T:Kotlib.Objects.IdentityList.IdentityEventHandler">
+            <summary>
+            Délégué en charge des événements d'ajout, modification et supppression
+            </summary>
+            <param name="item">Elément concené</param>
+        </member>
+        <member name="E:Kotlib.Objects.IdentityList.IdentityAddedEvent">
+            <summary>
+            Un élément a été ajouté
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.IdentityList.IdentityUpdatedEvent">
+            <summary>
+            Un élément a été modifié
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.IdentityList.IdentityRemovedEvent">
+            <summary>
+            Un élément a été supprimé
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.IdentityList.OnIdentityAdded(Kotlib.Objects.Identity)">
+            <summary>
+            Informe qu'un élément a été ajouté
+            </summary>
+            <param name="item">Elément concerné</param>
+        </member>
+        <member name="M:Kotlib.Objects.IdentityList.OnIdentityUpdated(Kotlib.Objects.Identity)">
+            <summary>
+            Informe qu'un élément a été modifié
+            </summary>
+            <param name="item">Elément concerné</param>
+        </member>
+        <member name="M:Kotlib.Objects.IdentityList.OnIdentityRemoved(Kotlib.Objects.Identity)">
+            <summary>
+            Informe qu'un élément a été supprimé
+            </summary>
+            <param name="item">Elément concerné</param>
+        </member>
+        <member name="P:Kotlib.Objects.IdentityList.Empty">
+            <summary>
+            Retourne une liste vide
+            </summary>
+            <value>Liste vide.</value>
+        </member>
+        <member name="M:Kotlib.Objects.IdentityList.#ctor">
+            <summary>
+            Constructeur
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.IdentityList.#ctor(System.Collections.Generic.IEnumerable{Kotlib.Objects.Identity})">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="items">Liste à charger</param>
+        </member>
+        <member name="M:Kotlib.Objects.IdentityList.GetById(System.Guid)">
+            <summary>
+            Retourne la premiere identité trouvée possédant l'identifiant unique passé en paramètre
+            </summary>
+            <returns>Identité trouvée.</returns>
+            <param name="id">Identifiant unique.</param>
+        </member>
+        <member name="P:Kotlib.Objects.IdentityList.Item(System.Int32)">
+            <summary>
+            Retourne l'élément à la position <c>index</c>
+            </summary>
+            <param name="index">Position de l'élément.</param>
+        </member>
+        <member name="M:Kotlib.Objects.IdentityList.RemoveAt(System.Int32)">
+            <summary>
+            Supprime l'élément de la liste à la position spécifié
+            </summary>
+            <param name="index">Position de l'élément.</param>
+        </member>
+        <member name="M:Kotlib.Objects.IdentityList.Clear">
+            <summary>
+            Vide la liste de ses éléments
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.IdentityList.Remove(Kotlib.Objects.Identity)">
+            <summary>
+            Supprime un élément de la liste
+            </summary>
+            <returns>true, l'élément est supprimé, sinon, false.</returns>
+            <param name="item">Elément à supprimer.</param>
+        </member>
+        <member name="M:Kotlib.Objects.IdentityList.Add(Kotlib.Objects.Identity)">
+            <summary>
+            Ajoute un élément à la liste
+            </summary>
+            <param name="item">Item.</param>
+        </member>
+        <member name="M:Kotlib.Objects.IdentityList.Insert(System.Int32,Kotlib.Objects.Identity)">
+            <summary>
+            Insert un élément à la position spécifiée
+            </summary>
+            <param name="index">Position d'insertion.</param>
+            <param name="item">Elément à insérer.</param>
+        </member>
+        <member name="T:Kotlib.Objects.ObjectList`1">
+            <summary>
+            Liste personnalisée d'objets 
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.ObjectList`1.OnCollectionChanged(System.Collections.Specialized.NotifyCollectionChangedAction)">
+            <summary>
+            Informe que la collection est modifiée
+            </summary>
+            <param name="action">Nom de la méthode</param>
+        </member>
+        <member name="M:Kotlib.Objects.ObjectList`1.OnUpdated(System.Object,System.EventArgs)">
+            <summary>
+            Informe que le dossier financier a été modifié
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.ObjectList`1._AddUpdatedEvent(`0)">
+            <summary>
+            Lie l'événement UpdatedEvent d'un objet à celui de la liste d'objets
+            </summary>
+            <param name="item">Objet à lier.</param>
+        </member>
+        <member name="M:Kotlib.Objects.ObjectList`1._RemoveUpdatedEvent(`0)">
+            <summary>
+            Annule le routage d'événement pour l'objet supprimé
+            </summary>
+            <param name="item">Objet à délier.</param>
+        </member>
+        <member name="E:Kotlib.Objects.ObjectList`1.CollectionChanged">
+            <summary>
+            Se produit lorsque que la collection est modifiée
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.ObjectList`1.UpdatedEvent">
+            <summary>
+            Se produit lorsque le dossier financier a été modifié
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.ObjectList`1.#ctor">
+            <summary>
+            Constructeur
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.ObjectList`1.#ctor(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="items">Eléments à charger</param>
+        </member>
+        <member name="P:Kotlib.Objects.ObjectList`1.Count">
+            <summary>
+            Retourne le nombre d'éléments de la liste
+            </summary>
+            <value>Nombre d'éléments.</value>
+        </member>
+        <member name="P:Kotlib.Objects.ObjectList`1.IsReadOnly">
+            <summary>
+            Indique si la liste est en lecture seule
+            </summary>
+            <value><c>true</c> si la liste est en lecture seule, sinon, <c>false</c>.</value>
+        </member>
+        <member name="P:Kotlib.Objects.ObjectList`1.Item(System.Int32)">
+            <summary>
+            Retournel'élément à la position <c>index</c>
+            </summary>
+            <param name="index">Position de l'élément.</param>
+        </member>
+        <member name="M:Kotlib.Objects.ObjectList`1.Add(`0)">
+            <summary>
+            Ajoute un élément à la liste
+            </summary>
+            <param name="item">Item.</param>
+        </member>
+        <member name="M:Kotlib.Objects.ObjectList`1.IndexOf(`0)">
+            <summary>
+            Retourne la position d'un élément
+            </summary>
+            <returns>Position de l'élément base 0, -1 si non trouvée.</returns>
+            <param name="item">Elément à rechercher.</param>
+        </member>
+        <member name="M:Kotlib.Objects.ObjectList`1.Insert(System.Int32,`0)">
+            <summary>
+            Insert un élément à la position spécifiée
+            </summary>
+            <param name="index">Position d'insertion.</param>
+            <param name="item">Elément à insérer.</param>
+        </member>
+        <member name="M:Kotlib.Objects.ObjectList`1.RemoveAt(System.Int32)">
+            <summary>
+            Supprime l'élément de la liste à la position spécifié
+            </summary>
+            <param name="index">Position de l'élément.</param>
+        </member>
+        <member name="M:Kotlib.Objects.ObjectList`1.Clear">
+            <summary>
+            Vide la liste de ses éléments
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.ObjectList`1.Contains(`0)">
+            <summary>
+            Retourne si la liste contient un élément
+            </summary>
+            <returns>true, si l'élément existe, sinon, false.</returns>
+            <param name="item">Elément à trouver.</param>
+        </member>
+        <member name="M:Kotlib.Objects.ObjectList`1.CopyTo(`0[],System.Int32)">
+            <summary>
+            Copie une partie de la liste vers une autre
+            </summary>
+            <param name="array">Conteneur de la copie.</param>
+            <param name="arrayIndex">Position de la liste .</param>
+        </member>
+        <member name="M:Kotlib.Objects.ObjectList`1.Remove(`0)">
+            <summary>
+            Supprime un élément de la liste
+            </summary>
+            <returns>true, l'élément est supprimé, sinon, false.</returns>
+            <param name="item">Elément à supprimer.</param>
+        </member>
+        <member name="M:Kotlib.Objects.ObjectList`1.RemoveAll(System.Predicate{`0})">
+            <summary>
+            Supprime tous les éléments suivant les conditions predicate
+            </summary>
+            <param name="predicate">Conditions</param>
+            <returns>Nombre d'éléments supprimés</returns>
+        </member>
+        <member name="M:Kotlib.Objects.ObjectList`1.GetEnumerator">
+            <summary>
+            Retourne l'énumérateur
+            </summary>
+            <returns>Enumérateur.</returns>
+        </member>
+        <member name="M:Kotlib.Objects.ObjectList`1.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            Retourne l'interface d'énumération
+            </summary>
+            <returns>Interface d'énumération.</returns>
+        </member>
+        <member name="P:Kotlib.Objects.ObjectList`1.Items">
+            <summary>
+            Retourne la liste des éléments
+            </summary>
+            <value>Liste des éléments</value>
+        </member>
+        <member name="T:Kotlib.Objects.Operation">
+            <summary>
+            Représente une opération bancaire.
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Operation.OnPropertyChanged(System.String)">
+            <summary>
+            Informe qu'une propriété est modifiée
+            </summary>
+            <param name="name">Nom de la propriété,
+            ou vide pour le nom de la propriété appelante.</param>
+        </member>
+        <member name="M:Kotlib.Objects.Operation.OnUpdated(System.Object,System.EventArgs)">
+            <summary>
+            Informe que l'opération a été modifiée
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.Operation.PropertyChanged">
+            <summary>
+            Se produit lorsque qu'une propriété est modifiée
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.Operation.UpdatedEvent">
+            <summary>
+            Se produit lorsque le dossier financier a été modifié
+            </summary>
+        </member>
+        <member name="P:Kotlib.Objects.Operation.Id">
+            <summary>
+            Identifiant unique
+            </summary>
+            <value>Identifiant unique.</value>
+        </member>
+        <member name="P:Kotlib.Objects.Operation.Name">
+            <summary>
+            Nom donné à l'opération
+            </summary>
+            <example>Prélèvement électricité</example>
+            <value>Nom, 255 caractères maximum.</value>
+        </member>
+        <member name="M:Kotlib.Objects.Operation.ShouldSerializeName">
+            <summary>
+            Vérifie si la propriété est correctement définie avant d'être sérialisée
+            </summary>
+            <returns><c>true</c></returns>
+        </member>
+        <member name="P:Kotlib.Objects.Operation.Date">
+            <summary>
+            Date de l'opération
+            </summary>
+            <value>Date de l'opération</value>
+        </member>
+        <member name="P:Kotlib.Objects.Operation.Amount">
+            <summary>
+            Montant de l'opération
+            </summary>
+            <value>Montant de l'opération.</value>
+        </member>
+        <member name="P:Kotlib.Objects.Operation.ToId">
+            <summary>
+            Identité du destinataire
+            </summary>
+            <value>Identifiant unique de l'identité du destinataire</value>
+        </member>
+        <member name="M:Kotlib.Objects.Operation.ShouldSerializeToId">
+            <summary>
+            Vérifie si la propriété est correctement définie avant d'être sérialisée
+            </summary>
+            <returns><c>true</c></returns>
+        </member>
+        <member name="P:Kotlib.Objects.Operation.TypeId">
+            <summary>
+            Type d'opération (moyen de paiement ou d'encaissement)
+            </summary>
+            <value>Identifiant unique du moyen de paiement ou d'encaissement</value>
+        </member>
+        <member name="M:Kotlib.Objects.Operation.ShouldSerializeTypeId">
+            <summary>
+            Vérifie si la propriété est correctement définie avant d'être sérialisée
+            </summary>
+            <returns><c>true</c></returns>
+        </member>
+        <member name="P:Kotlib.Objects.Operation.CategoryId">
+            <summary>
+            Catégorie dans laquelle classer cette opération
+            </summary>
+            <value>Identifiant unique de la catégorie</value>
+        </member>
+        <member name="M:Kotlib.Objects.Operation.ShouldSerializeCategoryId">
+            <summary>
+            Vérifie si la propriété est correctement définie avant d'être sérialisée
+            </summary>
+            <returns><c>true</c></returns>
+        </member>
+        <member name="P:Kotlib.Objects.Operation.Note">
+            <summary>
+            Notes appliquées à cette catégory.
+            </summary>
+            <value>Notes, 4000 caractères maximum.</value>
+        </member>
+        <member name="P:Kotlib.Objects.Operation.NoteCData">
+            <summary>
+            Note au format brute
+            </summary>
+        </member>
+        <member name="P:Kotlib.Objects.Operation.Active">
+            <summary>
+            Retourne ou définit si l'opération est comptabilisée ou non
+            </summary>
+            <value>Etat de l'opération</value>
+        </member>
+        <member name="M:Kotlib.Objects.Operation.#ctor">
+            <summary>
+            Constructeurs
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Operation.#ctor(System.String,System.DateTime,System.Double,System.Guid,System.Guid,System.Guid,System.Boolean)">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="name">Nom de l'opération.</param>
+            <param name="date">Date de l'opération</param>
+            <param name="amount">Montant de l'opération</param>"
+            <param name="toId">Identifiant unique de l'identité du destinataire</param>
+            <param name="typeId">Identifiant unique du moyen d'encaissement ou de paiement</param>
+            <param name="categoryId">Identifiant unique de la catégorie de classement</param>
+            <param name="active"><c>true</c>, l'opération est comptabilisée, sinon, <c>false</c>. Optionnel, <c>true</c> par défaut</param>
+        </member>
+        <member name="T:Kotlib.Objects.OperationList">
+            <summary>
+            Liste des opérations
+            </summary>
+        </member>
+        <member name="T:Kotlib.Objects.OperationList.OperationEventHandler">
+            <summary>
+            Délégué en charge des événements d'ajout, modification et supppression
+            </summary>
+            <param name="item">Elément concené</param>
+        </member>
+        <member name="E:Kotlib.Objects.OperationList.OperationAddedEvent">
+            <summary>
+            Un élément a été ajouté
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.OperationList.OperationUpdatedEvent">
+            <summary>
+            Un élément a été modifié
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.OperationList.OperationRemovedEvent">
+            <summary>
+            Un élément a été supprimé
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.OperationList.OnOperationAdded(Kotlib.Objects.Operation)">
+            <summary>
+            Informe qu'un élément a été ajouté
+            </summary>
+            <param name="item">Elément concerné</param>
+        </member>
+        <member name="M:Kotlib.Objects.OperationList.OnOperationUpdated(Kotlib.Objects.Operation)">
+            <summary>
+            Informe qu'un élément a été modifié
+            </summary>
+            <param name="item">Elément concerné</param>
+        </member>
+        <member name="M:Kotlib.Objects.OperationList.OnOperationRemoved(Kotlib.Objects.Operation)">
+            <summary>
+            Informe qu'un élément a été supprimé
+            </summary>
+            <param name="item">Elément concerné</param>
+        </member>
+        <member name="P:Kotlib.Objects.OperationList.Empty">
+            <summary>
+            Retourne une liste vide
+            </summary>
+            <value>Liste vide.</value>
+        </member>
+        <member name="P:Kotlib.Objects.OperationList.Defaults">
+            <summary>
+            Retourne une liste des opérations par défaut
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.OperationList.#ctor">
+            <summary>
+            Constructeur
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.OperationList.#ctor(System.Collections.Generic.IEnumerable{Kotlib.Objects.Operation})">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="items">Liste à charger</param>
+        </member>
+        <member name="M:Kotlib.Objects.OperationList.GetById(System.Guid)">
+            <summary>
+            Retourne la première opération trouvée possédant l'identifiant unique passé en paramètre
+            </summary>
+            <returns>Opération trouvée.</returns>
+            <param name="id">Identifiant unique.</param>
+        </member>
+        <member name="P:Kotlib.Objects.OperationList.Item(System.Int32)">
+            <summary>
+            Retourne l'élément à la position <c>index</c>
+            </summary>
+            <param name="index">Position de l'élément.</param>
+        </member>
+        <member name="M:Kotlib.Objects.OperationList.RemoveAt(System.Int32)">
+            <summary>
+            Supprime l'élément de la liste à la position spécifié
+            </summary>
+            <param name="index">Position de l'élément.</param>
+        </member>
+        <member name="M:Kotlib.Objects.OperationList.Clear">
+            <summary>
+            Vide la liste de ses éléments
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.OperationList.Remove(Kotlib.Objects.Operation)">
+            <summary>
+            Supprime un élément de la liste
+            </summary>
+            <returns>true, l'élément est supprimé, sinon, false.</returns>
+            <param name="item">Elément à supprimer.</param>
+        </member>
+        <member name="M:Kotlib.Objects.OperationList.Add(Kotlib.Objects.Operation)">
+            <summary>
+            Ajoute un élément à la liste
+            </summary>
+            <param name="item">Item.</param>
+        </member>
+        <member name="M:Kotlib.Objects.OperationList.Insert(System.Int32,Kotlib.Objects.Operation)">
+            <summary>
+            Insert un élément à la position spécifiée
+            </summary>
+            <param name="index">Position d'insertion.</param>
+            <param name="item">Elément à insérer.</param>
+        </member>
+        <member name="T:Kotlib.Objects.Paytype">
+            <summary>
+            Moyen de paiement
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Paytype.OnPropertyChanged(System.String)">
+            <summary>
+            Informe qu'une propriété est modifiée
+            </summary>
+            <param name="name">Nom de la propriété,
+            ou vide pour le nom de la propriété appelante.</param>
+        </member>
+        <member name="M:Kotlib.Objects.Paytype.OnUpdated(System.Object,System.EventArgs)">
+            <summary>
+            Informe que le dossier financier a été modifié
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.Paytype.PropertyChanged">
+            <summary>
+            Se produit lorsque qu'une propriété est modifiée
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.Paytype.UpdatedEvent">
+            <summary>
+            Se produit lorsque le dossier financier a été modifié
+            </summary>
+        </member>
+        <member name="P:Kotlib.Objects.Paytype.Id">
+            <summary>
+            Identifiant unique
+            </summary>
+            <value>Identifiant unique.</value>
+        </member>
+        <member name="P:Kotlib.Objects.Paytype.Name">
+            <summary>
+            Dénomination du moyen de paiement
+            </summary>
+            <value>Nom, 255 caractères maximum.</value>
+        </member>
+        <member name="M:Kotlib.Objects.Paytype.ShouldSerializeName">
+            <summary>
+            Vérifie si la propriété est correctement définie avant d'être sérialisée
+            </summary>
+            <returns><c>true</c></returns>
+        </member>
+        <member name="M:Kotlib.Objects.Paytype.#ctor">
+            <summary>
+            Constructeurs
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Paytype.#ctor(System.String)">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="name">Nom du moyen de paiement.</param>
+        </member>
+        <member name="T:Kotlib.Objects.Collection">
+            <summary>
+            Moyen d'encaissement
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Collection.#ctor">
+            <summary>
+            Constructeurs
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Collection.#ctor(System.String)">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="name">Nom donné au moyen d'encaissement personnalisé.</param>
+        </member>
+        <member name="T:Kotlib.Objects.BankCard">
+            <summary>
+            Paiement par carte bancaire
+            </summary>
+        </member>
+        <member name="P:Kotlib.Objects.BankCard.Number">
+            <summary>
+            Numéro de la carte bancaire
+            </summary>
+            <value>Numéro de la carte bancaire.</value>
+        </member>
+        <member name="P:Kotlib.Objects.BankCard.CVV">
+            <summary>
+            Numéro CVV/CCV
+            </summary>
+            <value>Numéro CVV/CCV.</value>
+        </member>
+        <member name="P:Kotlib.Objects.BankCard.Date">
+            <summary>
+            Date de validité (année, mois)
+            </summary>
+            <value>Date de validité (année, mois).</value>
+        </member>
+        <member name="P:Kotlib.Objects.BankCard.FlatDate">
+            <summary>
+            Date au format brute
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.BankCard.#ctor">
+            <summary>
+            Constructeurs
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.BankCard.#ctor(System.String)">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="name">Nom donné à la carte bancaire.</param>
+        </member>
+        <member name="T:Kotlib.Objects.Check">
+            <summary>
+            Paiement par chèque
+            </summary>
+        </member>
+        <member name="P:Kotlib.Objects.Check.Number">
+            <summary>
+            Numéro du chèque
+            </summary>
+            <value>Numéro du chèque.</value>
+        </member>
+        <member name="M:Kotlib.Objects.Check.#ctor">
+            <summary>
+            Constructeurs
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Check.#ctor(System.String)">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="name">Nom donné au chèque.</param>
+        </member>
+        <member name="T:Kotlib.Objects.Money">
+            <summary>
+            Paiement en espèces
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Money.#ctor">
+            <summary>
+            Constructeurs
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Money.#ctor(System.String)">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="name">Nom donné au paiment en espèces.</param>
+        </member>
+        <member name="T:Kotlib.Objects.BankDirectDebit">
+            <summary>
+            Prélèvemenent bancaire
+            </summary>
+        </member>
+        <member name="P:Kotlib.Objects.BankDirectDebit.Ref">
+            <summary>
+            Référence / Note du transfer.
+            </summary>
+            <value>Référence / Note du transfer, 4000 caractères maximum.</value>
+        </member>
+        <member name="P:Kotlib.Objects.BankDirectDebit.RefCData">
+            <summary>
+            Référence au format brute
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.BankDirectDebit.#ctor">
+            <summary>
+            Constructeurs
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.BankDirectDebit.#ctor(System.String)">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="name">Nom donné au prélèvement bancaire.</param>
+        </member>
+        <member name="T:Kotlib.Objects.DirectTransfer">
+            <summary>
+            Virement bancaire
+            </summary>
+        </member>
+        <member name="P:Kotlib.Objects.DirectTransfer.Ref">
+            <summary>
+            Référence / Note du transfer.
+            </summary>
+            <value>Référence / Note du transfer, 4000 caractères maximum.</value>
+        </member>
+        <member name="P:Kotlib.Objects.DirectTransfer.RefCData">
+            <summary>
+            Référence au format brute
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.DirectTransfer.#ctor">
+            <summary>
+            Constructeurs
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.DirectTransfer.#ctor(System.String)">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="name">Nom donné au virement bancaire.</param>
+        </member>
+        <member name="T:Kotlib.Objects.LocalTransfer">
+            <summary>
+            Transfert d'argent entre 2 comptes bancaires
+            </summary>
+        </member>
+        <member name="P:Kotlib.Objects.LocalTransfer.Ref">
+            <summary>
+            Référence / Note du transfer.
+            </summary>
+            <value>Référence / Note du transfer, 4000 caractères maximum.</value>
+        </member>
+        <member name="P:Kotlib.Objects.LocalTransfer.RefCData">
+            <summary>
+            Référence au format brute
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.LocalTransfer.#ctor">
+            <summary>
+            Constructeurs
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.LocalTransfer.#ctor(System.String)">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="name">Nom donné au transfert bancaire.</param>
+        </member>
+        <member name="T:Kotlib.Objects.Deposit">
+            <summary>
+            Dépot d'espèces
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Deposit.#ctor">
+            <summary>
+            Constructeurs
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Deposit.#ctor(System.String)">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="name">Nom donné au dépot d'espèces.</param>
+        </member>
+        <member name="T:Kotlib.Objects.PaytypeList">
+            <summary>
+            Liste de moyens de paiements
+            </summary>
+        </member>
+        <member name="T:Kotlib.Objects.PaytypeList.PaytypeEventHandler">
+            <summary>
+            Délégué en charge des événements d'ajout, modification et supppression
+            </summary>
+            <param name="item">Elément concené</param>
+        </member>
+        <member name="E:Kotlib.Objects.PaytypeList.PaytypeAddedEvent">
+            <summary>
+            Un élément a été ajouté
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.PaytypeList.PaytypeUpdatedEvent">
+            <summary>
+            Un élément a été modifié
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.PaytypeList.PaytypeRemovedEvent">
+            <summary>
+            Un élément a été supprimé
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.PaytypeList.OnPaytypeAdded(Kotlib.Objects.Paytype)">
+            <summary>
+            Informe qu'un élément a été ajouté
+            </summary>
+            <param name="item">Elément concerné</param>
+        </member>
+        <member name="M:Kotlib.Objects.PaytypeList.OnPaytypeUpdated(Kotlib.Objects.Paytype)">
+            <summary>
+            Informe qu'un élément a été modifié
+            </summary>
+            <param name="item">Elément concerné</param>
+        </member>
+        <member name="M:Kotlib.Objects.PaytypeList.OnPaytypeRemoved(Kotlib.Objects.Paytype)">
+            <summary>
+            Informe qu'un élément a été supprimé
+            </summary>
+            <param name="item">Elément concerné</param>
+        </member>
+        <member name="P:Kotlib.Objects.PaytypeList.Empty">
+            <summary>
+            Retourne une liste vide
+            </summary>
+            <value>Liste vide.</value>
+        </member>
+        <member name="P:Kotlib.Objects.PaytypeList.Defaults">
+            <summary>
+            Retourne une liste de moyens par défaut
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.PaytypeList.#ctor">
+            <summary>
+            Constructeur
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.PaytypeList.#ctor(System.Collections.Generic.IEnumerable{Kotlib.Objects.Paytype})">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="items">Liste à charger</param>
+        </member>
+        <member name="M:Kotlib.Objects.PaytypeList.GetById(System.Guid)">
+            <summary>
+            Retourne le premier moyen de paiement trouvé possédant l'identifiant unique passé en paramètre
+            </summary>
+            <returns>Moyen de paiement trouvé.</returns>
+            <param name="id">Identifiant unique.</param>
+        </member>
+        <member name="M:Kotlib.Objects.PaytypeList.GetAvaillablePaytypes">
+            <summary>
+            Retourne la liste des moyens de paiements et d'encaissements disponibles
+            </summary>
+            <returns>Liste des moyens disponibles</returns>
+        </member>
+        <member name="M:Kotlib.Objects.PaytypeList.GetAvaillablePaytypes(System.String)">
+            <summary>
+            Retourne la liste des moyens de paiements ou d'encaissements disponibles
+            </summary>
+            <param name="categoryName">"payment" ou "collection"</param>
+            <returns>Liste des moyens disponibles</returns>
+        </member>
+        <member name="M:Kotlib.Objects.PaytypeList.GetAvaillablePayments">
+            <summary>
+            Retourne la liste des moyens de paiements disponibles
+            </summary>
+            <returns>Liste des moyens de paiements (nom, description, type)</returns>
+        </member>
+        <member name="M:Kotlib.Objects.PaytypeList.GetAvaillableCollections">
+            <summary>
+            Retourne la liste des moyens d'encaissements disponibles
+            </summary>
+            <returns>Liste des moyens d'encaissements (nom, description, type)</returns>
+        </member>
+        <member name="P:Kotlib.Objects.PaytypeList.Item(System.Int32)">
+            <summary>
+            Retourne l'élément à la position <c>index</c>
+            </summary>
+            <param name="index">Position de l'élément.</param>
+        </member>
+        <member name="M:Kotlib.Objects.PaytypeList.RemoveAt(System.Int32)">
+            <summary>
+            Supprime l'élément de la liste à la position spécifié
+            </summary>
+            <param name="index">Position de l'élément.</param>
+        </member>
+        <member name="M:Kotlib.Objects.PaytypeList.Clear">
+            <summary>
+            Vide la liste de ses éléments
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.PaytypeList.Remove(Kotlib.Objects.Paytype)">
+            <summary>
+            Supprime un élément de la liste
+            </summary>
+            <returns>true, l'élément est supprimé, sinon, false.</returns>
+            <param name="item">Elément à supprimer.</param>
+        </member>
+        <member name="M:Kotlib.Objects.PaytypeList.Add(Kotlib.Objects.Paytype)">
+            <summary>
+            Ajoute un élément à la liste
+            </summary>
+            <param name="item">Item.</param>
+        </member>
+        <member name="M:Kotlib.Objects.PaytypeList.Insert(System.Int32,Kotlib.Objects.Paytype)">
+            <summary>
+            Insert un élément à la position spécifiée
+            </summary>
+            <param name="index">Position d'insertion.</param>
+            <param name="item">Elément à insérer.</param>
+        </member>
+        <member name="T:Kotlib.Objects.ThirdpartyList">
+            <summary>
+            Liste de tiers
+            </summary>
+        </member>
+        <member name="T:Kotlib.Objects.ThirdpartyList.ThirdpartyEventHandler">
+            <summary>
+            Délégué en charge des événements d'ajout, modification et supppression
+            </summary>
+            <param name="item">Elément concené</param>
+        </member>
+        <member name="E:Kotlib.Objects.ThirdpartyList.ThirdpartyAddedEvent">
+            <summary>
+            Un élément a été ajouté
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.ThirdpartyList.ThirdpartyUpdatedEvent">
+            <summary>
+            Un élément a été modifié
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.ThirdpartyList.ThirdpartyRemovedEvent">
+            <summary>
+            Un élément a été supprimé
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.ThirdpartyList.OnThirdpartyAdded(Kotlib.Objects.Identity)">
+            <summary>
+            Informe qu'un élément a été ajouté
+            </summary>
+            <param name="item">Elément concerné</param>
+        </member>
+        <member name="M:Kotlib.Objects.ThirdpartyList.OnThirdpartyUpdated(Kotlib.Objects.Identity)">
+            <summary>
+            Informe qu'un élément a été modifié
+            </summary>
+            <param name="item">Elément concerné</param>
+        </member>
+        <member name="M:Kotlib.Objects.ThirdpartyList.OnThirdpartyRemoved(Kotlib.Objects.Identity)">
+            <summary>
+            Informe qu'un élément a été supprimé
+            </summary>
+            <param name="item">Elément concerné</param>
+        </member>
+        <member name="P:Kotlib.Objects.ThirdpartyList.Empty">
+            <summary>
+            Retourne une liste vide
+            </summary>
+            <value>Liste vide.</value>
+        </member>
+        <member name="M:Kotlib.Objects.ThirdpartyList.#ctor">
+            <summary>
+            Constructeur
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.ThirdpartyList.#ctor(System.Collections.Generic.IEnumerable{Kotlib.Objects.Identity})">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="items">Liste à charger</param>
+        </member>
+        <member name="M:Kotlib.Objects.ThirdpartyList.GetById(System.Guid)">
+            <summary>
+            Retourne le premier tiers trouvé possédant l'identifiant unique passé en paramètre
+            </summary>
+            <returns>Tiers trouvé.</returns>
+            <param name="id">Identifiant unique.</param>
+        </member>
+        <member name="P:Kotlib.Objects.ThirdpartyList.Item(System.Int32)">
+            <summary>
+            Retourne l'élément à la position <c>index</c>
+            </summary>
+            <param name="index">Position de l'élément.</param>
+        </member>
+        <member name="M:Kotlib.Objects.ThirdpartyList.RemoveAt(System.Int32)">
+            <summary>
+            Supprime l'élément de la liste à la position spécifié
+            </summary>
+            <param name="index">Position de l'élément.</param>
+        </member>
+        <member name="M:Kotlib.Objects.ThirdpartyList.Clear">
+            <summary>
+            Vide la liste de ses éléments
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.ThirdpartyList.Remove(Kotlib.Objects.Identity)">
+            <summary>
+            Supprime un élément de la liste
+            </summary>
+            <returns>true, l'élément est supprimé, sinon, false.</returns>
+            <param name="item">Elément à supprimer.</param>
+        </member>
+        <member name="M:Kotlib.Objects.ThirdpartyList.Add(Kotlib.Objects.Identity)">
+            <summary>
+            Ajoute un élément à la liste
+            </summary>
+            <param name="item">Item.</param>
+        </member>
+        <member name="M:Kotlib.Objects.ThirdpartyList.Insert(System.Int32,Kotlib.Objects.Identity)">
+            <summary>
+            Insert un élément à la position spécifiée
+            </summary>
+            <param name="index">Position d'insertion.</param>
+            <param name="item">Elément à insérer.</param>
+        </member>
+        <member name="T:Kotlib.Objects.Transfer">
+            <summary>
+            Représente un transfert bancaire.
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Transfer.OnPropertyChanged(System.String)">
+            <summary>
+            Informe qu'une propriété est modifiée
+            </summary>
+            <param name="name">Nom de la propriété,
+            ou vide pour le nom de la propriété appelante.</param>
+        </member>
+        <member name="M:Kotlib.Objects.Transfer.OnUpdated(System.Object,System.EventArgs)">
+            <summary>
+            Informe que l'opération a été modifiée
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.Transfer.PropertyChanged">
+            <summary>
+            Se produit lorsque qu'une propriété est modifiée
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.Transfer.UpdatedEvent">
+            <summary>
+            Se produit lorsque le dossier financier a été modifié
+            </summary>
+        </member>
+        <member name="P:Kotlib.Objects.Transfer.Id">
+            <summary>
+            Identifiant unique
+            </summary>
+            <value>Identifiant unique.</value>
+        </member>
+        <member name="P:Kotlib.Objects.Transfer.Name">
+            <summary>
+            Nom donné au transfert
+            </summary>
+            <example>Virement Livret A</example>
+            <value>Nom, 255 caractères maximum.</value>
+        </member>
+        <member name="M:Kotlib.Objects.Transfer.ShouldSerializeName">
+            <summary>
+            Vérifie si la propriété est correctement définie avant d'être sérialisée
+            </summary>
+            <returns><c>true</c></returns>
+        </member>
+        <member name="P:Kotlib.Objects.Transfer.Date">
+            <summary>
+            Date du transfert
+            </summary>
+            <value>Date du transfert</value>
+        </member>
+        <member name="P:Kotlib.Objects.Transfer.Amount">
+            <summary>
+            Montant du transfert
+            </summary>
+            <value>Montant du transfert.</value>
+        </member>
+        <member name="P:Kotlib.Objects.Transfer.FromAccountId">
+            <summary>
+            Identifiant unique du compte émetteur
+            </summary>
+            <value>Identifiant unique du compte émetteur</value>
+        </member>
+        <member name="M:Kotlib.Objects.Transfer.ShouldSerializeFromAccountId">
+            <summary>
+            Vérifie si la propriété est correctement définie avant d'être sérialisée
+            </summary>
+            <returns><c>true</c></returns>
+        </member>
+        <member name="P:Kotlib.Objects.Transfer.ToAccountId">
+            <summary>
+            Identifiant unique du compte destinataire
+            </summary>
+            <value>Identifiant unique du compte destinataire</value>
+        </member>
+        <member name="M:Kotlib.Objects.Transfer.ShouldSerializeToAccountId">
+            <summary>
+            Vérifie si la propriété est correctement définie avant d'être sérialisée
+            </summary>
+            <returns><c>true</c></returns>
+        </member>
+        <member name="P:Kotlib.Objects.Transfer.Note">
+            <summary>
+            Notes appliquées à ce transfert.
+            </summary>
+            <value>Notes, 4000 caractères maximum.</value>
+        </member>
+        <member name="P:Kotlib.Objects.Transfer.NoteCData">
+            <summary>
+            Note au format brute
+            </summary>
+        </member>
+        <member name="P:Kotlib.Objects.Transfer.Active">
+            <summary>
+            Retourne ou définit si le transfert comptabilisée ou non
+            </summary>
+            <value>Etat du transfert</value>
+        </member>
+        <member name="M:Kotlib.Objects.Transfer.#ctor">
+            <summary>
+            Constructeurs
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.Transfer.#ctor(System.String,System.DateTime,System.Double,System.Guid,System.Guid,System.Boolean)">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="name">Nom du transfert.</param>
+            <param name="date">Date du transfert</param>
+            <param name="amount">Montant du transfert</param>"
+            <param name="fromAccountId">Identifiant unique du compte émetteur</param>
+            <param name="toAccountId">Identifiant unique du compte destinataire</param>
+            <param name="active"><c>true</c>, le transfert est comptabilisé, sinon, <c>false</c>. Optionnel, <c>true</c> par défaut</param>
+        </member>
+        <member name="T:Kotlib.Objects.TransferList">
+            <summary>
+            Liste des transferts
+            </summary>
+        </member>
+        <member name="T:Kotlib.Objects.TransferList.TransferEventHandler">
+            <summary>
+            Délégué en charge des événements d'ajout, modification et supppression
+            </summary>
+            <param name="item">Elément concené</param>
+        </member>
+        <member name="E:Kotlib.Objects.TransferList.TransferAddedEvent">
+            <summary>
+            Un élément a été ajouté
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.TransferList.TransferUpdatedEvent">
+            <summary>
+            Un élément a été modifié
+            </summary>
+        </member>
+        <member name="E:Kotlib.Objects.TransferList.TransferRemovedEvent">
+            <summary>
+            Un élément a été supprimé
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.TransferList.OnTransferAdded(Kotlib.Objects.Transfer)">
+            <summary>
+            Informe qu'un élément a été ajouté
+            </summary>
+            <param name="item">Elément concerné</param>
+        </member>
+        <member name="M:Kotlib.Objects.TransferList.OnTransferUpdated(Kotlib.Objects.Transfer)">
+            <summary>
+            Informe qu'un élément a été modifié
+            </summary>
+            <param name="item">Elément concerné</param>
+        </member>
+        <member name="M:Kotlib.Objects.TransferList.OnTransferRemoved(Kotlib.Objects.Transfer)">
+            <summary>
+            Informe qu'un élément a été supprimé
+            </summary>
+            <param name="item">Elément concerné</param>
+        </member>
+        <member name="P:Kotlib.Objects.TransferList.Empty">
+            <summary>
+            Retourne une liste vide
+            </summary>
+            <value>Liste vide.</value>
+        </member>
+        <member name="P:Kotlib.Objects.TransferList.Defaults">
+            <summary>
+            Retourne une liste des opérations par défaut
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.TransferList.#ctor">
+            <summary>
+            Constructeur
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.TransferList.#ctor(System.Collections.Generic.IEnumerable{Kotlib.Objects.Transfer})">
+            <summary>
+            Constructeur
+            </summary>
+            <param name="items">Liste à charger</param>
+        </member>
+        <member name="M:Kotlib.Objects.TransferList.GetById(System.Guid)">
+            <summary>
+            Retourne le premièr transfert trouvé possédant l'identifiant unique passé en paramètre
+            </summary>
+            <returns>Transfert trouvé.</returns>
+            <param name="id">Identifiant unique.</param>
+        </member>
+        <member name="M:Kotlib.Objects.TransferList.PartialAmountAt(Kotlib.Objects.Account,System.DateTime,System.Boolean)">
+            <summary>
+            Retourne le solde des transferts à la date souhaité
+            </summary>
+            <param name="account">Element bancaire associé aux transferts</param>
+            <param name="date">Date souhaitée</param>
+            <param name="addInitialAmount"><c>true</c>, ajoute le solde initial, sinon, <c>false</c></param>
+            <returns>Solde</returns>
+        </member>
+        <member name="P:Kotlib.Objects.TransferList.Item(System.Int32)">
+            <summary>
+            Retourne l'élément à la position <c>index</c>
+            </summary>
+            <param name="index">Position de l'élément.</param>
+        </member>
+        <member name="M:Kotlib.Objects.TransferList.RemoveAt(System.Int32)">
+            <summary>
+            Supprime l'élément de la liste à la position spécifié
+            </summary>
+            <param name="index">Position de l'élément.</param>
+        </member>
+        <member name="M:Kotlib.Objects.TransferList.Clear">
+            <summary>
+            Vide la liste de ses éléments
+            </summary>
+        </member>
+        <member name="M:Kotlib.Objects.TransferList.Remove(Kotlib.Objects.Transfer)">
+            <summary>
+            Supprime un élément de la liste
+            </summary>
+            <returns>true, l'élément est supprimé, sinon, false.</returns>
+            <param name="item">Elément à supprimer.</param>
+        </member>
+        <member name="M:Kotlib.Objects.TransferList.Add(Kotlib.Objects.Transfer)">
+            <summary>
+            Ajoute un élément à la liste
+            </summary>
+            <param name="item">Item.</param>
+        </member>
+        <member name="M:Kotlib.Objects.TransferList.Insert(System.Int32,Kotlib.Objects.Transfer)">
+            <summary>
+            Insert un élément à la position spécifiée
+            </summary>
+            <param name="index">Position d'insertion.</param>
+            <param name="item">Elément à insérer.</param>
+        </member>
+        <member name="T:Kotlib.Tools.Currency">
+            <summary>
+            Contient les informations culturelles nécessaires
+            </summary>
+        </member>
+        <member name="P:Kotlib.Tools.Currency.CultureName">
+            <summary>
+            Nom de la culture
+            eg: fr_FR , en_US, etc.
+            </summary>
+        </member>
+        <member name="P:Kotlib.Tools.Currency.CultureFullname">
+            <summary>
+            Nom complet
+            eg: Français (France)
+            </summary>
+        </member>
+        <member name="P:Kotlib.Tools.Currency.RegionName">
+            <summary>
+            Nom de la région du monde
+            eg: Portugal, France
+            </summary>
+        </member>
+        <member name="P:Kotlib.Tools.Currency.Symbol">
+            <summary>
+            Symbole monétaire
+            eg: $, $, £
+            </summary>
+        </member>
+        <member name="P:Kotlib.Tools.Currency.Name">
+            <summary>
+            Dénomination ISO de la monnaie
+            eg: EUR
+            </summary>
+        </member>
+        <member name="P:Kotlib.Tools.Currency.IsCurrentCulture">
+            <summary>
+            Indique si la culture correspond à la culture du système
+            </summary>
+        </member>
+        <member name="M:Kotlib.Tools.Currency.#ctor(System.Globalization.CultureInfo)">
+            <summary>
+            Contructeur
+            </summary>
+            <param name="ci">Informations culturelles</param>
+        </member>
+        <member name="M:Kotlib.Tools.Currency.Format(System.Double,System.Boolean)">
+            <summary>
+            Format une valeur monétaire
+            </summary>
+            <param name="value">Valeur monétaire</param>
+            <param name="iso">Formattage ISO</param>
+            <returns>Valeur formattée</returns>
+        </member>
+        <member name="M:Kotlib.Tools.Currency.Format(System.Decimal,System.Boolean)">
+            <summary>
+            Format une valeur monétaire
+            </summary>
+            <param name="value">Valeur monétaire</param>
+            <param name="iso">Formattage ISO</param>
+            <returns>Valeur formattée</returns>
+        </member>
+        <member name="M:Kotlib.Tools.Currency.Format(System.Single,System.Boolean)">
+            <summary>
+            Format une valeur monétaire
+            </summary>
+            <param name="value">Valeur monétaire</param>
+            <param name="iso">Formattage ISO</param>
+            <returns>Valeur formattée</returns>
+        </member>
+        <member name="M:Kotlib.Tools.Currency.Format(System.Int32,System.Boolean)">
+            <summary>
+            Format une valeur monétaire
+            </summary>
+            <param name="value">Valeur monétaire</param>
+            <param name="iso">Formattage ISO</param>
+            <returns>Valeur formattée</returns>
+        </member>
+        <member name="T:Kotlib.Tools.Currencies">
+            <summary>
+            Outils pour la gestion de la culture.
+            </summary>
+        </member>
+        <member name="P:Kotlib.Tools.Currencies.Availlable">
+            <summary>
+            Retourne la liste des cultures disponibles et leurs informations.
+            </summary>
+            <returns>Liste des cultures</returns>
+        </member>
+    </members>
+</doc>

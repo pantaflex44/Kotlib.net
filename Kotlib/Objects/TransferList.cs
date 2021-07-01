@@ -148,7 +148,7 @@ namespace Kotlib.Objects
 		/// <param name="date">Date souhaitée</param>
 		/// <param name="addInitialAmount"><c>true</c>, ajoute le solde initial, sinon, <c>false</c></param>
 		/// <returns>Solde</returns>
-		public double PartialAmountAt(Account account, DateTime date, bool addInitialAmount = true)
+		public decimal PartialAmountAt(Account account, DateTime date, bool addInitialAmount = true)
 		{
 			var f = Items.Where(a => a.Date <= date && a.FromAccountId.Equals(account.Id)).Select(a => a.Amount).ToList();
 			var sf = Math.Abs(f.Sum());
@@ -156,7 +156,7 @@ namespace Kotlib.Objects
 			var t = Items.Where(a => a.Date <= date && a.ToAccountId.Equals(account.Id)).Select(a => a.Amount).ToList();
 			var st = Math.Abs(t.Sum());
 			
-			var amts = new double[] { (addInitialAmount ? account.InitialAmount : 0.0d), -sf, st };
+			var amts = new decimal[] { (addInitialAmount ? account.InitialAmount : 0m), -sf, st };
 			return amts.Sum();
 		}
 		
@@ -176,7 +176,7 @@ namespace Kotlib.Objects
 					
 				base[index] = value;
 				
-				base[index].UpdatedEvent += (sender, e) => OnTransferUpdated((Transfer)sender);
+				base[index].UpdatedEvent += (sender, e) => OnTransferUpdated(base[index]);
 				OnTransferAdded(base[index]);
 			}
 		}
@@ -227,7 +227,7 @@ namespace Kotlib.Objects
 		public new void Add(Transfer item)
 		{
 			OnTransferAdded(item);
-			item.UpdatedEvent += (sender, e) => OnTransferUpdated((Transfer)sender);
+			item.UpdatedEvent += (sender, e) => OnTransferUpdated(item);
 			base.Add(item);
 		}
 		
@@ -239,7 +239,7 @@ namespace Kotlib.Objects
 		public new void Insert(int index, Transfer item)
 		{
 			OnTransferAdded(item);
-			item.UpdatedEvent += (sender, e) => OnTransferUpdated((Transfer)sender);
+			item.UpdatedEvent += (sender, e) => OnTransferUpdated(item);
 			base.Insert(index, item);
 		}
 		

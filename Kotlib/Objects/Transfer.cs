@@ -33,7 +33,7 @@ namespace Kotlib.Objects
 	/// Représente un transfert bancaire.
 	/// </summary>
 	[XmlRoot(ElementName = "Transfer")]
-	public class Transfer: INotifyPropertyChanged
+	public class Transfer: IEventAction, INotifyPropertyChanged
 	{
 		
 		#region Fonctions privées
@@ -163,13 +163,13 @@ namespace Kotlib.Objects
 			}
 		}
 		
-		private double _amount = 0.0d;
+		private decimal _amount = 0m;
 		/// <summary>
 		/// Montant du transfert
 		/// </summary>
 		/// <value>Montant du transfert.</value>
 		[XmlAttribute(AttributeName = "amount")]
-		public double Amount
+		public decimal Amount
 		{
 			get { return _amount; }
 			set
@@ -310,7 +310,7 @@ namespace Kotlib.Objects
 		/// <param name="fromAccountId">Identifiant unique du compte émetteur</param>
 		/// <param name="toAccountId">Identifiant unique du compte destinataire</param>
 		/// <param name="active"><c>true</c>, le transfert est comptabilisé, sinon, <c>false</c>. Optionnel, <c>true</c> par défaut</param>
-		public Transfer(string name, DateTime date, double amount, Guid fromAccountId, Guid toAccountId, bool active = true)
+		public Transfer(string name, DateTime date, decimal amount, Guid fromAccountId, Guid toAccountId, bool active = true)
 			: this()
 		{
 			Name = name;

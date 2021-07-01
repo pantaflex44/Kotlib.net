@@ -174,13 +174,13 @@ namespace Kotlib.Objects
 			}
 		}
 
-		private double _initialamount = 0.0d;
+		private decimal _initialamount = 0m;
 		/// <summary>
 		/// Solde initial
 		/// </summary>
 		/// <value>Solde initial.</value>
 		[XmlAttribute(AttributeName = "initial_amount")]
-		public double InitialAmount
+		public decimal InitialAmount
 		{
 			get { return _initialamount; }
 			set
@@ -197,7 +197,7 @@ namespace Kotlib.Objects
 		/// Retourne le solde des opérations
 		/// </summary>
 		[XmlIgnore()]
-		public double PartialAmount
+		public decimal PartialAmount
 		{
 			get
 			{
@@ -205,18 +205,18 @@ namespace Kotlib.Objects
 			}
 		}
 		
-		private double _allowedcredit = 0.0d;
+		private decimal _allowedcredit = 0m;
 		/// <summary>
 		/// Découvert autorisé
 		/// </summary>
 		/// <value>Découvert autorisé.</value>
 		[XmlAttribute(AttributeName = "allowed_credit")]
-		public double AllowedCredit
+		public decimal AllowedCredit
 		{
 			get { return _allowedcredit; }
 			set
 			{
-				if (value < 0.0d)
+				if (value < 0m)
 					throw new ArgumentException("Le montant du découvert autorisé doit être positif.");
 
 				if (!value.Equals(_allowedcredit))
@@ -325,8 +325,8 @@ namespace Kotlib.Objects
 		{
 			Id = Guid.NewGuid();
 			Paytypes = PaytypeList.Empty;
-			InitialAmount = 0.0d;
-			AllowedCredit = 0.0d;
+			InitialAmount = 0m;
+			AllowedCredit = 0m;
 			Operations = OperationList.Empty;
 		}
 		/// <summary>
@@ -347,7 +347,7 @@ namespace Kotlib.Objects
 		/// <param name="date">Date souhaitée</param>
 		/// <param name="addInitialAmount"><c>true</c>, ajoute le solde initial, sinon, <c>false</c></param>
 		/// <returns>Solde</returns>
-		public double PartialAmountAt(DateTime date, bool addInitialAmount = true)
+		public decimal PartialAmountAt(DateTime date, bool addInitialAmount = true)
 		{
 			var amts = Operations.Items.Where(a => a.Date <= date).Select(a => a.Amount).ToList();
 			
@@ -608,8 +608,8 @@ namespace Kotlib.Objects
 		public Wallet()
 			: base()
 		{
-			AllowedCredit = 0.0d;
-			InitialAmount = (double)Math.Abs(InitialAmount);
+			AllowedCredit = 0m;
+			InitialAmount = (decimal)Math.Abs(InitialAmount);
 		}
 		/// <summary>
 		/// Constructeur
@@ -619,8 +619,8 @@ namespace Kotlib.Objects
 		public Wallet(string name, Identity owner)
 			: base(name, owner)
 		{
-			AllowedCredit = 0.0d;
-			InitialAmount = (double)Math.Abs(InitialAmount);
+			AllowedCredit = 0m;
+			InitialAmount = (decimal)Math.Abs(InitialAmount);
 		}
 	}
 

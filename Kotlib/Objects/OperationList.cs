@@ -157,7 +157,7 @@ namespace Kotlib.Objects
 					
 				base[index] = value;
 				
-				base[index].UpdatedEvent += (sender, e) => OnOperationUpdated((Operation)sender);
+				base[index].UpdatedEvent += (sender, e) => OnOperationUpdated(base[index]);
 				OnOperationAdded(base[index]);
 			}
 		}
@@ -208,7 +208,7 @@ namespace Kotlib.Objects
 		public new void Add(Operation item)
 		{
 			OnOperationAdded(item);
-			item.UpdatedEvent += (sender, e) => OnOperationUpdated((Operation)sender);
+			item.UpdatedEvent += (sender, e) => OnOperationUpdated(item);
 			base.Add(item);
 		}
 		
@@ -220,7 +220,7 @@ namespace Kotlib.Objects
 		public new void Insert(int index, Operation item)
 		{
 			OnOperationAdded(item);
-			item.UpdatedEvent += (sender, e) => OnOperationUpdated((Operation)sender);
+			item.UpdatedEvent += (sender, e) => OnOperationUpdated(item);
 			base.Insert(index, item);
 		}
 		

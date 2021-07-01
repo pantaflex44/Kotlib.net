@@ -176,7 +176,7 @@ namespace Kotlib.Objects
 					
 				base[index] = value;
 				
-				base[index].UpdatedEvent += (sender, e) => OnAccountUpdated((Account)sender);
+				base[index].UpdatedEvent += (sender, e) => OnAccountUpdated(base[index]);
 				OnAccountAdded(base[index]);
 			}
 		}
@@ -232,7 +232,7 @@ namespace Kotlib.Objects
 		public new void Add(Account item)
 		{
 			OnAccountAdded(item);
-			item.UpdatedEvent += (sender, e) => OnAccountUpdated((Account)sender);
+			item.UpdatedEvent += (sender, e) => OnAccountUpdated(item);
 			base.Add(item);
 		}
 		
@@ -244,7 +244,7 @@ namespace Kotlib.Objects
 		public new void Insert(int index, Account item)
 		{
 			OnAccountAdded(item);
-			item.UpdatedEvent += (sender, e) => OnAccountUpdated((Account)sender);
+			item.UpdatedEvent += (sender, e) => OnAccountUpdated(item);
 			base.Insert(index, item);
 		}
 

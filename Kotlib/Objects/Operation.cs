@@ -34,7 +34,7 @@ namespace Kotlib.Objects
 	/// Représente une opération bancaire.
 	/// </summary>
 	[XmlRoot(ElementName = "Operation")]
-	public class Operation: INotifyPropertyChanged
+	public class Operation: IEventAction, INotifyPropertyChanged
 	{
 		
 		#region Fonctions privées
@@ -164,13 +164,13 @@ namespace Kotlib.Objects
 			}
 		}
 		
-		private double _amount = 0.0d;
+		private decimal _amount = 0m;
 		/// <summary>
 		/// Montant de l'opération
 		/// </summary>
 		/// <value>Montant de l'opération.</value>
 		[XmlAttribute(AttributeName = "amount")]
-		public double Amount
+		public decimal Amount
 		{
 			get { return _amount; }
 			set
@@ -341,7 +341,7 @@ namespace Kotlib.Objects
 		/// <param name="typeId">Identifiant unique du moyen d'encaissement ou de paiement</param>
 		/// <param name="categoryId">Identifiant unique de la catégorie de classement</param>
 		/// <param name="active"><c>true</c>, l'opération est comptabilisée, sinon, <c>false</c>. Optionnel, <c>true</c> par défaut</param>
-		public Operation(string name, DateTime date, double amount, Guid toId, Guid typeId, Guid categoryId, bool active = true)
+		public Operation(string name, DateTime date, decimal amount, Guid toId, Guid typeId, Guid categoryId, bool active = true)
 			: this()
 		{
 			Name = name;

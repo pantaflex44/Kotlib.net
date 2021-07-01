@@ -205,7 +205,7 @@ namespace Kotlib.Objects
 					
 				base[index] = value;
 				
-				base[index].UpdatedEvent += (sender, e) => OnPaytypeUpdated((Paytype)sender);
+				base[index].UpdatedEvent += (sender, e) => OnPaytypeUpdated(base[index]);
 				OnPaytypeAdded(base[index]);
 			}
 		}
@@ -256,7 +256,7 @@ namespace Kotlib.Objects
 		public new void Add(Paytype item)
 		{
 			OnPaytypeAdded(item);
-			item.UpdatedEvent += (sender, e) => OnPaytypeUpdated((Paytype)sender);
+			item.UpdatedEvent += (sender, e) => OnPaytypeUpdated(item);
 			base.Add(item);
 		}
 		
@@ -268,7 +268,7 @@ namespace Kotlib.Objects
 		public new void Insert(int index, Paytype item)
 		{
 			OnPaytypeAdded(item);
-			item.UpdatedEvent += (sender, e) => OnPaytypeUpdated((Paytype)sender);
+			item.UpdatedEvent += (sender, e) => OnPaytypeUpdated(item);
 			base.Insert(index, item);
 		}
 		

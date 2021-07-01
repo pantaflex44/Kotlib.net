@@ -25,6 +25,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using Kotlib.Objects;
@@ -166,16 +168,35 @@ namespace Kotlib
 		/// </summary>
 		/// <param name="date">Date de l'occurence</param>
 		/// <param name="postEvent">Occurence et ses informations</param>
-		private void EventPosted(DateTime date, Event postEvent)
+		private async void EventPosted(DateTime date, Event postEvent)
 		{
-			var account = Accounts.GetById(postEvent.AccountId);
-			if (!account.Equals(default(Account)))
-			{
-				//TODO: Traiter l'opération ou le transfert à poster
-				
-				
-				OnPostRaised(date, postEvent);
-			}
+			await Task.Run(() =>
+				{
+					var ea_type = postEvent.EventAction.GetType();
+					if (ea_type == typeof(Operation))
+					{
+						var operation = (Operation)postEvent.EventAction;
+						operation.Date = date;
+						var to = Accounts.GetById(operation.ToId);
+						if (!to.Equals(default(Account)))
+						{
+							to.Operations.Add(operation);
+							OnPostRaised(date, postEvent);
+						}
+					}
+					else if (ea_type == typeof(Transfer))
+					{
+						var transfer = (Transfer)postEvent.EventAction;
+						transfer.Date = date;
+						var to = Accounts.GetById(transfer.ToAccountId);
+						var from = Accounts.GetById(transfer.FromAccountId);
+						if (!to.Equals(default(Account)) && !from.Equals(default(Account)))
+						{
+							Accounts.Transfers.Add(transfer);
+							OnPostRaised(date, postEvent);
+						}
+					}
+				});
 		}
 		
 		#endregion
@@ -679,12 +700,12 @@ namespace Kotlib
 		/// <param name="date">Date du solde</param>
 		/// <param name="addInitialAmount"><c>true</c>, ajoute le solde initial, sinon, <c>false</c></param>
 		/// <returns>Solde total</returns>
-		public double AmountAt(Account account, DateTime date, bool addInitialAmount = true)
+		public decimal AmountAt(Account account, DateTime date, bool addInitialAmount = true)
 		{
 			var amount_account = account.PartialAmountAt(date, addInitialAmount: false);
 			var amount_transfers = Accounts.Transfers.PartialAmountAt(account, date, addInitialAmount: false);
 			
-			return (addInitialAmount ? account.InitialAmount : 0.0d) + amount_account + amount_transfers;
+			return (addInitialAmount ? account.InitialAmount : 0) + amount_account + amount_transfers;
 		}
 		
 		/// <summary>
@@ -693,9 +714,9 @@ namespace Kotlib
 		/// <param name="date">Date de solde</param>
 		/// <param name="addInitialAmount"><c>true</c>, ajoute le solde initial, sinon, <c>false</c></param>
 		/// <returns>Solde total</returns>
-		public double AmountAt(DateTime date, bool addInitialAmount = true)
+		public decimal AmountAt(DateTime date, bool addInitialAmount = true)
 		{
-			var amounts = 0.0d;
+			var amounts = 0m;
 			
 			Accounts.Items.ForEach(a =>
 				{

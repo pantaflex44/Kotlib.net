@@ -20,6 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using Kotlib.Objects;
@@ -70,7 +71,7 @@ namespace Kotlib.test
 					Phone = "0102030405"
 				},
 				Paytypes = new PaytypeList() { bc },
-				InitialAmount = 300.0d
+				InitialAmount = 300.0m
 			};
 			
 			//###############################################################################################################
@@ -80,7 +81,7 @@ namespace Kotlib.test
 				         name: "Mon dossier financier",
 				         owner: me,
 				         accounts: new AccountList() { ba },
-				         cultureName: "en_US",
+				         cultureName: "fr_FR",
 				         loadDefaults: true,
 				         paytypes: new PaytypeList() { bc }
 			         );
@@ -97,10 +98,11 @@ namespace Kotlib.test
 			fi.Events.PostEventRemovedEvent += (postEvent) => Console.WriteLine("fi1 - Suppression de la programmation id {1}, '{0}'", postEvent.Name, postEvent.Id);
 			fi.PostRaisedEvent += (date, postEvent) =>
 			{
-				Console.WriteLine("fi1 - L'occurence '{0}' programmée pour le {1} sur le compte {2} vient dêtre postée.",
+				Console.WriteLine("fi1 - L'occurence '{0}' ({2}, {3}) programmée pour le {1} vient dêtre postée.",
 					postEvent.Name,
 					date.ToLongDateString(),
-					fi.Accounts.GetById(postEvent.AccountId).Name);
+					postEvent.EventAction.Name,
+					fi.Currency.Format(postEvent.EventAction.Amount));
 				Console.WriteLine("dates restantes: {0}", 
 					string.Join(", ", postEvent.GetNextCalendar().Select(d => d.ToLongDateString())));
 				Console.WriteLine("prochaine date: {0} ({1}/{2} occurences restantes)\r\n",
@@ -139,8 +141,13 @@ namespace Kotlib.test
 			// Création d'une nouvelle programmation
 			Console.WriteLine();
 			var p = new Event(name: "essai",
-				        accountId: fi.Accounts[0].Id,
-				        startDate: new DateTime(2021, 5, 12),
+				        eventAction: new Operation(name: "Abonnement YouTube",
+					        date: new DateTime(2021, 7, 5),
+					        amount: -14m,
+					        toId: ba.Id,
+					        typeId: bc.Id,
+					        categoryId: fi.Categories[0].Id,
+					        active: true),
 				        count: 4,
 				        step: 1, 
 				        type: RepeatType.Month);
@@ -187,10 +194,11 @@ namespace Kotlib.test
 			fi2.Events.PostEventRemovedEvent += (postEvent) => Console.WriteLine("fi2 - Suppression de la programmation id {1}, '{0}'", postEvent.Name, postEvent.Id);
 			fi2.PostRaisedEvent += (date, postEvent) =>
 			{
-				Console.WriteLine("fi2 - L'occurence '{0}' programmée pour le {1} sur le compte {2} vient dêtre postée.",
+				Console.WriteLine("fi2 - L'occurence '{0}' ({2}, {3}) programmée pour le {1} vient dêtre postée.",
 					postEvent.Name,
 					date.ToLongDateString(),
-					fi2.Accounts.GetById(postEvent.AccountId).Name);
+					postEvent.EventAction.Name,
+					fi2.Currency.Format(postEvent.EventAction.Amount));
 				Console.WriteLine("dates restantes: {0}", 
 					string.Join(", ", postEvent.GetNextCalendar().Select(d => d.ToLongDateString())));
 				Console.WriteLine("prochaine date: {0} ({1}/{2} occurences restantes)\r\n",
@@ -251,6 +259,12 @@ namespace Kotlib.test
 				if (c.IsCurrentCulture)
 					Console.WriteLine("Culture système: {0} | Monnaie: {1} {2}", c.CultureFullname, c.Symbol, c.Name);
 			}
+			
+			
+
+
+			
+			
 			
 
 			

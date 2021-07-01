@@ -209,7 +209,7 @@ namespace Kotlib.Objects
 				OnPostEventRemoved(base[index]);
 				
 				base[index] = value;
-				base[index].UpdatedEvent += (sender, e) => OnPostEventUpdated((Event)sender);
+				base[index].UpdatedEvent += (sender, e) => OnPostEventUpdated(base[index]);
 				
 				_AddPostRaisedEvent(base[index]);
 				OnPostEventAdded(base[index]);
@@ -226,7 +226,7 @@ namespace Kotlib.Objects
 			{
 				_AddPostRaisedEvent(item);
 				OnPostEventAdded(item);
-				item.UpdatedEvent += (sender, e) => OnPostEventUpdated((Event)sender);
+				item.UpdatedEvent += (sender, e) => OnPostEventUpdated(item);
 				base.Add(item);
 			}
 		}
@@ -241,7 +241,7 @@ namespace Kotlib.Objects
 			if (base.IndexOf(item) == -1)
 			{
 				OnPostEventAdded(item);
-				item.UpdatedEvent += (sender, e) => OnPostEventUpdated((Event)sender);
+				item.UpdatedEvent += (sender, e) => OnPostEventUpdated(item);
 				_AddPostRaisedEvent(item);
 				base.Insert(index, item);
 			}

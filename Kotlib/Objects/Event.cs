@@ -24,11 +24,18 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace Kotlib.Objects
 {
+	
+	/// <summary>
+	/// Interface représentant un action de type Opération ou Transfert
+	/// </summary>
+	public class IEventAction
+	{}
 	
 	/// <summary>
 	/// Méthodes de répétition
@@ -275,28 +282,7 @@ namespace Kotlib.Objects
 				}
 			}
 		}
-		
-		private Guid _accountId = Guid.Empty;
-		/// <summary>
-		/// Identifiant unique de l'élément bancaire associé à cette programmation
-		/// </summary>
-		/// <value>Identifiant unique de l'élément bancaire associé à cette programmation</value>
-		public Guid AccountId
-		{
-			get { return _accountId; }
-			set
-			{
-				if (value.Equals(Guid.Empty))
-					throw new ArgumentException("Un élément bancaire doit être associé à cette programmation!");
-				
-				if (value != _accountId)
-				{
-					_accountId = value;
-					OnPropertyChanged();
-				}
-			}
-		}
-		
+
 		private DateTime _startDate = DateTime.Now;
 		/// <summary>
 		/// Date et heure de début de la programmation
@@ -451,7 +437,33 @@ namespace Kotlib.Objects
 			}
 		}
 		
-		
+		private dynamic _eventAction = null;
+		/// <summary>
+		/// Action  éxécutée par cet événement
+		/// </summary>
+		/// <value>Action  éxécutée par cet événement.</value>
+		[XmlElement(ElementName = "EventAction")]
+		public dynamic EventAction
+		{
+			get { return _eventAction; }
+			set 
+			{
+				if (value == null || !value.GetType().IsSubclassOf(typeof(IEventAction)))
+					throw new ArgumentException("Une action de type Opération ou Transfert est requise.");
+				
+				if(value != _eventAction)
+				{
+					_eventAction = value;
+					
+					var diff = _endDate - _startDate;
+					_startDate = _eventAction.Date;
+					_endDate = _eventAction.Date + diff;
+					ComputeCounts();
+					
+					OnPropertyChanged();
+				}
+			}
+		}
 		
 		#endregion
 
@@ -466,25 +478,23 @@ namespace Kotlib.Objects
 		/// Constructeur
 		/// </summary>
 		/// <param name="name">Nom de la programmation.</param>
-		/// <param name="accountId">Identifiant unique de l'élément bancaire concerné</param>
-		/// <param name="startDate">Date de début de la programmation</param>
+		/// <param name="eventAction">Action de type Opération ou Transfert</param>
 		/// <param name="endDate">Date de fin (optionnel)</param>
 		/// <param name="count">Nombre de répétitions (optionnel)</param>
 		/// <param name="step"><paramref name="step">step</paramref> fois par <paramref name="type">type</paramref> </param>
 		/// <param name="type">Méthode de répétition. (Day | Week | Month | Year)</param>
-		public Event(string name, Guid accountId, DateTime startDate, DateTime? endDate = null, int count = 1, int step = 1, RepeatType type = RepeatType.Month)
+		public Event(string name, dynamic eventAction, DateTime? endDate = null, int count = 1, int step = 1, RepeatType type = RepeatType.Month)
 			: this()
 		{
 			Name = name;
-			AccountId = accountId;
-			StartDate = startDate;
-			NextDate = startDate;
+			NextDate = eventAction.Date;
 			RepeatStep = step;
 			RepeatType = type;
 			if (endDate == null)
 				RepeatCount = count;
 			else
-				EndDate = endDate ?? startDate;
+				EndDate = endDate ?? eventAction.Date;
+			EventAction = eventAction;
 		}
 		
 		/// <summary>
