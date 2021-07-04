@@ -21,6 +21,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Linq;
 using Kotlib.Objects;
@@ -260,11 +261,17 @@ namespace Kotlib.test
 					Console.WriteLine("Culture système: {0} | Monnaie: {1} {2}", c.CultureFullname, c.Symbol, c.Name);
 			}
 			
+			Console.WriteLine();
+			var now = DateTime.Now;
+			Console.WriteLine("Aujourd'hui nous sommes le {0}", now.ToLongDateString());
+			Console.WriteLine("le premier jour de la semaine est le {0}", CultureInfo.GetCultureInfo(fi.CultureName).GetFirstDateOfWeek(now).ToLongDateString());
+			Console.WriteLine("le dernier jour de la semaine est le {0}", CultureInfo.GetCultureInfo(fi.CultureName).GetLastDateOfWeek(now).ToLongDateString());
+			Console.WriteLine("le premier jour du mois est le {0}", CultureInfo.GetCultureInfo(fi.CultureName).GetFirstDateOfMonth(now).ToLongDateString());
+			Console.WriteLine("le dernier jour du mois est le {0}", CultureInfo.GetCultureInfo(fi.CultureName).GetLastDateOfMonth(now).ToLongDateString());
+			Console.WriteLine("le premier jour de l'année est le {0}", CultureInfo.GetCultureInfo(fi.CultureName).GetFirstDateOfYear(now).ToLongDateString());
+			Console.WriteLine("le dernier jour de l'année est le {0}", CultureInfo.GetCultureInfo(fi.CultureName).GetLastDateOfYear(now).ToLongDateString());
 			
-
-
-			
-			
+			var l = fi2.GetEventsInfosAt(fi2.Accounts[0].Id, new DateTime(2021, 7, 1), new DateTime(2021, 8, 31));
 			
 
 			

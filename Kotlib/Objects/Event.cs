@@ -23,6 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
@@ -35,7 +36,9 @@ namespace Kotlib.Objects
 	/// Interface représentant un action de type Opération ou Transfert
 	/// </summary>
 	public class IEventAction
-	{}
+	{
+
+	}
 	
 	/// <summary>
 	/// Méthodes de répétition
@@ -446,12 +449,12 @@ namespace Kotlib.Objects
 		public dynamic EventAction
 		{
 			get { return _eventAction; }
-			set 
+			set
 			{
 				if (value == null || !value.GetType().IsSubclassOf(typeof(IEventAction)))
 					throw new ArgumentException("Une action de type Opération ou Transfert est requise.");
 				
-				if(value != _eventAction)
+				if (value != _eventAction)
 				{
 					_eventAction = value;
 					
@@ -516,7 +519,7 @@ namespace Kotlib.Objects
 			var dt = StartDate;
 			for (int i = 0; i < RepeatCount; i++)
 			{
-				calendar.Add(dt);
+				calendar.Add(dt.Date);
 				dt = ComputeNextDate(dt);
 			}
 			
@@ -534,7 +537,7 @@ namespace Kotlib.Objects
 			var dt = NextDate;
 			for (int i = 0; i < RepeatCount; i++)
 			{
-				calendar.Add(dt);
+				calendar.Add(dt.Date);
 				dt = ComputeNextDate(dt);
 				
 				if (dt.Date > EndDate.Date)
@@ -608,5 +611,6 @@ namespace Kotlib.Objects
 		
 
 	}
+
 	
 }

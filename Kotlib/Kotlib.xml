@@ -852,6 +852,11 @@
             <param name="index">Position d'insertion.</param>
             <param name="item">Elément à insérer.</param>
         </member>
+        <member name="T:Kotlib.Objects.IEventAction">
+            <summary>
+            Interface représentant un action de type Opération ou Transfert
+            </summary>
+        </member>
         <member name="T:Kotlib.Objects.RepeatType">
             <summary>
             Méthodes de répétition
@@ -964,12 +969,6 @@
             </summary>
             <value>Etat de la programmation</value>
         </member>
-        <member name="P:Kotlib.Objects.Event.AccountId">
-            <summary>
-            Identifiant unique de l'élément bancaire associé à cette programmation
-            </summary>
-            <value>Identifiant unique de l'élément bancaire associé à cette programmation</value>
-        </member>
         <member name="P:Kotlib.Objects.Event.StartDate">
             <summary>
             Date et heure de début de la programmation
@@ -1019,18 +1018,23 @@
             </summary>
             <value>Nombre de répétitions</value>
         </member>
+        <member name="P:Kotlib.Objects.Event.EventAction">
+            <summary>
+            Action  éxécutée par cet événement
+            </summary>
+            <value>Action  éxécutée par cet événement.</value>
+        </member>
         <member name="M:Kotlib.Objects.Event.#ctor">
             <summary>
             Constructeurs
             </summary>
         </member>
-        <member name="M:Kotlib.Objects.Event.#ctor(System.String,System.Guid,System.DateTime,System.Nullable{System.DateTime},System.Int32,System.Int32,Kotlib.Objects.RepeatType)">
+        <member name="M:Kotlib.Objects.Event.#ctor(System.String,System.Object,System.Nullable{System.DateTime},System.Int32,System.Int32,Kotlib.Objects.RepeatType)">
             <summary>
             Constructeur
             </summary>
             <param name="name">Nom de la programmation.</param>
-            <param name="accountId">Identifiant unique de l'élément bancaire concerné</param>
-            <param name="startDate">Date de début de la programmation</param>
+            <param name="eventAction">Action de type Opération ou Transfert</param>
             <param name="endDate">Date de fin (optionnel)</param>
             <param name="count">Nombre de répétitions (optionnel)</param>
             <param name="step"><paramref name="step">step</paramref> fois par <paramref name="type">type</paramref> </param>
@@ -1687,7 +1691,7 @@
             Constructeurs
             </summary>
         </member>
-        <member name="M:Kotlib.Objects.Operation.#ctor(System.String,System.DateTime,System.Double,System.Guid,System.Guid,System.Guid,System.Boolean)">
+        <member name="M:Kotlib.Objects.Operation.#ctor(System.String,System.DateTime,System.Decimal,System.Guid,System.Guid,System.Guid,System.Boolean)">
             <summary>
             Constructeur
             </summary>
@@ -2399,7 +2403,7 @@
             Constructeurs
             </summary>
         </member>
-        <member name="M:Kotlib.Objects.Transfer.#ctor(System.String,System.DateTime,System.Double,System.Guid,System.Guid,System.Boolean)">
+        <member name="M:Kotlib.Objects.Transfer.#ctor(System.String,System.DateTime,System.Decimal,System.Guid,System.Guid,System.Boolean)">
             <summary>
             Constructeur
             </summary>
@@ -2575,7 +2579,7 @@
             </summary>
             <param name="ci">Informations culturelles</param>
         </member>
-        <member name="M:Kotlib.Tools.Currency.Format(System.Double,System.Boolean)">
+        <member name="M:Kotlib.Tools.Currency.Format(System.Decimal,System.Boolean)">
             <summary>
             Format une valeur monétaire
             </summary>
@@ -2583,7 +2587,7 @@
             <param name="iso">Formattage ISO</param>
             <returns>Valeur formattée</returns>
         </member>
-        <member name="M:Kotlib.Tools.Currency.Format(System.Decimal,System.Boolean)">
+        <member name="M:Kotlib.Tools.Currency.Format(System.Double,System.Boolean)">
             <summary>
             Format une valeur monétaire
             </summary>

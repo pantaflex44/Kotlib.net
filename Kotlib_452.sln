@@ -1,6 +1,5 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-# SharpDevelop 5.1
 VisualStudioVersion = 12.0.20827.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kotlib_452", "Kotlib\Kotlib_452.csproj", "{8B4EF7A1-708D-4141-A2C0-67F13D2F87D2}"
@@ -21,5 +20,14 @@ Global
 		{DDB370F3-0385-4B5E-A36E-88EBA6C0FEEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DDB370F3-0385-4B5E-A36E-88EBA6C0FEEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DDB370F3-0385-4B5E-A36E-88EBA6C0FEEE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		Policies = $0
+		$0.DotNetNamingPolicy = $1
+		$1.DirectoryNamespaceAssociation = PrefixedHierarchical
+		$0.StandardHeader = $2
+		$2.Text = @//\n//  ${FileName}\n//\n//  Author:\n//       ${AuthorName} <${AuthorEmail}>\n//\n//  ${CopyrightHolder}\n//\n//  This program is free software: you can redistribute it and/or modify\n//  it under the terms of the GNU General Public License as published by\n//  the Free Software Foundation, either version 3 of the License, or\n//  (at your option) any later version.\n//\n//  This program is distributed in the hope that it will be useful,\n//  but WITHOUT ANY WARRANTY; without even the implied warranty of\n//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n//  GNU General Public License for more details.\n//\n//  You should have received a copy of the GNU General Public License\n//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+		description = Librairie pour la gestion assistée par ordinateur des finances personnelles.
+		version = v0.1-alpha.1
 	EndGlobalSection
 EndGlobal
