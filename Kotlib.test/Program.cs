@@ -177,7 +177,6 @@ namespace Kotlib.test
 			Console.WriteLine("Enregistrement du dossier financier...");
 			string filepath = fi.SaveToFile(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), password: "bob");
 			
-			
 			//###############################################################################################################
 			
 			// Chargement du dossier financier précédement enregistré
@@ -270,12 +269,25 @@ namespace Kotlib.test
 			Console.WriteLine("le dernier jour du mois est le {0}", CultureInfo.GetCultureInfo(fi.CultureName).GetLastDateOfMonth(now).ToLongDateString());
 			Console.WriteLine("le premier jour de l'année est le {0}", CultureInfo.GetCultureInfo(fi.CultureName).GetFirstDateOfYear(now).ToLongDateString());
 			Console.WriteLine("le dernier jour de l'année est le {0}", CultureInfo.GetCultureInfo(fi.CultureName).GetLastDateOfYear(now).ToLongDateString());
-			
-			var l = fi2.GetEventsInfosAt(fi2.Accounts[0].Id, new DateTime(2021, 7, 1), new DateTime(2021, 8, 31));
-			
 
-			
-			Console.ReadLine();
+            var events = fi2.GetEventsInfosAt(fi2.Accounts[0].Id, DateTime.MinValue, DateTime.MaxValue);
+            Console.WriteLine();
+            Console.WriteLine("Liste des événements programmés entre le {0} et le {1}", DateTime.MinValue.ToLongDateString(), DateTime.MaxValue.ToLongDateString());
+            Console.WriteLine("- {0} événement(s), total des revenus: {1}, total des dépenses {2}", events.Item3, fi.Currency.Format(events.Item1), fi.Currency.Format(events.Item2));
+
+            Console.WriteLine();
+            Console.WriteLine("Exportation des mouvements de tous les éléments bancaires au format CSV:");
+            var csvs = fi2.Accounts.Export2CSV(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fi2.Accounts.Select(a => a.Id).ToList(), DateTime.MinValue, DateTime.MaxValue);
+            foreach(var csv in csvs)
+                Console.WriteLine("- {0} : {1}", fi2.Accounts.GetById(csv.Item1).Name, csv.Item2);
+
+            Console.WriteLine();
+            Console.WriteLine("Exportation des mouvements de tous les éléments bancaires au format HTML:");
+            var htmls = fi2.Export2Html(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fi2.Accounts.Select(a => a.Id).ToList(), DateTime.MinValue, DateTime.MaxValue);
+            foreach (KeyValuePair<Guid, string> html in htmls)
+                Console.WriteLine("- {0} : {1}", fi2.Accounts.GetById(html.Key).Name, html.Value);
+
+            Console.ReadLine();
 		}
 
 	}

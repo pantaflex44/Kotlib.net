@@ -150,10 +150,10 @@ namespace Kotlib.Objects
 		/// <returns>Solde</returns>
 		public decimal PartialAmountAt(Account account, DateTime date, bool addInitialAmount = true)
 		{
-			var f = Items.Where(a => a.Date <= date && a.FromAccountId.Equals(account.Id)).Select(a => a.Amount).ToList();
+			var f = Items.Where(a => a.Date.Date <= date.Date && a.FromAccountId.Equals(account.Id)).Select(a => a.Amount).ToList();
 			var sf = Math.Abs(f.Sum());
 			
-			var t = Items.Where(a => a.Date <= date && a.ToAccountId.Equals(account.Id)).Select(a => a.Amount).ToList();
+			var t = Items.Where(a => a.Date.Date <= date.Date && a.ToAccountId.Equals(account.Id)).Select(a => a.Amount).ToList();
 			var st = Math.Abs(t.Sum());
 			
 			var amts = new decimal[] { (addInitialAmount ? account.InitialAmount : 0m), -sf, st };

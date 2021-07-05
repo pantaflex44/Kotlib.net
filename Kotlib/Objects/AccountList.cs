@@ -22,7 +22,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Xml.Serialization;
 
 namespace Kotlib.Objects
@@ -288,7 +291,199 @@ namespace Kotlib.Objects
 			Transfers.RemoveAll(a => !actIdList.Contains(a.FromAccountId) || !actIdList.Contains(a.ToAccountId));
 		}
 
-	}
+        /// <summary>
+        /// Exporte les mouvements d'un élément bancaire au format CSV
+        /// </summary>
+        /// <returns>
+        /// Liste des fichiers nouvellement créés.
+        /// Structure comprenant:
+        /// - Item 1: Identifiant unique de l'élément bancaire
+        /// - Item 2: Chemin du fichier CSV.
+        /// </returns>
+        /// <param name="directory">Chemin du répertoire recevant les fichiers CSV.</param>
+        /// <param name="accountsId">Liste d'identifiants uniques correspondant aux éléments bancaires à traiter.</param>
+        /// <param name="startDate">Date de début des mouvements pris en compte.</param>
+        /// <param name="endDate">Date de fin des mouvements pris en compte.</param>
+        /// <param name="delimiter">Délimiteur de colones CSV.</param>
+        /// <param name="decimalSeparator">Délimiteur des décimales.</param>
+        /// <param name="dateFormat">Format des dates enregistrées.</param>
+        public List<Tuple<Guid, string>> Export2CSV(string directory, List<Guid> accountsId, DateTime startDate, DateTime endDate, string delimiter = ";", string decimalSeparator = ",", string dateFormat = "dd/MM/yyyy")
+        {
+            var d = directory.Trim().Replace("~", Environment.GetFolderPath(Environment.SpecialFolder.Personal));
+            if (!Directory.Exists(d))
+                throw new DirectoryNotFoundException();
+
+            var filenames = new List<Tuple<Guid, string>>();
+
+            var columns = new string[] { "Date", "Débit", "Crédit", "Libellé" };
+            foreach (var uid in accountsId)
+            {
+                var a = GetById(uid);
+                if (a == null || a.Equals(default(Account)))
+                    continue;
+
+                var operations = a.Operations.Items
+                .Where(o => o.Active && o.Date.Date >= startDate.Date && o.Date.Date <= endDate.Date)
+                .Select(o => new Dictionary<string, string>()
+                {
+                    ["Sorter"] = o.Date.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                    [columns[0]] = o.Date.Date.ToString(dateFormat),
+                    [columns[1]] = (o.Amount < 0m) ? Math.Round(o.Amount, 2).ToString("0.00").Replace(".", decimalSeparator) : "0.00",
+                    [columns[2]] = (o.Amount >= 0m) ? Math.Round(o.Amount, 2).ToString("0.00").Replace(".", decimalSeparator) : "0.00",
+                    [columns[3]] = o.Name
+                })
+                .ToList();
+
+                var transfersOut = Transfers.Items
+                .Where(t => t.Active && t.FromAccountId.Equals(a.Id) && t.Date.Date >= startDate.Date && t.Date.Date <= endDate.Date)
+                .Select(t => new Dictionary<string, string>()
+                {
+                    ["Sorter"] = t.Date.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                    [columns[0]] = t.Date.Date.ToString(dateFormat),
+                    [columns[1]] = "-" + Math.Round(Math.Abs(t.Amount), 2).ToString("0.00").Replace(".", decimalSeparator),
+                    [columns[2]] = "0.00",
+                    [columns[3]] = t.Name
+                })
+                .ToList();
+
+                var transfersIn = Transfers.Items
+                .Where(t => t.Active && t.ToAccountId.Equals(a.Id) && t.Date.Date >= startDate.Date && t.Date.Date <= endDate.Date)
+                .Select(t => new Dictionary<string, string>()
+                {
+                    ["Sorter"] = t.Date.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                    [columns[0]] = t.Date.Date.ToString(dateFormat),
+                    [columns[1]] = "0.00",
+                    [columns[2]] = Math.Round(Math.Abs(t.Amount), 2).ToString("0.00").Replace(".", decimalSeparator),
+                    [columns[3]] = t.Name
+                })
+                .ToList();
+
+                var mvts = new List<Dictionary<string, string>>();
+                mvts.AddRange(operations);
+                mvts.AddRange(transfersIn);
+                mvts.AddRange(transfersOut);
+
+                mvts.Sort((mvt1, mvt2) =>
+                {
+                    var d1 = DateTime.ParseExact(mvt1["Sorter"], "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                    var d2 = DateTime.ParseExact(mvt2["Sorter"], "yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+                    if (d2 > d1)
+                        return -1;
+
+                    if (d2 < d1)
+                        return 1;
+
+                    return 0;
+                });
+
+                var lines = new List<string>() { string.Join(delimiter, columns.ToArray()) };
+                foreach (var m in mvts)
+                {
+                    var lColumns = new List<string>();
+                    foreach (var c in columns)
+                    {
+                        if (m.Keys.Contains(c))
+                            lColumns.Add(m[c]);
+                        else
+                            lColumns.Add("");
+                    }
+                    lines.Add(string.Join(delimiter, lColumns.ToArray()));
+                }
+
+                var filename = String.Join("_", a.Name.Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries)).TrimEnd('.');
+
+                var fp = Path.Combine(d, filename) + ".csv";
+                fp = Path.GetFullPath(fp);
+
+                using (StreamWriter sw = new StreamWriter(File.Open(fp, FileMode.Create), Encoding.UTF8))
+                {
+                    foreach (var line in lines)
+                        sw.WriteLine(line);
+                }
+                lines.Clear();
+
+                filenames.Add(new Tuple<Guid, string>(a.Id, fp));
+            }
+
+            return filenames;
+        }
+
+        /// <summary>
+        /// Exporte les mouvements bancaires des éléments souhaité
+        /// </summary>
+        /// <returns>
+        /// Liste des mouvements par éléments bancaires:
+        /// - Key: Identifiant unique de l'élément bancaire
+        /// - Value: Dictionnaire classé et trié par date des mouvements
+        ///     - Key: Date des mouvements
+        ///     - Value: Liste des mouvements de type <c>Operation</c> ou <c>Transfer</c>
+        /// </returns>
+        /// <param name="directory">Chemin du répertoire recevant les fichiers CSV.</param>
+        /// <param name="accountsId">Liste d'identifiants uniques correspondant aux éléments bancaires à traiter.</param>
+        /// <param name="startDate">Date de début des mouvements pris en compte.</param>
+        /// <param name="endDate">Date de fin des mouvements pris en compte.</param>
+        public Dictionary<Guid, Dictionary<DateTime, List<IEventAction>>> Export2List(string directory, List<Guid> accountsId, DateTime startDate, DateTime endDate)
+        {
+            var result = new Dictionary<Guid, Dictionary<DateTime, List<IEventAction>>>();
+
+            foreach (var uid in accountsId)
+            {
+                var a = GetById(uid);
+                if (a == null || a.Equals(default(Account)))
+                    continue;
+
+                var datas = new Dictionary<DateTime, List<IEventAction>>();
+
+                a.Operations.Items
+                .Where(o => o.Active && o.Date.Date >= startDate.Date && o.Date.Date <= endDate.Date)
+                .ToList()
+                .ForEach(o => 
+                    {
+                        if (!datas.Keys.Contains(o.Date.Date))
+                            datas[o.Date.Date] = new List<IEventAction>();
+
+                        datas[o.Date.Date].Add(o);
+                    });
+
+                Transfers.Items
+                .Where(t => t.Active && (t.FromAccountId.Equals(a.Id) || t.ToAccountId.Equals(a.Id)) && t.Date.Date >= startDate.Date && t.Date.Date <= endDate.Date)
+                .ToList()
+                .ForEach(t =>
+                {
+                    if (!datas.Keys.Contains(t.Date.Date))
+                        datas[t.Date.Date] = new List<IEventAction>();
+
+                    datas[t.Date.Date].Add(t);
+                });
+
+                datas.ToList().Sort((mvt1, mvt2) =>
+                    {
+                        if (mvt2.Key > mvt1.Key)
+                            return -1;
+
+                        if (mvt2.Key < mvt1.Key)
+                            return 1;
+
+                        return 0;
+                    }
+                );
+
+                result.Add(a.Id, datas);
+            }
+
+            return result;
+        }
 
 
+
+
+
+
+
+
+
+
+
+    }
 }

@@ -27,12 +27,14 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using Kotlib.Objects;
 using Kotlib.Tools;
+using System.Reflection;
 
 namespace Kotlib
 {
@@ -883,7 +885,108 @@ namespace Kotlib
             return new Tuple<decimal, decimal, int>(i, e, c);
         }
 
+        /// <summary>
+        /// Exporte les mouvements des éléments bancaires souhaités entre les dates spécifiées.
+        /// </summary>
+        /// <returns>
+        /// Liste des fichiers html résultants:
+        ///     - Key: Identifiant unique de l'élément bancaire
+        ///     - Value: Chemin du fichier HTML correspondant
+        /// </returns>
+        /// <param name="directory">Chemin du répertoire recevant les fichiers CSV.</param>
+        /// <param name="accountsId">Liste d'identifiants uniques correspondant aux éléments bancaires à traiter.</param>
+        /// <param name="startDate">Date de début des mouvements pris en compte.</param>
+        /// <param name="endDate">Date de fin des mouvements pris en compte.</param>
+        public Dictionary<Guid, string> Export2Html(string directory, List<Guid> accountsId, DateTime startDate, DateTime endDate)
+        {
+            var d = directory.Trim().Replace("~", Environment.GetFolderPath(Environment.SpecialFolder.Personal));
+            if (!Directory.Exists(d))
+                throw new DirectoryNotFoundException();
 
+            var filenames = new Dictionary<Guid, string>();
+
+            var lst = Accounts.Export2List(directory, accountsId, startDate, endDate);
+
+            foreach (KeyValuePair<Guid, Dictionary<DateTime, List<IEventAction>>> kvp in lst)
+            {
+                var a = Accounts.GetById(kvp.Key);
+                var filename = String.Join("_", a.Name.Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries)).TrimEnd('.');
+                var fp = Path.Combine(d, filename) + ".html";
+                fp = Path.GetFullPath(fp);
+
+                string html = string.Format(@"<!doctype html><html><head lang=""{0}""><meta charset=""UTF-8"">
+                <title>{1}</title></head><body style=""width: 97%; font-family: sans-serif; font-size: 0.9em;"">
+                <p style=""font-weight: bold; font-size: large;"">{1}</p>
+                <table align=""center"" style=""border-collapse: collapse; width: 100%; border: 1px solid gray;"" border=""0"" cellpadding=""5"" cellspacing=""0"">
+                <tr style=""width: 100%; background: gray; color: white; font-weight: bold; border-bottom: 1px solid gray;"">
+                <td style=""width: 35%; max-width: 35%;"">{2}</td>
+                <td style=""width: 30%; max-width: 30%;"">{3}</td>
+                <td style=""width: 15%; max-width: 10%;"">{4}</td>
+                <td style=""width: 10%; max-width: 15%; text-align: right;"">{5}</td>
+                <td style=""width: 10%; max-width: 15%; text-align: right;"">{6}</td>
+                </tr>", 
+                    CultureName, a.Name, "Dénomination", "Note", "Type", "Débit", "Crédit");
+
+                var mvts = kvp.Value.OrderByDescending(i => i.Key);
+                foreach (KeyValuePair<DateTime, List<IEventAction>> kvp2 in mvts)
+                {
+                    var amount = AmountAt(a, kvp2.Key, true);
+
+                    html += string.Format(@"<tr style=""background: lightgray; border-top: 1px solid gray; border-bottom: 1px dashed gray;"">
+                    <td colspan=""2"" style=""text-align: left; font-weight: bold; font-size: small;"">{0}</td>
+                    <td colspan=""3"" style=""text-align: right; font-weight: bold; font-size: small; color: {3};"">{1} {2}</td>
+                    </tr>", 
+                        kvp2.Key.ToLongDateString(), "solde:", Currency.Format(amount), (amount < 0m ? "red" : "black"));
+
+                    foreach (var ot in kvp2.Value)
+                    {
+                        var name = ot.GetType() == typeof(Operation)
+                            ? (ot as Operation).Name
+                            : ot.GetType() == typeof(Transfer)
+                                ? (ot as Transfer).Name
+                                : "";
+                        var note = ot.GetType() == typeof(Operation)
+                            ? (ot as Operation).Note
+                            : ot.GetType() == typeof(Transfer)
+                                ? (ot as Transfer).Note
+                                : "";
+
+                        var type = ot.GetType() == typeof(Operation)
+                            ? Paytypes.GetById((ot as Operation).TypeId).Name
+                            : ot.GetType() == typeof(Transfer)
+                                ? "Transfert"
+                                : "";
+
+                        var expense = ot.GetType() == typeof(Operation)
+                            ? ((ot as Operation).Amount < 0m ? Currency.Format((ot as Operation).Amount) : "")
+                            : ot.GetType() == typeof(Transfer)
+                                ? ((ot as Transfer).FromAccountId.Equals(a.Id) ? Currency.Format(-Math.Abs((ot as Operation).Amount)) : "")
+                                : "";
+
+                        var income = ot.GetType() == typeof(Operation)
+                            ? ((ot as Operation).Amount >= 0m ? Currency.Format((ot as Operation).Amount) : "")
+                            : ot.GetType() == typeof(Transfer)
+                                ? ((ot as Transfer).ToAccountId.Equals(a.Id) ? Currency.Format(Math.Abs((ot as Operation).Amount)) : "")
+                                : "";
+
+                        html += string.Format(@"<tr style=""border-bottom: 1px dotted gray;"">
+                        <td>{0}</td><td>{1}</td><td>{2}</td><td style=""text-align: right;"">{3}</td><td style=""text-align: right;"">{4}</td>
+                        </tr>",
+                            name, note, type, expense, income);
+                    }
+                }
+
+                html += string.Format(@"</table><p style=""font-size: smaller; text-align: center; color: gray;"">{0} {1}</p></body></html>", 
+                    GetType().Assembly.GetName().Name, GetType().Assembly.GetName().Version);
+
+                using (StreamWriter sw = new StreamWriter(File.Open(fp, FileMode.Create), Encoding.UTF8))
+                    sw.Write(html);
+
+                filenames.Add(a.Id, fp);
+            }
+
+            return filenames;
+        }
 
 
 

@@ -349,7 +349,7 @@ namespace Kotlib.Objects
 		/// <returns>Solde</returns>
 		public decimal PartialAmountAt(DateTime date, bool addInitialAmount = true)
 		{
-			var amts = Operations.Items.Where(a => a.Date <= date).Select(a => a.Amount).ToList();
+			var amts = Operations.Items.Where(a => a.Date.Date <= date.Date).Select(a => a.Amount).ToList();
 			
 			if (addInitialAmount)
 				amts.Insert(0, InitialAmount);
