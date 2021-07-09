@@ -277,15 +277,26 @@ namespace Kotlib.test
 
             Console.WriteLine();
             Console.WriteLine("Exportation des mouvements de tous les éléments bancaires au format CSV:");
-            var csvs = fi2.Accounts.Export2CSV(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fi2.Accounts.Select(a => a.Id).ToList(), DateTime.MinValue, DateTime.MaxValue);
+            var csvs = fi2.ToCSV(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fi2.Accounts.Select(a => a.Id).ToList(), DateTime.MinValue, DateTime.MaxValue);
             foreach(var csv in csvs)
                 Console.WriteLine("- {0} : {1}", fi2.Accounts.GetById(csv.Item1).Name, csv.Item2);
 
             Console.WriteLine();
             Console.WriteLine("Exportation des mouvements de tous les éléments bancaires au format HTML:");
-            var htmls = fi2.Export2Html(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fi2.Accounts.Select(a => a.Id).ToList(), DateTime.MinValue, DateTime.MaxValue);
+            var htmls = fi2.ToHtml(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fi2.Accounts.Select(a => a.Id).ToList(), DateTime.MinValue, DateTime.MaxValue);
             foreach (KeyValuePair<Guid, string> html in htmls)
                 Console.WriteLine("- {0} : {1}", fi2.Accounts.GetById(html.Key).Name, html.Value);
+
+            Console.WriteLine();
+            Console.WriteLine("Exportation des mouvements de tous les éléments bancaires au format OFX:");
+            var ofxs = fi2.ToOfx(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fi2.Accounts.Select(a => a.Id).ToList(), DateTime.MinValue, DateTime.MaxValue);
+            foreach (KeyValuePair<Guid, string> ofx in ofxs)
+                Console.WriteLine("- {0} : {1}", fi2.Accounts.GetById(ofx.Key).Name, ofx.Value);
+
+            Console.WriteLine();
+            Console.WriteLine("Exportation des mouvements de tous les éléments bancaires au format QIF:");
+            var qif = fi2.ToQif(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fi2.Accounts.Select(a => a.Id).ToList(), DateTime.MinValue, DateTime.MaxValue);
+            Console.WriteLine("- {0}", qif);
 
             Console.ReadLine();
 		}

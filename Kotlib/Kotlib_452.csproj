@@ -38,7 +38,7 @@
         <PackageTags>Kotlib, Librairie, Finance, Personnelle, Gestion, Compte</PackageTags>
         <Title>Kotlib.Net</Title>
         <Description>Librairie .Net pour la gestion assistée par ordinateur des finances personnelles.</Description>
-        <ReleaseVersion>v0.1-alpha.1</ReleaseVersion>
+        <ReleaseVersion>v0.1-alpha.3</ReleaseVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
         <PlatformTarget>AnyCPU</PlatformTarget>
@@ -115,11 +115,25 @@
         <Folder Include="Objects" />
     </ItemGroup>
     <ItemGroup>
-        <None Include="kotlib.ico" />
-        <None Include="kotlib.png" />
+        <None Include="kotlib.ico">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="kotlib.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
         <None Include="kotlib_back.png" />
-        <None Include="LICENSE" />
-        <None Include="Kotlib.webp" />
+        <None Include="LICENSE">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="Kotlib.webp">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="README.md">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="CHANGE.md">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

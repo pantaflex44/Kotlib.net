@@ -27,14 +27,16 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using Kotlib.Objects;
 using Kotlib.Tools;
 using System.Reflection;
+using System.Linq.Expressions;
+
 
 namespace Kotlib
 {
@@ -886,18 +888,136 @@ namespace Kotlib
         }
 
         /// <summary>
-        /// Exporte les mouvements des éléments bancaires souhaités entre les dates spécifiées.
+        /// Exporte les mouvements d'un élément bancaire au format CSV
         /// </summary>
         /// <returns>
-        /// Liste des fichiers html résultants:
-        ///     - Key: Identifiant unique de l'élément bancaire
-        ///     - Value: Chemin du fichier HTML correspondant
+        /// Liste de structures comprenant chacune:
+        /// - Item 1: Identifiant unique de l'élément bancaire
+        /// - Item 2: Chemin du fichier CSV.
         /// </returns>
         /// <param name="directory">Chemin du répertoire recevant les fichiers CSV.</param>
         /// <param name="accountsId">Liste d'identifiants uniques correspondant aux éléments bancaires à traiter.</param>
         /// <param name="startDate">Date de début des mouvements pris en compte.</param>
         /// <param name="endDate">Date de fin des mouvements pris en compte.</param>
-        public Dictionary<Guid, string> Export2Html(string directory, List<Guid> accountsId, DateTime startDate, DateTime endDate)
+        /// <param name="delimiter">Délimiteur de colones CSV.</param>
+        /// <param name="decimalSeparator">Délimiteur des décimales.</param>
+        /// <param name="dateFormat">Format des dates enregistrées.</param>
+        public List<Tuple<Guid, string>> ToCSV(string directory, List<Guid> accountsId, DateTime startDate, DateTime endDate, string delimiter = ";", string decimalSeparator = ",", string dateFormat = "dd/MM/yyyy")
+        {
+            var d = directory.Trim().Replace("~", Environment.GetFolderPath(Environment.SpecialFolder.Personal));
+            if (!Directory.Exists(d))
+                throw new DirectoryNotFoundException();
+
+            var filenames = new List<Tuple<Guid, string>>();
+
+            var columns = new string[] { "Date", "Débit", "Crédit", "Libellé" };
+            foreach (var uid in accountsId)
+            {
+                var a = Accounts.GetById(uid);
+                if (a == null || a.Equals(default(Account)))
+                    continue;
+
+                var operations = a.Operations.Items
+                .Where(o => o.Active && o.Date.Date >= startDate.Date && o.Date.Date <= endDate.Date)
+                .Select(o => new Dictionary<string, string>()
+                {
+                    ["Sorter"] = o.Date.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                    [columns[0]] = o.Date.Date.ToString(dateFormat),
+                    [columns[1]] = (o.Amount < 0m) ? Math.Round(o.Amount, 2).ToString("0.00").Replace(".", decimalSeparator) : "0.00",
+                    [columns[2]] = (o.Amount >= 0m) ? Math.Round(o.Amount, 2).ToString("0.00").Replace(".", decimalSeparator) : "0.00",
+                    [columns[3]] = o.Name
+                })
+                .ToList();
+
+                var transfersOut = Accounts.Transfers.Items
+                .Where(t => t.Active && t.FromAccountId.Equals(a.Id) && t.Date.Date >= startDate.Date && t.Date.Date <= endDate.Date)
+                .Select(t => new Dictionary<string, string>()
+                {
+                    ["Sorter"] = t.Date.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                    [columns[0]] = t.Date.Date.ToString(dateFormat),
+                    [columns[1]] = "-" + Math.Round(Math.Abs(t.Amount), 2).ToString("0.00").Replace(".", decimalSeparator),
+                    [columns[2]] = "0.00",
+                    [columns[3]] = t.Name
+                })
+                .ToList();
+
+                var transfersIn = Accounts.Transfers.Items
+                .Where(t => t.Active && t.ToAccountId.Equals(a.Id) && t.Date.Date >= startDate.Date && t.Date.Date <= endDate.Date)
+                .Select(t => new Dictionary<string, string>()
+                {
+                    ["Sorter"] = t.Date.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                    [columns[0]] = t.Date.Date.ToString(dateFormat),
+                    [columns[1]] = "0.00",
+                    [columns[2]] = Math.Round(Math.Abs(t.Amount), 2).ToString("0.00").Replace(".", decimalSeparator),
+                    [columns[3]] = t.Name
+                })
+                .ToList();
+
+                var mvts = new List<Dictionary<string, string>>();
+                mvts.AddRange(operations);
+                mvts.AddRange(transfersIn);
+                mvts.AddRange(transfersOut);
+
+                mvts.Sort((mvt1, mvt2) =>
+                {
+                    var d1 = DateTime.ParseExact(mvt1["Sorter"], "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                    var d2 = DateTime.ParseExact(mvt2["Sorter"], "yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+                    if (d2 > d1)
+                        return -1;
+
+                    if (d2 < d1)
+                        return 1;
+
+                    return 0;
+                });
+
+                var lines = new List<string>() { string.Join(delimiter, columns.ToArray()) };
+                foreach (var m in mvts)
+                {
+                    var lColumns = new List<string>();
+                    foreach (var c in columns)
+                    {
+                        if (m.Keys.Contains(c))
+                            lColumns.Add(m[c]);
+                        else
+                            lColumns.Add("");
+                    }
+                    lines.Add(string.Join(delimiter, lColumns.ToArray()));
+                }
+
+                var filename = String.Join("_", a.Name.Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries)).TrimEnd('.');
+
+                var fp = Path.Combine(d, filename) + ".csv";
+                fp = Path.GetFullPath(fp);
+
+                using (StreamWriter sw = new StreamWriter(File.Open(fp, FileMode.Create), Encoding.UTF8))
+                {
+                    foreach (var line in lines)
+                        sw.WriteLine(line);
+                }
+                lines.Clear();
+
+                filenames.Add(new Tuple<Guid, string>(a.Id, fp));
+            }
+
+            return filenames;
+        }
+
+        /// <summary>
+        /// Exporte les mouvements des éléments bancaires souhaités entre les dates spécifiées.
+        /// </summary>
+        /// <returns>
+        /// Liste des fichiers HTML résultants:
+        /// - Key: Identifiant unique de l'élément bancaire
+        /// - Value: Chemin du fichier HTML correspondant
+        /// </returns>
+        /// <param name="directory">Chemin du répertoire recevant les fichiers HTML.</param>
+        /// <param name="accountsId">Liste d'identifiants uniques correspondant aux éléments bancaires à traiter.</param>
+        /// <param name="startDate">Date de début des mouvements pris en compte.</param>
+        /// <param name="endDate">Date de fin des mouvements pris en compte.</param>
+        /// <param name="contentReturns"><c>true</c>, retourne le contenu HTML sans crééer de fichier HTML, sinon, <c>false</c></param>
+        public Dictionary<Guid, string> ToHtml(string directory, List<Guid> accountsId, DateTime startDate, DateTime endDate, bool contentReturns = false)
         {
             var d = directory.Trim().Replace("~", Environment.GetFolderPath(Environment.SpecialFolder.Personal));
             if (!Directory.Exists(d))
@@ -905,7 +1025,7 @@ namespace Kotlib
 
             var filenames = new Dictionary<Guid, string>();
 
-            var lst = Accounts.Export2List(directory, accountsId, startDate, endDate);
+            var lst = Accounts.GetAccountStatements(directory, accountsId, startDate, endDate);
 
             foreach (KeyValuePair<Guid, Dictionary<DateTime, List<IEventAction>>> kvp in lst)
             {
@@ -924,7 +1044,7 @@ namespace Kotlib
                 <td style=""width: 15%; max-width: 10%;"">{4}</td>
                 <td style=""width: 10%; max-width: 15%; text-align: right;"">{5}</td>
                 <td style=""width: 10%; max-width: 15%; text-align: right;"">{6}</td>
-                </tr>", 
+                </tr>",
                     CultureName, a.Name, "Dénomination", "Note", "Type", "Débit", "Crédit");
 
                 var mvts = kvp.Value.OrderByDescending(i => i.Key);
@@ -935,7 +1055,7 @@ namespace Kotlib
                     html += string.Format(@"<tr style=""background: lightgray; border-top: 1px solid gray; border-bottom: 1px dashed gray;"">
                     <td colspan=""2"" style=""text-align: left; font-weight: bold; font-size: small;"">{0}</td>
                     <td colspan=""3"" style=""text-align: right; font-weight: bold; font-size: small; color: {3};"">{1} {2}</td>
-                    </tr>", 
+                    </tr>",
                         kvp2.Key.ToLongDateString(), "solde:", Currency.Format(amount), (amount < 0m ? "red" : "black"));
 
                     foreach (var ot in kvp2.Value)
@@ -976,11 +1096,178 @@ namespace Kotlib
                     }
                 }
 
-                html += string.Format(@"</table><p style=""font-size: smaller; text-align: center; color: gray;"">{0} {1}</p></body></html>", 
+                html += string.Format(@"</table><p style=""font-size: smaller; text-align: center; color: gray;"">{0} {1}</p></body></html>",
                     GetType().Assembly.GetName().Name, GetType().Assembly.GetName().Version);
 
+                if (!contentReturns)
+                {
+                    using (StreamWriter sw = new StreamWriter(File.Open(fp, FileMode.Create), Encoding.UTF8))
+                        sw.Write(html);
+
+                    filenames.Add(a.Id, fp);
+                }
+                else
+                    filenames.Add(a.Id, html);
+
+            }
+
+            return filenames;
+        }
+
+        /// <summary>
+        /// Exporte les mouvements des éléments bancaires souhaités entre les dates spécifiées.
+        /// </summary>
+        /// <returns>
+        /// Liste des fichiers OFX résultants:
+        /// - Key: Identifiant unique de l'élément bancaire
+        /// - Value: Chemin du fichier OFX correspondant
+        /// </returns>
+        /// <param name="directory">Chemin du répertoire recevant les fichiers OFX.</param>
+        /// <param name="accountsId">Liste d'identifiants uniques correspondant aux éléments bancaires à traiter.</param>
+        /// <param name="startDate">Date de début des mouvements pris en compte.</param>
+        /// <param name="endDate">Date de fin des mouvements pris en compte.</param>
+        public Dictionary<Guid, string> ToOfx(string directory, List<Guid> accountsId, DateTime startDate, DateTime endDate)
+        {
+            var d = directory.Trim().Replace("~", Environment.GetFolderPath(Environment.SpecialFolder.Personal));
+            if (!Directory.Exists(d))
+                throw new DirectoryNotFoundException();
+
+            var filenames = new Dictionary<Guid, string>();
+
+            var lst = Accounts.GetAccountStatements(directory, accountsId, startDate, endDate);
+            foreach (KeyValuePair<Guid, Dictionary<DateTime, List<IEventAction>>> kvp in lst)
+            {
+                var a = Accounts.GetById(kvp.Key);
+                var filename = String.Join("_", a.Name.Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries)).TrimEnd('.');
+                var fp = Path.Combine(d, filename) + ".ofx";
+                fp = Path.GetFullPath(fp);
+
+                var utcNow = DateTime.UtcNow;
+
+                var ofx = @"OFXHEADER:100" + "\n";
+                ofx += @"DATA:OFXSGML" + "\n";
+                ofx += @"VERSION:102" + "\n";
+                ofx += @"SECURITY:NONE" + "\n";
+                ofx += @"ENCODING:UTF-8" + "\n";
+                ofx += @"CHARSET:1252" + "\n";
+                ofx += @"COMPRESSION:NONE" + "\n";
+                ofx += @"OLDFILEUID:NONE" + "\n";
+                ofx += @"NEWFILEUID:NONE" + "\n";
+                ofx += "\n";
+                ofx += @"<OFX>" + "\n";
+                ofx += "\t" + @"<SIGNONMSGSRSV1>" + "\n";
+                ofx += "\t\t" + @"<SONRS>" + "\n";
+                ofx += "\t\t\t" + @"<STATUS>" + "\n";
+                ofx += "\t\t\t\t" + @"<CODE>0</CODE>" + "\n";
+                ofx += "\t\t\t\t" + @"<SEVERITY>INFO</SEVERITY>" + "\n";
+                ofx += "\t\t\t" + @"</STATUS>" + "\n";
+                ofx += string.Format(CultureInfo.InvariantCulture,
+                    "\t\t\t" + @"<DTSERVER>{0}</DTSERVER>" + "\n",
+                    utcNow.ToString("yyyyMMdd") + "000000");
+                ofx += string.Format(CultureInfo.InvariantCulture,
+                    "\t\t\t" + @"<LANGUAGE>{0}</LANGUAGE>" + "\n",
+                    CultureInfo.GetCultureInfo(CultureName).ThreeLetterISOLanguageName.ToUpper());
+                ofx += "\t\t" + @"</SONRS>" + "\n";
+                ofx += "\t" + @"</SIGNONMSGSRSV1>" + "\n";
+                ofx += "\t" + @"<BANKMSGSRSV1>" + "\n";
+                ofx += "\t\t" + @"<STMTTRNRS>" + "\n";
+                ofx += string.Format(CultureInfo.InvariantCulture,
+                    "\t\t\t" + @"<TRNUID>{0}</TRNUID>" + "\n",
+                     utcNow.ToString("yyyyMMdd") + "000000");
+                ofx += "\t\t\t" + @"<STATUS>" + "\n";
+                ofx += "\t\t\t\t" + @"<CODE>0</CODE>" + "\n";
+                ofx += "\t\t\t\t" + @"<SEVERITY>INFO</SEVERITY>" + "\n";
+                ofx += "\t\t\t" + @"</STATUS>" + "\n";
+                ofx += "\t\t\t" + @"<STMTRS>" + "\n";
+                ofx += string.Format(CultureInfo.InvariantCulture,
+                    "\t\t\t\t" + @"<CURDEF>{0}</CURDEF>" + "\n",
+                    Currency.Name.ToUpper());
+                ofx += "\t\t\t\t" + @"<BANKTRANLIST>" + "\n";
+                ofx += string.Format(CultureInfo.InvariantCulture,
+                    "\t\t\t\t\t" + @"<DTSTART>{0}</DTSTART>" + "\n",
+                    startDate.ToUniversalTime().ToString("yyyyMMdd") + "000000");
+                ofx += string.Format(CultureInfo.InvariantCulture,
+                    "\t\t\t\t\t" + @"<DTEND>{0}</DTEND>" + "\n",
+                    endDate.ToUniversalTime().ToString("yyyyMMdd") + "000000");
+
+                var mvts = kvp.Value.OrderByDescending(i => i.Key);
+                foreach (KeyValuePair<DateTime, List<IEventAction>> kvp2 in mvts)
+                {
+                    var mvtDate = kvp2.Key;
+                    foreach (var ot in kvp2.Value)
+                    {
+                        ofx += "\t\t\t\t\t" + @"<STMTTRN>" + "\n";
+                        ofx += string.Format(CultureInfo.InvariantCulture,
+                            "\t\t\t\t\t\t" + @"<TRNTYPE>{0}</TRNTYPE>" + "\n",
+                            ot.GetType() == typeof(Operation) && (ot as Operation).ToId.Equals(a.Id)
+                            ? (ot as Operation).Amount < 0
+                                ? "DEBIT"
+                                : "CREDIT"
+                            : ot.GetType() == typeof(Transfer)
+                                ? (ot as Transfer).FromAccountId.Equals(a.Id)
+                                    ? "DEBIT"
+                                    : (ot as Transfer).ToAccountId.Equals(a.Id)
+                                        ? "CREDIT"
+                                        : "OTHER"
+                                : "OTHER");
+                        ofx += string.Format(CultureInfo.InvariantCulture,
+                            "\t\t\t\t\t\t" + @"<DTPOSTED>{0}</DTPOSTED>" + "\n",
+                            mvtDate.ToUniversalTime().ToString("yyyyMMdd"));
+                        ofx += string.Format(CultureInfo.InvariantCulture,
+                            "\t\t\t\t\t\t" + @"<DTUSER>{0}</DTUSER>" + "\n",
+                            mvtDate.ToUniversalTime().ToString("yyyyMMdd"));
+                        ofx += string.Format(CultureInfo.InvariantCulture,
+                            "\t\t\t\t\t\t" + @"<TRNAMT>{0:F}</TRNAMT>" + "\n",
+                            ot.GetType() == typeof(Operation) && (ot as Operation).ToId.Equals(a.Id)
+                            ? (ot as Operation).Amount
+                            : ot.GetType() == typeof(Transfer)
+                                ? (ot as Transfer).FromAccountId.Equals(a.Id)
+                                    ? -Math.Abs((ot as Transfer).Amount)
+                                    : (ot as Transfer).ToAccountId.Equals(a.Id)
+                                        ? Math.Abs((ot as Transfer).Amount)
+                                        : 0
+                                : 0);
+                        ofx += string.Format(CultureInfo.InvariantCulture,
+                            "\t\t\t\t\t\t" + @"<FITID>{0}</FITID>" + "\n",
+                            ot.GetType() == typeof(Operation) && (ot as Operation).ToId.Equals(a.Id)
+                            ? (ot as Operation).Id.ToString("N").ToUpper()
+                            : ot.GetType() == typeof(Transfer)
+                                ? (ot as Transfer).Id.ToString("N").ToUpper()
+                                : Guid.NewGuid().ToString("N"));
+                        ofx += string.Format(CultureInfo.InvariantCulture,
+                            "\t\t\t\t\t\t" + @"<NAME>{0}</NAME>" + "\n",
+                            ot.GetType() == typeof(Operation) && (ot as Operation).ToId.Equals(a.Id)
+                            ? SecurityElement.Escape((ot as Operation).Name)
+                            : ot.GetType() == typeof(Transfer)
+                                ? SecurityElement.Escape((ot as Transfer).Name)
+                                : "");
+                        ofx += string.Format(CultureInfo.InvariantCulture,
+                            "\t\t\t\t\t\t" + @"<MEMO>{0}</MEMO>" + "\n",
+                            ot.GetType() == typeof(Operation) && (ot as Operation).ToId.Equals(a.Id)
+                            ? SecurityElement.Escape((ot as Operation).Note)
+                            : ot.GetType() == typeof(Transfer)
+                                ? SecurityElement.Escape((ot as Transfer).Note)
+                                : "");
+                        ofx += "\t\t\t\t\t" + @"</STMTTRN>" + "\n";
+                    }
+                }
+
+                ofx += "\t\t\t\t" + @"</BANKTRANLIST>" + "\n";
+                ofx += "\t\t\t\t" + @"<LEDGERBAL>" + "\n";
+                ofx += string.Format(CultureInfo.InvariantCulture,
+                    "\t\t\t\t\t" + @"<BALAMT>{0:F}</BALAMT>" + "\n",
+                    AmountAt(a, endDate, true));
+                ofx += string.Format(CultureInfo.InvariantCulture,
+                    "\t\t\t\t\t" + @"<DTASOF>{0}</DTASOF>" + "\n",
+                    endDate.ToUniversalTime().ToString("yyyyMMdd"));
+                ofx += "\t\t\t\t" + @"</LEDGERBAL>" + "\n";
+                ofx += "\t\t\t" + @"</STMTRS>" + "\n";
+                ofx += "\t\t" + @"</STMTTRNRS>" + "\n";
+                ofx += "\t" + @"</BANKMSGSRSV1>" + "\n";
+                ofx += @"</OFX>" + "\n";
+
                 using (StreamWriter sw = new StreamWriter(File.Open(fp, FileMode.Create), Encoding.UTF8))
-                    sw.Write(html);
+                    sw.Write(ofx);
 
                 filenames.Add(a.Id, fp);
             }
@@ -988,10 +1275,152 @@ namespace Kotlib
             return filenames;
         }
 
+        /// <summary>
+        /// Exporte les mouvements des éléments bancaires souhaités entre les dates spécifiées.
+        /// </summary>
+        /// <returns>
+        /// Chemin du fichier QIF correspondant
+        /// </returns>
+        /// <param name="directory">Chemin du répertoire recevant les fichiers QIF.</param>
+        /// <param name="accountsId">Liste d'identifiants uniques correspondant aux éléments bancaires à traiter.</param>
+        /// <param name="startDate">Date de début des mouvements pris en compte.</param>
+        /// <param name="endDate">Date de fin des mouvements pris en compte.</param>
+        public string ToQif(string directory, List<Guid> accountsId, DateTime startDate, DateTime endDate)
+        {
+            var d = directory.Trim().Replace("~", Environment.GetFolderPath(Environment.SpecialFolder.Personal));
+            if (!Directory.Exists(d))
+                throw new DirectoryNotFoundException();
+
+            var filename = String.Join("_", GetType().Assembly.GetName().Name.Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries)).TrimEnd('.');
+            var fp = Path.Combine(d, filename) + ".qif";
+            fp = Path.GetFullPath(fp);
+
+            string qif = "";
+
+            qif += "!Type:Cat\n";
+            void scrib(Category cat, string sParent)
+            {
+                var sFullName = string.Join(":", new string[] { sParent, cat.Name });
+                var sName = string.Format(CultureInfo.InvariantCulture, "{0}",
+                    SecurityElement.Escape(sFullName));
+
+                qif += "N" + sName + "\n";
+                qif += "^\n";
+
+                cat.Childs.Items.ForEach(ccat => scrib(ccat, sFullName));
+            }
+            Categories.Items.ForEach(cat => scrib(cat, ""));
+
+            var lst = Accounts.GetAccountStatements(directory, accountsId, startDate, endDate);
+            foreach (KeyValuePair<Guid, Dictionary<DateTime, List<IEventAction>>> kvp in lst)
+            {
+                var a = Accounts.GetById(kvp.Key);
+
+                var sType = "Bank";
+                if (a.GetType() == typeof(Paycard))
+                    sType = "CCard";
+                else if (a.GetType() == typeof(Wallet))
+                    sType = "Cash";
+
+                qif += "!Account\n";
+                qif += string.Format(CultureInfo.InvariantCulture, "N{0}\n",
+                    SecurityElement.Escape(a.Name));
+                qif += string.Format(CultureInfo.InvariantCulture, "D{0}\n",
+                    SecurityElement.Escape(a.Note));
+                qif += string.Format(CultureInfo.InvariantCulture, "T{0}\n",
+                    sType);
+                qif += string.Format(CultureInfo.InvariantCulture, "/{0}\n",
+                    endDate.ToUniversalTime().ToString("dd/MM/yyyy"));
+                qif += string.Format(CultureInfo.InvariantCulture, "${0}\n",
+                    AmountAt(a, endDate, true));
+                qif += "^\n";
+
+                if (kvp.Value.Any())
+                {
+                    qif += string.Format(CultureInfo.InvariantCulture, "!Type:{0}\n",
+                        sType);
+
+                    var mvts = kvp.Value.OrderByDescending(i => i.Key);
+                    foreach (KeyValuePair<DateTime, List<IEventAction>> kvp2 in mvts)
+                    {
+                        var mvtDate = kvp2.Key;
+                        var sMvtDate = string.Format(CultureInfo.InvariantCulture, "{0}",
+                                mvtDate.ToUniversalTime().ToString("yyyyMMdd"));
+
+                        foreach (var ot in kvp2.Value)
+                        {
+                            var sAmount = string.Format(CultureInfo.InvariantCulture, "{0:F}",
+                                ot.GetType() == typeof(Operation) && (ot as Operation).ToId.Equals(a.Id)
+                                ? (ot as Operation).Amount
+                                : ot.GetType() == typeof(Transfer)
+                                    ? (ot as Transfer).FromAccountId.Equals(a.Id)
+                                        ? -Math.Abs((ot as Transfer).Amount)
+                                        : (ot as Transfer).ToAccountId.Equals(a.Id)
+                                            ? Math.Abs((ot as Transfer).Amount)
+                                            : 0
+                                    : 0);
+
+                            var sId = ot.GetType() == typeof(Operation) && (ot as Operation).ToId.Equals(a.Id)
+                                ? (ot as Operation).Id.ToString("N").ToUpper()
+                                : ot.GetType() == typeof(Transfer)
+                                    ? (ot as Transfer).Id.ToString("N").ToUpper()
+                                    : Guid.NewGuid().ToString("N");
+
+                            var sName = string.Format(CultureInfo.InvariantCulture, "{0}",
+                                ot.GetType() == typeof(Operation) && (ot as Operation).ToId.Equals(a.Id)
+                                ? SecurityElement.Escape((ot as Operation).Name)
+                                : ot.GetType() == typeof(Transfer)
+                                    ? SecurityElement.Escape((ot as Transfer).Name)
+                                    : "");
+
+                            var sMemo = string.Format(CultureInfo.InvariantCulture, "{0}",
+                                ot.GetType() == typeof(Operation) && (ot as Operation).ToId.Equals(a.Id)
+                                ? SecurityElement.Escape((ot as Operation).Note)
+                                : ot.GetType() == typeof(Transfer)
+                                    ? SecurityElement.Escape((ot as Transfer).Note)
+                                    : "");
+
+                            var sCategory = string.Format(CultureInfo.InvariantCulture, "{0}",
+                                ot.GetType() == typeof(Operation) && (ot as Operation).ToId.Equals(a.Id)
+                                ? Categories.GetById((ot as Operation).CategoryId).Name
+                                : ot.GetType() == typeof(Transfer)
+                                    ? "Transfert"
+                                    : "");
+
+                            var sState = "*";
+
+                            qif += "D" + sMvtDate + "\n";
+                            qif += "T" + sAmount + "\n";
+                            qif += "P" + sName + "\n";
+                            qif += "M" + sMemo + "\n";
+                            qif += "N" + sId + "\n";
+                            qif += "L" + sCategory + "\n";
+                            qif += "N" + sState + "\n";
+                            qif += "^\n";
+                        }
+                    }
+                }
+
+            }
+
+            using (StreamWriter sw = new StreamWriter(File.Open(fp, FileMode.Create), Encoding.UTF8))
+                sw.Write(qif);
+
+            return fp;
+        }
+
+
+
+
+
+
+
+
+
+
+
 
 
     }
-
-
 
 }
